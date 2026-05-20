@@ -204,6 +204,55 @@ Runs at the close of every subtask or task.
 
 ---
 
+## Agent Activation Protocol
+
+When a task calls for a specific agent, state the agent name and read its roster file
+in full before proceeding. The roster file is the runtime contract — it contains Use
+When, Reads, Writes, Procedure, Refusals, and Compatible With. `AGENTS.md` is the
+router; the roster file is the spec.
+
+**Pattern:**
+```
+"Activating [AgentName]. Reading agents/roster/<name>.md."
+[read the file]
+[follow its Procedure section exactly]
+```
+
+**Persona overlays** — switch with `/personality <name>` in the Hermes CLI. Defined in
+`hermes-config.yaml`. Each overlay activates a mode and points to the relevant roster
+file. Seven overlays are registered: `brand-director`, `audience-researcher`,
+`product-explainer`, `x-editor`, `instagram-editor`, `provocateur`, `growth-analyst`.
+
+### Task-to-Agent Routing Table
+
+| Task type | Primary agent | Roster file |
+|---|---|---|
+| Clarify or brief a task | Interrogator | `agents/roster/interrogator.md` |
+| Generate social content | ContentAgent | `agents/roster/content-agent.md` |
+| Policy and brand preflight | ValidateAgent | `agents/roster/validate-agent.md` |
+| Publish approved content | PublishAgent | `agents/roster/publish-agent.md` |
+| Read channel inbox / classify mentions | EngagementAgent | `agents/roster/engagement-agent.md` |
+| Hold flagged item / write EscalationRecord | EscalationAgent | `agents/roster/escalation-agent.md` |
+| Collect metrics / attribution | MetricsAgent | `agents/roster/metrics-agent.md` |
+| Fetch product data / channel reads | FetchAgent | `agents/roster/fetch-agent.md` |
+| Research film context or claims | MovieResearchAgent | `agents/roster/movie-research-agent.md` |
+| Normalize or transform data | TransformAgent | `agents/roster/transform-agent.md` |
+| Compute or score metrics | AnalysisAgent | `agents/roster/analysis-agent.md` |
+| Audit outputs / detect drift | LintAgent | `agents/roster/lint-agent.md` |
+| Query content history / deduplication | QueryAgent | `agents/roster/query-agent.md` |
+| Compare periods / detect anomalies | DiffAgent | `agents/roster/diff-agent.md` |
+| Identify reusable procedures | DistillAgent | `agents/roster/distill-agent.md` |
+| Run a registered skill | ExecuteAgent | `agents/roster/execute-agent.md` |
+| Format and deliver output | ReportAgent | `agents/roster/report-agent.md` |
+| Build or refine skills and agent specs | SkillBuildingAgent | `agents/roster/skill-builder.md` |
+| Literary / editorial voice work | ComposerAgent | `agents/roster/composer.md` |
+| Golden Age Castilian translation | ComposerTranslatorAgent | `agents/roster/composer-translator.md` |
+
+**Archived agents** (do not route to these): `ingest-agent`, `concept-agent`,
+`librarian-agent`, `historian`, `research-page` — in `agents/roster/archive/`.
+
+---
+
 ## Skill System
 
 Skills are distilled reusable procedures in `agents/skills/`. They live as SKILL.md files, get promoted only when two or more agents or pipelines have demonstrated the pattern, and can be converted between Hermes, OpenAI, Anthropic, LangChain, CrewAI, AutoGen, and MCP formats via the Decompose/Reform procedures in [agents/skills/_formats.md](agents/skills/_formats.md).
