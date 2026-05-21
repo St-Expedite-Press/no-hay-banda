@@ -48,9 +48,9 @@
 
 ### Deliverables
 
-- [ ] Create dedicated Hermes profile for `newshow.biz`.
-- [ ] Write profile-scoped `SOUL.md`.
-- [ ] Write project `AGENTS.md`.
+- [ ] Create dedicated Hermes profile for `newshow.biz`. — *hermes-config.yaml written; human install step remains (`mkdir ~/.hermes/profiles/new-showbiz`, copy files).*
+- [x] ✅ Write profile-scoped `SOUL.md`. — *Written 2026-05-20. At `New_Show_Bot/SOUL.md` and `no-hay-banda/docs/SOUL.md`.*
+- [x] ✅ Write project `AGENTS.md`. — *Complete with Agent Activation Protocol, Task-to-Agent Routing Table, persona overlay registration, and full brand/escalation rules.*
 - [ ] Define initial skills for campaign planning, draft review, policy review, and reporting.
 - [ ] Define `PersonaRegistry`.
 - [ ] Define `TaskRouter`.
