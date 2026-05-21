@@ -206,50 +206,102 @@ Runs at the close of every subtask or task.
 
 ## Agent Activation Protocol
 
-When a task calls for a specific agent, state the agent name and read its roster file
-in full before proceeding. The roster file is the runtime contract — it contains Use
-When, Reads, Writes, Procedure, Refusals, and Compatible With. `AGENTS.md` is the
-router; the roster file is the spec.
+`AGENTS.md` is auto-loaded by Hermes as the cwd context file (system prompt slot 2) in
+every session started from this project root. `SOUL.md` occupies slot 1. The orchestrating
+agent reads this file, decomposes the task using the routing table below, and delegates to
+subagents using `delegate_task`.
 
-**Pattern:**
+### How Hermes Loads This File
+
+Hermes searches the current working directory for `AGENTS.md` at session start. When
+found, it is injected into the system prompt. This means any Hermes instance launched
+from this project root automatically has the full routing table, pipeline definitions,
+brand rules, and escalation policy in context — no manual loading required.
+
+### Two Activation Patterns
+
+**Pattern 1 — In-session persona switch** (same context window):
 ```
-"Activating [AgentName]. Reading agents/roster/<name>.md."
-[read the file]
-[follow its Procedure section exactly]
+/personality x-editor
+```
+Loads the overlay from `hermes-config.yaml`. The agent reads the roster file named in the
+overlay and follows its Procedure within the current session. Use for: interactive drafting,
+single-agent tasks, quick mode switches during a conversation.
+
+**Pattern 2 — Delegated subagent** (isolated context, parallel-capable):
+```
+delegate_task(
+    goal        = "<specific deliverable from task decomposition>",
+    context     = "You are <AgentName>. Read <roster_file> in full before proceeding.
+                   Follow its Procedure section exactly. SOUL.md and AGENTS.md are
+                   loaded from workdir — treat them as authoritative.",
+    toolsets    = [<toolsets from routing table below>],
+    workdir     = "<absolute path to New Showbiz project root>",
+    role        = "leaf"   # or "orchestrator" — see routing table
+)
 ```
 
-**Persona overlays** — switch with `/personality <name>` in the Hermes CLI. Defined in
-`hermes-config.yaml`. Each overlay activates a mode and points to the relevant roster
-file. Seven overlays are registered: `brand-director`, `audience-researcher`,
-`product-explainer`, `x-editor`, `instagram-editor`, `provocateur`, `growth-analyst`.
+Setting `workdir` to the project root ensures the subagent also loads `SOUL.md` and
+`AGENTS.md`, giving it the full operator identity and routing context in its isolated
+session. The `context` parameter carries the persona-adoption instruction and points to
+the roster file the subagent must read.
+
+Use `delegate_task` for: multi-step pipelines, parallel subtasks (pass `tasks=[...]`),
+any work that must be isolated, and any task that would overrun the current session budget.
+
+**Pattern 3 — Kanban profile worker** (durable, dispatcher-spawned, Phase 4+):
+
+Each agent role becomes a named Hermes profile with its own `SOUL.md` and config. The
+dispatcher assigns board tasks to profiles by name and spawns a worker process per task.
+Workers get the `kanban_*` toolset. Use for: fully autonomous continuous operation,
+parallel fleets, tasks that must survive session interruption.
 
 ### Task-to-Agent Routing Table
 
-| Task type | Primary agent | Roster file |
-|---|---|---|
-| Clarify or brief a task | Interrogator | `agents/roster/interrogator.md` |
-| Generate social content | ContentAgent | `agents/roster/content-agent.md` |
-| Policy and brand preflight | ValidateAgent | `agents/roster/validate-agent.md` |
-| Publish approved content | PublishAgent | `agents/roster/publish-agent.md` |
-| Read channel inbox / classify mentions | EngagementAgent | `agents/roster/engagement-agent.md` |
-| Hold flagged item / write EscalationRecord | EscalationAgent | `agents/roster/escalation-agent.md` |
-| Collect metrics / attribution | MetricsAgent | `agents/roster/metrics-agent.md` |
-| Fetch product data / channel reads | FetchAgent | `agents/roster/fetch-agent.md` |
-| Research film context or claims | MovieResearchAgent | `agents/roster/movie-research-agent.md` |
-| Normalize or transform data | TransformAgent | `agents/roster/transform-agent.md` |
-| Compute or score metrics | AnalysisAgent | `agents/roster/analysis-agent.md` |
-| Audit outputs / detect drift | LintAgent | `agents/roster/lint-agent.md` |
-| Query content history / deduplication | QueryAgent | `agents/roster/query-agent.md` |
-| Compare periods / detect anomalies | DiffAgent | `agents/roster/diff-agent.md` |
-| Identify reusable procedures | DistillAgent | `agents/roster/distill-agent.md` |
-| Run a registered skill | ExecuteAgent | `agents/roster/execute-agent.md` |
-| Format and deliver output | ReportAgent | `agents/roster/report-agent.md` |
-| Build or refine skills and agent specs | SkillBuildingAgent | `agents/roster/skill-builder.md` |
-| Literary / editorial voice work | ComposerAgent | `agents/roster/composer.md` |
-| Golden Age Castilian translation | ComposerTranslatorAgent | `agents/roster/composer-translator.md` |
+The orchestrator reads this table to construct `delegate_task` calls. Each row is
+executable: `agent` → `roster file` → `toolsets` → `role`.
+
+| Task type | Agent | Roster file | Toolsets | Role |
+|---|---|---|---|---|
+| Clarify or brief a task | Interrogator | `agents/roster/interrogator.md` | `clarify, file` | leaf |
+| Generate social content | ContentAgent | `agents/roster/content-agent.md` | `file, web` | leaf |
+| Policy and brand preflight | ValidateAgent | `agents/roster/validate-agent.md` | `file` | leaf |
+| Publish approved content | PublishAgent | `agents/roster/publish-agent.md` | `newshowbiz_x_publish_reviewed, file` | leaf |
+| Read channel inbox / classify mentions | EngagementAgent | `agents/roster/engagement-agent.md` | `newshowbiz_x_read, file` | leaf |
+| Hold flagged item / write EscalationRecord | EscalationAgent | `agents/roster/escalation-agent.md` | `file, todo` | leaf |
+| Collect metrics / attribution | MetricsAgent | `agents/roster/metrics-agent.md` | `file, web, session_search` | leaf |
+| Fetch product data / channel reads | FetchAgent | `agents/roster/fetch-agent.md` | `web, file` | leaf |
+| Research film context or claims | MovieResearchAgent | `agents/roster/movie-research-agent.md` | `web, file, search` | leaf |
+| Normalize or transform data | TransformAgent | `agents/roster/transform-agent.md` | `file` | leaf |
+| Compute or score metrics | AnalysisAgent | `agents/roster/analysis-agent.md` | `file, session_search` | leaf |
+| Audit outputs / detect drift | LintAgent | `agents/roster/lint-agent.md` | `file` | leaf |
+| Query content history / deduplication | QueryAgent | `agents/roster/query-agent.md` | `file, session_search` | leaf |
+| Compare periods / detect anomalies | DiffAgent | `agents/roster/diff-agent.md` | `file, session_search` | leaf |
+| Identify reusable procedures | DistillAgent | `agents/roster/distill-agent.md` | `file` | leaf |
+| Run a registered skill | ExecuteAgent | `agents/roster/execute-agent.md` | `file, terminal, skills` | leaf |
+| Format and deliver output | ReportAgent | `agents/roster/report-agent.md` | `file, messaging` | leaf |
+| Build or refine skills and agent specs | SkillBuildingAgent | `agents/roster/skill-builder.md` | `file, skills` | orchestrator |
+| Literary / editorial voice work | ComposerAgent | `agents/roster/composer.md` | `file` | leaf |
+| Golden Age Castilian translation | ComposerTranslatorAgent | `agents/roster/composer-translator.md` | `file` | leaf |
 
 **Archived agents** (do not route to these): `ingest-agent`, `concept-agent`,
 `librarian-agent`, `historian`, `research-page` — in `agents/roster/archive/`.
+
+### Persona Overlays
+
+Seven `/personality` overlays are registered in `hermes-config.yaml`. These map to in-session
+activation (Pattern 1 above). For delegation (Pattern 2), use the roster file directly in
+the `context` parameter — the overlay is not needed.
+
+| Overlay | Agent via delegate_task | Roster file |
+|---|---|---|
+| `brand-director` | ValidateAgent | `agents/roster/validate-agent.md` |
+| `audience-researcher` | MovieResearchAgent | `agents/roster/movie-research-agent.md` |
+| `product-explainer` | ContentAgent | `agents/roster/content-agent.md` |
+| `x-editor` | ContentAgent | `agents/roster/content-agent.md` |
+| `instagram-editor` | ContentAgent | `agents/roster/content-agent.md` |
+| `provocateur` | ContentAgent | `agents/roster/content-agent.md` |
+| `growth-analyst` | MetricsAgent | `agents/roster/metrics-agent.md` |
 
 ---
 
