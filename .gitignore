@@ -1,63 +1,28 @@
-# Internal planning and design documents
-CLARITY.md
-OVERVIEW.md
-WHITEPAPER.md
-customer_specs_scrum.md
-
-# Secrets
+# Local secrets
 .env
 *.env.local
 *.env.*.local
 
-# Python (for any local scripts or tooling)
-__pycache__/
-*.py[cod]
-*$py.class
-.venv/
-venv/
-ENV/
-.python-version
-
-# Node / JS (hermes-agent-upstream and any MCP tooling)
-node_modules/
-.pnp
-.pnp.js
-.yarn/cache
-.yarn/unplugged
-dist/
-build/
-
-# Logs and runtime output
+# Runtime output
 logs/
+drafts/
 *.log
 *.jsonl
 
-# Draft output (never commit marketing drafts)
-drafts/
-
-# Playwright CLI state
+# Local tooling caches
 .playwright-cli/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+node_modules/
 
-# IDEs
+# OS and editor noise
+.DS_Store
+Thumbs.db
+Desktop.ini
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
-
-# macOS
-.DS_Store
-.AppleDouble
-
-# Windows
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# Docker
-*.pid
-
-# Hermes runtime state (hermes-agent-upstream is upstream reference; keep its tracked files intact)
-hermes-agent-upstream/.hermes/
-hermes-agent-upstream/sessions/
-hermes-agent-upstream/memory/
