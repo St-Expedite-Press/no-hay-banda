@@ -6,7 +6,7 @@ canonical_path: agents/roster/content-agent.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-20
+updated: 2026-05-23
 part_of:
   - agent-system
   - newshowbiz-marketing
@@ -48,6 +48,16 @@ Draft ContentJob with:
 5. Attach source evidence in the ContentJob metadata; do not embed scores without attribution.
 6. Flag any risk-adjacent language (donation prompts, comparison to creators, identity-sensitive framing) for ValidateAgent review.
 7. Return status: `DRAFT`; do not set `APPROVED`.
+
+## Examples
+
+### Research Memo to Public Hook
+
+A dense research memo should not be copied into public copy. Extract the one claim with the clearest evidence, translate it into a direct audience-facing angle, and preserve uncertainty where the source note flags unverifiable citations. The draft carries the source-backed claim in metadata; the visible post stays concise and legible.
+
+### Definitions Become Claims
+
+If a post uses a category label, score, or representational dimension, treat the definition behind that label as part of the claim. Do not imply certainty when the underlying system is profiling, classifying, or inferring. Good copy keeps the hook without hiding the epistemic weight.
 
 ## Guardrails
 

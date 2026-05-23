@@ -6,7 +6,7 @@ canonical_path: agents/roster/librarian-agent.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-20
+updated: 2026-05-23
 part_of:
   - agent-system
 ---
@@ -115,6 +115,14 @@ When invoked for a periodic health check on a ledger:
 3. For each record file with no matching ledger entry: flag as `[MISSING LEDGER ENTRY]`.
 4. For each ledger entry whose `canonical_path` does not resolve to an existing file: flag as `[BROKEN REFERENCE]`.
 5. Compile a coverage report. Route repairs: missing ledger entries → `ledger-update`; broken references → flag for human review (do not silently delete).
+
+---
+
+## Examples
+
+### Completeness Gap Versus Structural Drift
+
+A newly discussed published item has enough evidence to belong in the system, but no work record, publication record, or ledger entry exists yet. LibrarianAgent owns the missing record-family problem, while LintAgent checks whether existing records and links are structurally valid. The example distinguishes "records should exist" from "existing records are malformed."
 
 ---
 

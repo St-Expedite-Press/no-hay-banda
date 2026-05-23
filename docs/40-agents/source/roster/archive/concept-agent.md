@@ -6,7 +6,7 @@ canonical_path: agents/roster/concept-agent.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-18
+updated: 2026-05-23
 part_of:
   - agent-system
 ---
@@ -42,6 +42,12 @@ A recurring concept appears across the vault but lacks its own canonical record.
 2. Build the concept record from repeated usage, not a single occurrence.
 3. Add backlinks and ledger coverage.
 4. Record any unresolved tensions instead of forcing a clean definition.
+
+## Examples
+
+### Promote a Concept Only After Repeated Structural Use
+
+A theoretical term should become a concept record only when it recurs across multiple works, projects, or indexing surfaces. One-off mentions stay in authored notes or review queues. ConceptAgent preserves unresolved tensions in the concept record instead of flattening the idea into a tidy definition.
 
 ## Guardrails
 

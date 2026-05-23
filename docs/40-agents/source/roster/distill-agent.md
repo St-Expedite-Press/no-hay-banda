@@ -6,7 +6,7 @@ canonical_path: agents/roster/distill-agent.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-20
+updated: 2026-05-23
 part_of:
   - agent-system
 ---
@@ -88,6 +88,12 @@ required_environment_variables: [omit if none]
 
 durability_rationale: why this is invocable by at least two agents or pipeline families
 ```
+
+## Examples
+
+### Promote a Repeated Drift Repair Into a Skill Proposal
+
+After multiple tasks require checking ledgers, local indexes, and canonical paths after writes, DistillAgent identifies the pattern as reusable across ingest, record creation, and maintenance workflows. It appends a structured `skill-proposal` for a drift-check procedure instead of writing the skill directly. The proposal includes triggers, inputs, verification, outputs, and a durability rationale.
 
 ## Guardrails
 

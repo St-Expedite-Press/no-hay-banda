@@ -8,7 +8,7 @@ human_owned: false
 agent_owned: true
 section: _System
 subsection: agents
-updated: 2026-05-18
+updated: 2026-05-23
 part_of:
   - agent-system
 ---
@@ -41,6 +41,12 @@ Task-scoped diff output when needed.
 2. Apply scope consistently to each side.
 3. Compute adds, removals, and modifications.
 4. Surface the highest-signal changes first.
+
+## Examples
+
+### Draft Variant vs. Canonical Publication
+
+When two files appear to cover the same work or content item, compare their receipts, index entries, and review notes before calling either one canonical. A file with no receipt, no index entry, and a queue note identifying it as a variant should be reported as drift, not as a second publication. The diff output should name the canonical surface and the unresolved duplicate candidate.
 
 ## Guardrails
 

@@ -6,7 +6,7 @@ canonical_path: agents/roster/skill-builder.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-20
+updated: 2026-05-23
 part_of:
   - agent-system
 ---
@@ -162,6 +162,14 @@ Full templates and the Decompose/Reform procedures live in [`agents/skills/_form
 | LangChain (Pydantic) | JSON Schema → `BaseModel` with `Field(description=...)` |
 | CrewAI | `BaseTool` subclass; `args_schema` as Pydantic `BaseModel` |
 | MCP | No wrapper; `parameters` → `inputSchema` (camelCase) |
+
+---
+
+## Examples
+
+### Build Seed Skills From Pending Operational Needs
+
+SkillBuildingAgent processes pending improvement work by creating validated seed skills for query routing, session logging, ledger updates, record creation, and drift checks. It registers each skill, updates the skill index, and marks improvement work complete only after the roster and queue surfaces agree. This is queue-driven doctrine change, not ad hoc agent editing.
 
 ---
 

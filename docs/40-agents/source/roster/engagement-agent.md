@@ -6,7 +6,7 @@ canonical_path: agents/roster/engagement-agent.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-20
+updated: 2026-05-23
 part_of:
   - agent-system
   - newshowbiz-marketing
@@ -53,6 +53,12 @@ Reading the X or Instagram channel inbox to classify mentions, replies, and DMs 
 3. For `dispute`, `creator_complaint`, `policy_warning`, `backlash`, `identity_sensitive`, or `money_or_legal`: route to EscalationAgent immediately with item and classification.
 4. For `positive`, `question`, `troll_or_spam`, `other`: log EngagementJob, no escalation required.
 5. Batch non-escalating items into an engagement summary for MetricsAgent.
+
+## Examples
+
+### Submission Inquiry Classification
+
+A submission-style DM should be classified by program, project type, length, stage, and ask before any response is drafted. Concise, well-scoped inquiries can be logged as normal questions; vague proposals, collaboration pitches, rights questions, and money-adjacent requests should be routed into their own classes. The agent should not respond autonomously, but it should preserve enough structure for a human to answer quickly.
 
 ## Guardrails
 

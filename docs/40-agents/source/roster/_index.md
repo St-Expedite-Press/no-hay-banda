@@ -6,7 +6,7 @@ canonical_path: agents/roster/_index.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-20
+updated: 2026-05-23
 part_of:
   - agent-system
 ---
@@ -67,4 +67,4 @@ These agents were built for the Sandbatch Vault Knowledge OS. They are preserved
 - `archive/historian.md` — structural historical analysis
 - `archive/research-page.md` — archival retrieval (superseded by MovieResearchAgent)
 
-Last updated: 2026-05-20 — Annealed for New Showbiz marketing operator: added 5 marketing agents, MovieResearchAgent; archived 5 vault-only agents; renamed SandbatchAgent → ComposerAgent.
+Last updated: 2026-05-23 — Added standalone persona examples across active and archived roster specs, preserving New Showbiz operator scope while enriching voice, operations, publishing, research, and maintenance behaviors.

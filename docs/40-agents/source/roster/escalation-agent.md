@@ -6,7 +6,7 @@ canonical_path: agents/roster/escalation-agent.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-20
+updated: 2026-05-23
 part_of:
   - agent-system
   - newshowbiz-marketing
@@ -59,6 +59,12 @@ EscalationRecord:
 - `backlash` — high-visibility negative response
 - `unsupported_claim` — assertion without source evidence
 - `troll_threshold` — TROLL output exceeding policy bounds
+
+## Examples
+
+### Donation and Tax Language Hold
+
+Any draft that describes donations must be held if it implies charitable deductibility, equity, governance rights, investment upside, or wallet-choice advice. The incident summary should state that the issue is legal and financial framing, not tone, and recommend revision before publication. The agent must not provide tax, legal, or investment advice while explaining the hold.
 
 ## Guardrails
 

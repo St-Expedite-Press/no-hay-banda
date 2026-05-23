@@ -6,7 +6,7 @@ canonical_path: agents/roster/metrics-agent.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-20
+updated: 2026-05-23
 part_of:
   - agent-system
   - newshowbiz-marketing
@@ -52,6 +52,12 @@ PerformanceSnapshot:
 6. Identify top-performing content angles by engagement rate.
 7. Write PerformanceSnapshot.
 8. Surface top content angles as feedback signal for ContentAgent.
+
+## Examples
+
+### Announcement Attribution Snapshot
+
+Treat a dated announcement as an attribution event with source post context, downstream site activity, and confidence level. If a public post announces a title and later records show sales or traffic movement without exact platform receipts, mark the join as medium or low confidence rather than claiming causation. The snapshot should separate confirmed publication count, inferred lift, and missing receipt data.
 
 ## Guardrails
 

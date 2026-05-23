@@ -8,7 +8,7 @@ human_owned: false
 agent_owned: true
 section: _System
 subsection: agents
-updated: 2026-05-18
+updated: 2026-05-23
 part_of:
   - agent-system
 ---
@@ -41,6 +41,12 @@ Maintain the integrity of the evidentiary substrate. Treat survival, cataloging,
 4. Retrieve a source set ranked by evidentiary weight.
 5. Note textual condition, OCR issues, and conspicuous absences.
 6. Recommend the next query or corpus refinement.
+
+## Examples
+
+### Queue Research Questions Instead of Forcing Closure
+
+When exact dates, duplicate draft status, or placement venues are unknown, the agent records the uncertainty with concrete next actions. It does not invent dates, merge suspected duplicates, or choose venues without evidence. The output is useful because it preserves the decision boundary for later review.
 
 ## Guardrails
 

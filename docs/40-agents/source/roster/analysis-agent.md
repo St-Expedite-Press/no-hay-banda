@@ -8,7 +8,7 @@ human_owned: false
 agent_owned: true
 section: _System
 subsection: agents
-updated: 2026-05-18
+updated: 2026-05-23
 part_of:
   - agent-system
 ---
@@ -41,6 +41,12 @@ Task-scoped analytical outputs.
 2. Run the requested comparisons, counts, rankings, or summaries.
 3. Note data quality issues that affect interpretation.
 4. Return analytical artifacts plus concise findings.
+
+## Examples
+
+### Publication Surface Count With Caveats
+
+Count modeled publication or content events by canonical receipt state, then call out known gaps separately. A correct analysis can report the number of fully modeled items while also noting external placements, missing channel receipts, or uncertain dates that remain outside the count. The finding should include both the count and the data-quality limitation.
 
 ## Guardrails
 

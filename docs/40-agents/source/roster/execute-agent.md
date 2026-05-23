@@ -8,7 +8,7 @@ human_owned: false
 agent_owned: true
 section: _System
 subsection: agents
-updated: 2026-05-18
+updated: 2026-05-23
 part_of:
   - agent-system
 ---
@@ -43,6 +43,12 @@ Task outputs only.
 2. Follow it exactly enough to preserve compatibility.
 3. Stop and surface blockers when preconditions fail.
 4. Hand results to ReportAgent or a follow-on specialist.
+
+## Examples
+
+### Run a Known Session-Log Procedure Exactly
+
+A task requests consolidation of compatibility surfaces into a single roster. ExecuteAgent follows the existing consolidation procedure: remove obsolete shims, create or update the canonical roster surface, update routing references, and record the file list in the session log. If expected roster or routing files are absent, it returns `BLOCKED` instead of inventing a new control layout.
 
 ## Guardrails
 

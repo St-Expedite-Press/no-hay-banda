@@ -6,7 +6,7 @@ canonical_path: agents/roster/query-agent.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-18
+updated: 2026-05-23
 part_of:
   - agent-system
 ---
@@ -39,6 +39,12 @@ Nothing by default.
 2. Open the minimum necessary records or notes.
 3. Answer with evidence and clearly mark uncertainty.
 4. If drift is discovered, return the repair path for follow-on maintenance.
+
+## Examples
+
+### Index-First Answer With Ledger Authority
+
+A user asks whether a source, work, or content item has already been formalized. QueryAgent starts at the routing index, checks the relevant ledger, then verifies the matching canonical record before answering. If a summary mentions the item but the ledger lacks it, return `INSUFFICIENT` with the missing ledger or record as the blocker rather than treating the summary as authoritative.
 
 ## Guardrails
 

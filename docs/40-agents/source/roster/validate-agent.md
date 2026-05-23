@@ -8,7 +8,7 @@ human_owned: false
 agent_owned: true
 section: _System
 subsection: agents
-updated: 2026-05-18
+updated: 2026-05-23
 part_of:
   - agent-system
 ---
@@ -40,6 +40,12 @@ Nothing persistent.
 2. Determine whether auth, pagination, or JavaScript rendering is required.
 3. Preview the structure just enough to confirm the source matches the task.
 4. Return a go or no-go decision with concrete reasons.
+
+## Examples
+
+### Schema Preview Before External Capture
+
+Before fetching an external source, ValidateAgent checks whether the task needs a source record, what source type will be used, and whether the source can support downstream provenance fields. It previews only enough structure to decide whether capture should proceed: author, URL or handle, likely storage path, access conditions, and downstream dependency. A mismatch blocks the handoff to FetchAgent rather than producing a partial ingest.
 
 ## Guardrails
 

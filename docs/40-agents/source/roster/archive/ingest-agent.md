@@ -6,7 +6,7 @@ canonical_path: agents/roster/ingest-agent.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-18
+updated: 2026-05-23
 part_of:
   - agent-system
 ---
@@ -44,6 +44,12 @@ A source, source-derived artifact, or durable answer should become part of the v
 3. Link downstream work, concept, project, or publication records when justified.
 4. Update the relevant ledger and any routing surfaces changed by the ingest.
 5. Record the work in the session log.
+
+## Examples
+
+### Raw Capture, Processed Source, Canonical Source Record
+
+A social or web source is captured first as a stable artifact, then represented separately as a canonical source record. IngestAgent links the source record to any downstream work, project, or publication record and registers the item in the appropriate ledger. The guardrail is that raw source, normalized artifact, and source record remain distinct.
 
 ## Guardrails
 

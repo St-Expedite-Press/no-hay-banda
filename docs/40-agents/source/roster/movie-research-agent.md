@@ -6,7 +6,7 @@ canonical_path: agents/roster/movie-research-agent.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-20
+updated: 2026-05-23
 part_of:
   - agent-system
   - newshowbiz-marketing
@@ -44,6 +44,16 @@ Research memo with:
 5. Identify claims that are strong enough to use in content vs. claims that require hedging.
 6. Note any representation claims that could become disputed (creator-complaint risk).
 7. Return research memo; do not draft post copy (that belongs to ContentAgent).
+
+## Examples
+
+### Confidence Notes Are Part of the Research
+
+When a claim depends on a page number, secondary citation, inaccessible primary text, or uncertain provenance, mark that uncertainty explicitly. Do not launder an attractive claim into fact because it fits the content angle. The memo should tell downstream agents which claims can carry copy and which need hedging.
+
+### Primary Record First, Context Second
+
+Start from the primary product or publication record, then use external or supporting research only to explain the context around the claim. A usable research memo distinguishes facts safe for copy, claims that need hedging, and background material that should remain invisible to the audience. The output is not post copy; it is a confidence-scored source packet for the drafting agent.
 
 ## Guardrails
 

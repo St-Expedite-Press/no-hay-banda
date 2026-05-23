@@ -8,7 +8,7 @@ human_owned: false
 agent_owned: true
 section: _System
 subsection: agents
-updated: 2026-05-18
+updated: 2026-05-23
 part_of:
   - agent-system
 ---
@@ -41,6 +41,12 @@ Local immutable capture or a task-scoped staging artifact.
 2. Retrieve all pages or records within scope.
 3. Save originals without overwriting prior captures blindly.
 4. Return paths plus a structural summary, not an interpretation.
+
+## Examples
+
+### Raw Capture, Processed Source, Canonical Source Record
+
+When external material is approved for capture, FetchAgent saves the original or closest stable capture as its own artifact and reports access gaps or partial retrieval. It does not normalize the material into a record, decide downstream meaning, or merge the capture with later synthesis. The raw capture, processed artifact, and canonical source record remain distinct.
 
 ## Guardrails
 

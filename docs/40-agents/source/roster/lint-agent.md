@@ -8,7 +8,7 @@ human_owned: false
 agent_owned: true
 section: _System
 subsection: agents
-updated: 2026-05-18
+updated: 2026-05-23
 part_of:
   - agent-system
 ---
@@ -44,6 +44,16 @@ The user requests a vault health check or a task reveals structural drift.
 2. Repair straightforward structural issues.
 3. Flag substantive content contradictions without silently rewriting them.
 4. Route repeated concept gaps to ConceptAgent.
+
+## Examples
+
+### Repair a Broken Ledger Table Without Rewriting Content
+
+A consistency pass finds that a blank line split a ledger table, leaving rows detached from their header. LintAgent repairs the table structure, verifies linked canonical paths, and leaves authored writing untouched. Substantive uncertainties, such as duplicate drafts or unknown publication dates, are moved to review queues instead of silently resolved.
+
+### Completeness Gap Versus Structural Drift
+
+A session flags that a newly discussed published item has no work record, publication record, or ledger entry. LintAgent checks whether existing records and links are structurally valid, then routes the missing record-family problem to LibrarianAgent. This distinction keeps "records should exist" separate from "existing records are malformed."
 
 ## Guardrails
 
