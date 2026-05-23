@@ -24,6 +24,6 @@ Mermaid is the standard diagram format for this package. Diagrams should live ne
 | Metrics attribution flow | `docs/20-system-spec/metrics-and-reporting.md` | Show post metrics joined to site and support outcomes |
 | Toolset permission boundary | `docs/20-system-spec/tool-boundaries.md` | Keep read and write capabilities separate |
 | Secrets lifecycle | `docs/30-operations/secrets-policy.md` | Show local env, profile env, runtime tools, and redaction |
+| Documentation update loop | `docs/40-agents/subagent-execution-plan.md` | Show scope, consistency, evidence, safety, verification, and reporting flow |
 | Subagent DAG | `docs/40-agents/subagent-execution-plan.md` | Show implementation delegation order |
 | Rollout dependency graph | `docs/50-rollout/acceptance-criteria.md` | Show phase gates and blockers |
-

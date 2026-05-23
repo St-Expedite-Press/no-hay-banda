@@ -6,7 +6,7 @@ canonical_path: agents/_index.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-18
+updated: 2026-05-23
 ---
 
 # Agent System Index
@@ -33,9 +33,11 @@ All agents in this system must:
 
 ## Pipeline Families
 
+- Simple task fast path: `User / Interrogator -> Orchestrator -> ExecuteAgent / one specialist -> ReportAgent`
 - Vault query: `Interrogator -> Orchestrator -> QueryAgent -> ReportAgent`
 - Source ingest: `Interrogator -> Orchestrator -> ValidateAgent -> FetchAgent -> TransformAgent -> IngestAgent -> ReportAgent`
 - Structural maintenance: `Interrogator -> Orchestrator -> QueryAgent / LintAgent / DiffAgent / ConceptAgent -> ReportAgent`
+- Python standards review: `Interrogator -> Orchestrator -> PythonStandardsAgent -> ReportAgent`
 - Historical research: `Interrogator -> Orchestrator -> ResearchPageAgent -> HistorianAgent -> ReportAgent`
 - Generative composition: `Interrogator -> Orchestrator -> ComposerAgent -> ReportAgent`
 - Translation: `Interrogator -> Orchestrator -> ComposerTranslatorAgent -> ReportAgent`
@@ -58,5 +60,5 @@ All agents in this system must:
 - External verification or acquisition: web or connector tools only when needed
 - Drive or other remote systems: treat as external sources, then ingest into canonical vault surfaces if the task calls for permanence
 
-Last updated: 2026-05-20 - added self-improvement loops to shared contract and pipeline families; added SkillBuildingAgent.
+Last updated: 2026-05-23 - added Simple Task Fast Path and PythonStandardsAgent routing.
 

@@ -20,6 +20,9 @@
 - [x] âœ… Approve `microsoft/playwright-mcp` as the general browser fallback. â€” QA and browser inspection only; not an unsupervised publishing fallback (docs/10-hermes/AGENTS.md)
 - [x] âœ… Approve that `kitadmin01/social_mcp` is reference material, not the default runtime. â€” Tier 3 reference for session/retry design (docs/10-hermes/AGENTS.md)
 - [x] âœ… Approve that `miles0sage` remains experimental. â€” Tier 4; do not rely on (docs/10-hermes/AGENTS.md)
+- [x] Approve documentation governance loop. - Scope, consistency, evidence, safety, and verification loops are defined in `docs/30-operations/documentation-governance.md`; root `AGENTS.md` and root `MEMORY.md` are local ignored workspace guidance/state.
+- [x] Approve simple task fast path. - Orchestrator may bypass full DAG construction for single-hop low-risk work when all fast-path gates pass.
+- [x] Approve PythonStandardsAgent. - Active operations agent for evidence-scored Python standards, tooling, typing, testing, and packaging guidance.
 
 ### Exit Criteria
 

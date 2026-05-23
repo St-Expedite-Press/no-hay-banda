@@ -42,11 +42,12 @@ General-purpose agents adapted for New Showbiz data and content flows.
 ## Operations
 
 - [LintAgent](lint-agent.md) — audit ContentJob receipts, EscalationRecords, and routing drift
+- [PythonStandardsAgent](python-standards-agent.md) — define and review Python coding standards, tooling policy, typing expectations, testing practices, and maintainability guidance with evidence-scored recommendations
 - [QueryAgent](query-agent.md) — answer questions about content history, prior posts, and deduplication
 - [DiffAgent](diff-agent.md) — compare metrics periods; detect engagement anomalies
 - [DistillAgent](distill-agent.md) — evaluate completed tasks for reusable procedure candidates
-- [ExecuteAgent](execute-agent.md) — run known procedures from the live skill registry
-- [ReportAgent](report-agent.md) — format and deliver output
+- [ExecuteAgent](execute-agent.md) — run known procedures from the live skill registry; preferred executor for simple known procedures
+- [ReportAgent](report-agent.md) — format and deliver output while preserving blockers
 
 ## System Improvement
 
@@ -67,4 +68,4 @@ These agents were built for the Sandbatch Vault Knowledge OS. They are preserved
 - `archive/historian.md` — structural historical analysis
 - `archive/research-page.md` — archival retrieval (superseded by MovieResearchAgent)
 
-Last updated: 2026-05-23 — Added standalone persona examples across active and archived roster specs, preserving New Showbiz operator scope while enriching voice, operations, publishing, research, and maintenance behaviors.
+Last updated: 2026-05-23 — Added Simple Task Fast Path support and PythonStandardsAgent; roster examples remain preserved across active and archived specs.

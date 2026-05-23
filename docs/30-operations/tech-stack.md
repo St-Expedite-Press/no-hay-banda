@@ -27,6 +27,7 @@ This package defines the target stack. It does not ship runnable implementation 
 | Browser QA | Playwright MCP or equivalent read-only diagnostics |
 | Persistence | Implementation-owned database or structured records, not Hermes sessions |
 | Metrics | Platform analytics plus site analytics plus support/donation joins |
+| Documentation governance | Scope, consistency, evidence, safety, and verification loops in `docs/30-operations/documentation-governance.md` |
 
 ## Out of Scope for This Repo
 
@@ -36,5 +37,6 @@ This package defines the target stack. It does not ship runnable implementation 
 - Hosting a database.
 - Storing secrets.
 - Shipping Python packages.
+- Treating root `AGENTS.md` or root `MEMORY.md` as canonical repo documentation; they are local ignored workspace guidance/state.
 
 

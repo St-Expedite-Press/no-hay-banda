@@ -12,6 +12,7 @@ Canonical package areas:
 - `docs/10-hermes/` - Hermes prompt architecture, `docs/10-hermes/SOUL.md`, profile setup, and context strategy.
 - `docs/20-system-spec/` - architecture, domain contracts, channel operations, risk, metrics, and tool boundaries.
 - `docs/30-operations/` - environment setup, tech stack, deployment runbook, and secrets policy.
+- `docs/30-operations/documentation-governance.md` - documentation update loops and coherence rules.
 - `docs/40-agents/` - subagent execution plan and preserved source agent/skill specs.
 - `docs/50-rollout/` - phased checklist, acceptance criteria, and risk register.
 - `docs/60-models/` - model cards and runtime selection notes.
@@ -52,9 +53,23 @@ Read and preserve the operator docs in this order:
 9. `docs/20-system-spec/channel-operations.md`
 10. `docs/20-system-spec/metrics-and-reporting.md`
 11. `docs/20-system-spec/x-mcp-options-and-discussions.md`
-12. `docs/50-rollout/phased-checklist.md`
+12. `docs/30-operations/documentation-governance.md`
+13. `docs/40-agents/source/orchestrator.md`
+14. `docs/50-rollout/phased-checklist.md`
 
 When docs conflict, prefer the more specific operational document over the more general strategic document.
+
+## Documentation Update Loops
+
+Any agent changing this package must run the documentation loops defined in `docs/30-operations/documentation-governance.md`:
+
+1. Scope loop: identify affected doc families and downstream references.
+2. Consistency loop: update indexes, maps, reading paths, and phase status.
+3. Evidence loop: verify current claims against primary sources or mark `needs_source_check`.
+4. Safety loop: scan for secrets and credential-bearing URLs.
+5. Verification loop: run `git diff --check` and inspect changed files.
+
+Simple, low-risk documentation edits may use the Orchestrator Simple Task Fast Path. Changes that introduce agents, skills, policies, runtime behavior, public-channel behavior, phase gates, or external-current facts must use the full documentation workflow.
 
 ## Brand and Voice Rules
 
@@ -115,6 +130,8 @@ Cron prompts must be self-contained or fetch durable state.
 - Keep Markdown operational and implementation-ready.
 - Preserve one H1 per Markdown file.
 - Keep `.env` local and secret-bearing.
+- Keep root `AGENTS.md` local and ignored; do not treat it as canonical profile context.
 - Use `.env.example` and redacted env docs for setup guidance.
+- Update package maps, indexes, and rollout status in the same pass as substantive doc changes.
 - Do not reintroduce runnable scaffolding into this documentation package unless the user explicitly asks to convert it back into an implementation repo.
 

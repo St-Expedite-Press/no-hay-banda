@@ -2,6 +2,8 @@
 
 The local `.env` file is secret-bearing state. Keep it local, keep it out of git, and never copy values into documentation or prompts. This package documents variable names and handling rules only.
 
+Root `AGENTS.md` and root `MEMORY.md` are also local and ignored. Use them only for checkout-specific agent guidance and local change memory; canonical profile context remains `docs/10-hermes/AGENTS.md`, and package-wide documentation process remains `docs/30-operations/documentation-governance.md`.
+
 ## Environment Flow
 
 ```mermaid
@@ -77,4 +79,3 @@ Use config-driven model selection so migration does not change business logic. P
 - Never use the brand `@new_show_biz` account cookies.
 - Set `INGEST_ENABLED=false` to disable all X reads immediately.
 - Log timestamp, query, account used, and item IDs for every fetch.
-

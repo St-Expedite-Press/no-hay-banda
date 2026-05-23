@@ -23,6 +23,7 @@ sequenceDiagram
 
 - `.env` stays local.
 - `.env.example` contains names, comments, and placeholders only.
+- Root `AGENTS.md` and root `MEMORY.md` stay local and ignored; they may contain workspace process guidance and local change memory but never secret values.
 - Secret-bearing lines are never pasted into docs, prompts, issue comments, commits, or reports.
 - Logs include variable names only when helpful and never include values.
 - X cookies belong only to the throwaway read account in Phase 1.
@@ -40,4 +41,3 @@ sequenceDiagram
 | Hugging Face | Use for model operations only, never for public channel actions |
 | Telegram | Gateway oversight only, allowlisted chat IDs |
 | Scweet/X cookies | Throwaway read account only, kill switch required |
-

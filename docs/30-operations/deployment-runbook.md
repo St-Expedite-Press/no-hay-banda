@@ -5,9 +5,10 @@ This is the target deployment sequence for implementers. It is intentionally gat
 ## Phase 0: Documentation Package
 
 1. Review this package.
-2. Confirm the implementation repository or service boundary.
-3. Confirm who owns `.env` and production secrets.
-4. Confirm the human oversight channel.
+2. Review `docs/30-operations/documentation-governance.md` and confirm docs update loops are in force.
+3. Confirm the implementation repository or service boundary.
+4. Confirm who owns `.env` and production secrets.
+5. Confirm the human oversight channel.
 
 ## Phase 1: Draft-Only Build
 
@@ -41,4 +42,3 @@ This is the target deployment sequence for implementers. It is intentionally gat
 3. Run daily reports.
 4. Review incidents before expanding behavior modes.
 5. Add Instagram only after its channel contract is complete.
-

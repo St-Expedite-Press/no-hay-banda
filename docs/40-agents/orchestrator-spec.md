@@ -6,7 +6,7 @@ The canonical detailed source spec is preserved at [source/orchestrator.md](sour
 
 - Intake and clarify tasks.
 - Classify reversibility and risk.
-- Build a subtask DAG.
+- Select fast path or full DAG; build a DAG when task complexity requires it.
 - Select context and workers.
 - Assign narrow toolsets.
 - Validate outputs.
@@ -18,12 +18,20 @@ The canonical detailed source spec is preserved at [source/orchestrator.md](sour
 
 | Pipeline | Route |
 |---|---|
+| Simple known task | Orchestrator -> ExecuteAgent or one specialist -> ReportAgent |
 | Content creation | Interrogator -> Orchestrator -> MovieResearchAgent -> ContentAgent -> ValidateAgent -> PublishAgent -> ReportAgent |
 | Scheduled publishing | Cron -> Orchestrator -> ContentAgent -> ValidateAgent -> PublishAgent -> MetricsAgent |
 | Engagement triage | Orchestrator -> EngagementAgent -> EscalationAgent or MetricsAgent |
 | Factual dispute | EngagementAgent -> EscalationAgent -> MovieResearchAgent -> human review -> ReportAgent |
 | Metrics reporting | Orchestrator -> MetricsAgent -> AnalysisAgent -> ReportAgent |
+| Python standards review | Orchestrator -> PythonStandardsAgent -> ReportAgent |
 | Self-improvement | Any Agent -> improvement queue -> SkillBuildingAgent -> ReportAgent |
+
+## Simple Task Fast Path
+
+For narrow, low-risk, single-hop work, the orchestrator may bypass full DAG construction and dispatch one specialist or ExecuteAgent directly. The fast path is allowed only when the task is interpretable, one agent can complete it, no `final` operation or public/external write is involved, output contracts are clear, and any write has an idempotency key plus a possible pre-operation snapshot.
+
+If a fast-path gate fails, or the assigned agent returns `BLOCKED`, `INSUFFICIENT`, `NO BASELINE`, or invalid output, the orchestrator escalates back to the full 12-phase workflow or surfaces the blocker.
 
 ## Required Validation
 
@@ -35,4 +43,3 @@ Before any public write, the orchestrator must confirm:
 - Idempotency key is present.
 - Toolset is the reviewed channel wrapper.
 - Human hold or pause state is not active.
-

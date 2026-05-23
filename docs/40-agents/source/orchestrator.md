@@ -6,7 +6,7 @@ canonical_path: agents/orchestrator.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-20
+updated: 2026-05-23
 part_of:
   - agent-system
 ---
@@ -23,7 +23,75 @@ The orchestrator decomposes tasks, classifies work, assigns subagents, manages e
 
 ## Complete Workflow
 
-The orchestrator runs a **Plan-and-Execute** loop: decompose the full task upfront into a dependency graph, then execute waves of independent subtasks in order. Each phase is mandatory; skip only with a logged reason.
+The orchestrator runs either a **Simple Task Fast Path** or the full **Plan-and-Execute** loop. Composite, risky, multi-agent, external, public, or dependency-bearing tasks use the full 12-phase workflow: decompose the task upfront into a dependency graph, then execute waves of independent subtasks in order. Narrow low-risk tasks may use the logged fast path when all eligibility gates pass.
+
+Each selected control step is mandatory. Any full workflow phase skipped by the fast path requires a logged reason.
+
+---
+
+## Simple Task Fast Path
+
+Use the fast path when the task is a single safe hop:
+
+`User / Interrogator -> Orchestrator -> one specialist or ExecuteAgent -> Orchestrator validation -> ReportAgent`
+
+The orchestrator still classifies, authorizes, routes, validates, logs, and escalates. It skips only unnecessary DAG construction and wave management.
+
+### Eligibility Gates
+
+All gates must pass:
+
+1. The request is interpretable without Interrogator, or Interrogator already supplied a complete brief.
+2. One agent can complete the task without upstream or downstream dependencies.
+3. The task does not involve public write, external publish, delete, authored-content edit, or any other `final` operation.
+4. No missing source, missing baseline, policy ambiguity, schema uncertainty, or human-review-sensitive condition is present.
+5. Context can be routed through known index surfaces or provided task inputs without broad vault reading.
+6. The output contract is clear: `status`, `claims`, `artifacts`, and `blockers`.
+7. For writes: an idempotency key exists, pre-operation snapshot is possible, and affected surfaces are known.
+
+### Single-Node Manifest
+
+When the gates pass, create a `single_node_manifest` instead of a DAG:
+
+```
+single_node_manifest:
+  workflow_mode: simple_fast_path
+  task_id: unique identifier
+  chain_id: audit lineage
+  assigned_agent: ExecuteAgent or one specialist
+  job_class: (see schema below)
+  context_package: minimum paths, records, or prompt material required
+  required_skills: [skill names, if any]
+  output_contract: expected fields: status, claims, artifacts, blockers
+  idempotency_key: required for writes
+  reversibility_class: reversible | compensatable
+  skipped_full_phases_reason: why full DAG orchestration is unnecessary
+```
+
+### Required Fast-Path Controls
+
+1. Intake and classify the task.
+2. Check authorization and reversibility.
+3. Build the `single_node_manifest`.
+4. Load only required context and skills.
+5. Dispatch one specialist or ExecuteAgent.
+6. For writes: perform idempotency check and pre-operation snapshot before editing.
+7. Validate returned output against the compatibility contract.
+8. Route final response through ReportAgent.
+9. Log `workflow_mode`, assigned agent, validation result, artifacts, blockers, and skipped phase reason.
+
+### Escalate to Full Workflow
+
+Rebuild as the full 12-phase workflow when:
+
+- More than one specialist is required.
+- Sequencing is needed, such as research -> transform -> validate -> publish.
+- A dependency, retry, compensation, rollback, or parallel execution plan is needed.
+- The assigned agent returns `BLOCKED`, `INSUFFICIENT`, `NO BASELINE`, `PARTIAL` for a non-partial task, or invalid output.
+- The operation becomes `final`, public, external, policy-sensitive, or human-review-sensitive.
+- A required skill is absent or unclear.
+- Context grows beyond the initial narrow package.
+- The task creates control-surface drift that needs coordinated repair.
 
 ---
 
@@ -67,13 +135,14 @@ The orchestrator runs a **Plan-and-Execute** loop: decompose the full task upfro
 ### Phase 3 — Task Decomposition & DAG Construction
 
 **Input:** Authorized request  
-**Output:** Task DAG with validated execution order
+**Output:** Task DAG with validated execution order, or `single_node_manifest` when `workflow_mode: simple_fast_path`
 
-1. Break the request into discrete subtasks. Prefer a **DAG** (directed acyclic graph) over a flat list:
+1. If the Simple Task Fast Path gates passed, create a `single_node_manifest` and log `workflow_mode: simple_fast_path`. Do not build a full DAG merely for ceremonial completeness.
+2. Otherwise, break the request into discrete subtasks. Prefer a **DAG** (directed acyclic graph) over a flat list:
    - Nodes = subtasks
    - Edges = strict ordering dependencies ("must complete before")
    - Independent subtasks with no shared dependencies can be dispatched in parallel (Phase 7)
-2. Assign to each subtask (see **Subtask Metadata Schema** below):
+3. Assign to each subtask (see **Subtask Metadata Schema** below):
    - `task_id`, `parent_task_id`, `chain_id`
    - `job_class` (operation type, mode, reversibility, scope)
    - `depends_on`: upstream task IDs
@@ -82,12 +151,12 @@ The orchestrator runs a **Plan-and-Execute** loop: decompose the full task upfro
    - `output_contract`: expected structure the subagent must return
    - `idempotency_key`: a descriptor that identifies whether this write has already happened (e.g., "append source X to sources-ledger" — check before executing)
    - `reversibility_class`, `timeout`, `max_retries`
-3. Validate the DAG:
+4. Validate the DAG:
    - No cycles: if task A depends on task B which depends on task A, decompose differently.
    - All tasks reachable from entry point.
    - No orphaned outputs: every task's output feeds downstream or is the final deliverable.
    - Every task has an assigned `output_contract`.
-4. Produce topological execution order (earlier = fewer unmet dependencies).
+5. Produce topological execution order (earlier = fewer unmet dependencies).
 
 **Gate:** Do not proceed with a DAG that contains cycles, orphans, or missing output contracts.
 
@@ -135,6 +204,7 @@ The orchestrator runs a **Plan-and-Execute** loop: decompose the full task upfro
 | Analytical (vault query) | QueryAgent | Route via MASTER_INDEX first |
 | Analytical (maintenance) | LintAgent, DiffAgent | Depends on scope |
 | Analytical (external check) | ValidateAgent | Must run before FetchAgent |
+| Analytical (Python standards) | PythonStandardsAgent | Evidence-scored standards, tooling, typing, testing, and packaging guidance |
 | Transformative (ingest) | TransformAgent → IngestAgent | Always sequential |
 | Transformative (concept) | ConceptAgent | When pattern repeats across vault |
 | Generative (composition) | ComposerAgent | Only for explicit creative tasks |
@@ -189,6 +259,7 @@ Each agent receives:
 
 #### Execution strategy
 
+- **Single-hop dispatch** (fast path): Dispatch one specialist or ExecuteAgent from the `single_node_manifest`. Do not run parallel wave handling. Idempotency checks, pre-operation snapshots for writes, output validation, and final reporting still apply.
 - **Parallel dispatch** (preferred for independent subtasks): Dispatch all tasks with no unmet dependencies simultaneously. Reduces total wall time for wide, flat task graphs.
 - **Sequential dispatch** (required for dependent subtasks): Wait for upstream task to complete and return validated output before dispatching downstream task.
 - **Hybrid** (default): Dispatch independent chains in parallel; within each chain, execute sequentially.
@@ -336,6 +407,8 @@ if blocked:
 | Output contradicts canonical vault truth | Halt; surface contradiction specifically |
 | Cost or context budget overrun | Surface to user before continuing |
 | Agent returns `INSUFFICIENT` or `NO BASELINE` | Do not fabricate missing evidence; escalate |
+| Fast-path gate fails before dispatch | Rebuild as full workflow from current intake/classification |
+| Fast-path agent returns invalid or blocked output | Rebuild as full workflow or surface blocker; do not silently accept |
 
 **Dead-letter handling:**
 
@@ -388,7 +461,9 @@ When a task cannot recover:
 
 Update `infernalis/_Index/sessions/YYYY-MM-DD.md`:
 - What task ran, what pipeline was used.
+- `workflow_mode`: `simple_fast_path` or `full_plan_execute`.
 - Which agents were dispatched.
+- For fast path: assigned agent, skipped full phases reason, validation result, artifacts, and blockers.
 - What was written, moved, or changed.
 - Any failures, escalations, or compensations.
 - Token/context cost summary if notable.
@@ -570,6 +645,14 @@ Use for 16th-century Castilian or adjacent poetic translation under the Composer
 `Interrogator -> Orchestrator -> ExecuteAgent -> ReportAgent`  
 Use when a skill in `agents/skills/` matches the task closely enough that full custom routing is unnecessary.
 
+### Simple task fast path
+`User / Interrogator -> Orchestrator -> ExecuteAgent / one specialist -> ReportAgent`
+Use when one safe agent can complete the task without dependency graph overhead and all fast-path gates pass.
+
+### Python standards review
+`Interrogator -> Orchestrator -> PythonStandardsAgent -> ReportAgent`
+Use when Python coding standards, tooling policy, typing expectations, testing practice, or packaging guidance needs evidence-scored review.
+
 ### Self-improvement
 `Any Agent -> improvement-queue -> Orchestrator -> SkillBuildingAgent -> ReportAgent`  
 Runs at task close whenever `agents/queues/improvement-queue.md` has pending entries.
@@ -593,5 +676,5 @@ Runs at task close whenever `agents/queues/improvement-queue.md` has pending ent
 
 ---
 
-Last updated: 2026-05-20 - added pre-operation snapshot requirement to Phase 7; Phase 11 compensation now snapshot-driven; core skill pre-loads named explicitly with paths to seed skills.
+Last updated: 2026-05-23 - added Simple Task Fast Path for single-hop low-risk work; added PythonStandardsAgent routing.
 
