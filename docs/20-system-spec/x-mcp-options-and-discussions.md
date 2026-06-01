@@ -282,3 +282,50 @@ The X MCP layer is implementation-ready when:
 - tool failures are classified as auth, selector, block, rate-limit, network, or unknown
 - `TROLL` and engagement actions cannot access write tools unless explicitly authorized
 - documentation links each public action to `ContentJob`, `EngagementJob`, policy disposition, and receipt
+
+---
+
+## Deployment Status — 2026-06-01
+
+All four MCP servers have been deployed to the `newshowbiz` Hermes profile on EC2 (i-05451add3165b57ff). The following updates the pre-deployment spec above with confirmed operational findings.
+
+### Infrastructure findings
+
+Playwright-based MCP servers require system libraries not present on a fresh Amazon Linux 2023 instance. Required packages: `atk at-spi2-atk cups-libs libdrm libxkbcommon libXcomposite libXdamage libXfixes libXrandr libgbm pango alsa-lib nss`. `playwright install-deps` does not work on Amazon Linux; install manually via `dnf`.
+
+Direct HTTP from EC2 to `x.com` returns 403 (Cloudflare). Playwright browser automation passes Cloudflare and returns 200. All X tool access must use browser automation; there is no raw HTTP fallback from this IP range without a proxy.
+
+### Confirmed working
+
+`twitter_user` (miles0sage/twitter-mcp) — returns public profile data without authentication. Confirmed live with `@new_show_biz`: name, bio, follower count correct.
+
+### Confirmed blocked without auth
+
+All other miles0sage/twitter-mcp tools — `twitter_search`, `twitter_user_tweets`, `twitter_trending`, `twitter_feed` — hit X login walls and time out. The assumption in the spec that this server provides unauthenticated read access to search and trending is incorrect. Public profile lookups are the only reliable unauthenticated capability.
+
+### Barresider/x-mcp selector drift — four bugs patched
+
+X changed its login UI since Barresider was last updated. Four bugs in `login.js` required patching before any login attempt could proceed:
+
+| Bug | Original | Patched |
+|---|---|---|
+| Login URL | `twitter.com/i/flow/login` | `x.com/i/flow/login` + `domcontentloaded` |
+| Username selector | `autocomplete="username"` | `name="username_or_email"` |
+| Next button | `//span[contains(text(),'Next')]` | `button[3]` (current layout) |
+| Headless mode | `headless: false` (requires display) | `headless: true` + `--no-sandbox` |
+| Auth path | hardcoded `playwright/.auth/` | `AUTH_DIR` env var |
+| stdio pollution | `console.log` to stdout | `console.error` to stderr |
+
+Patches are applied to the npx cache at `~/.npm/_npx/.../behaviors/login.js`. They will be lost if the cache is cleared. Upstream PR or local fork recommended.
+
+### Login rate limiting incident
+
+After rapid repeated login attempts during selector drift debugging, X applied a temporary login restriction to the operator account. The login page displays "We've temporarily limited your login. Please try again later." This is standard X automation detection behavior.
+
+The login mechanics are correct — page loads, credentials fill, password accepts — but the final redirect is blocked. This resolves automatically. Do not attempt login again until the restriction clears. Expected recovery: a few hours to 24 hours.
+
+### Implication for acceptance criteria
+
+The pre-deployment acceptance criteria included "read-only canary runs succeed without account warnings." This criterion is not yet met — authentication is pending. The account received a warning equivalent (temporary login restriction) during testing. Address before declaring the integration operational.
+
+Full test details: [X MCP Test Log](../30-operations/x-mcp-test-log.md).

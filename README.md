@@ -30,6 +30,7 @@ flowchart TD
 | Architecture | [Architecture](docs/20-system-spec/architecture.md) | Runtime, domain, channel, analytics, and oversight layers |
 | Operations | [Tech Stack](docs/30-operations/tech-stack.md) | Recommended stack by phase |
 | Environment | [Environment Setup](docs/30-operations/env-setup.md) | Required and optional environment variables without secret values |
+| X MCP test log | [X MCP Test Log](docs/30-operations/x-mcp-test-log.md) | Per-tool test results, login.js patches, rate limit incident, recovery steps |
 | Documentation governance | [Documentation Governance](docs/30-operations/documentation-governance.md) | How this spec package is updated, verified, and kept coherent |
 | Agents | [Subagent Execution Plan](docs/40-agents/subagent-execution-plan.md) | How subagents complete implementation and operations work |
 | Source specs | [Agent Source Index](docs/40-agents/source/_index.md) | Orchestrator, roster, skill, and queue specs |
@@ -55,9 +56,9 @@ hermes -p newshowbiz
 /personality growth-analyst    → pull X profile/timeline data, structure performance notes
 ```
 
-The X read toolset (`mcp-x-mcp-read`) is active. Available tools: `login`, `search_twitter`, `search_viral`, `scrape_trending`, `scrape_timeline`, `scrape_posts`, `scrape_profile`, `scrape_comments`. On first session, call `login` to authenticate and persist the session to `x-auth/`.
+**`x-mcp-read` (Barresider) — authenticated reads, session pending.** The server connects and all 8 tools are registered with engagement tools excluded. Authentication was blocked by a temporary X rate limit from rapid login attempts during canary testing. Once the rate limit clears, call `login` once to save the session to `x-auth/`; all read tools (`search_twitter`, `search_viral`, `scrape_trending`, `scrape_timeline`, `scrape_posts`, `scrape_profile`, `scrape_comments`) will be operational. Four bugs in Barresider's `login.js` were found and patched (stale URL, selector drift, headless mode, auth path).
 
-`miles0sage/twitter-mcp` is also active as a supplemental stateless read path (no authentication, public content only): `twitter_search`, `twitter_user`, `twitter_user_tweets`, `twitter_trending`, `twitter_feed`.
+**`twitter-mcp` (miles0sage) — `twitter_user` only without auth.** Tested live: profile lookup for `@new_show_biz` returned correct name, bio, and follower counts. All other tools (`twitter_search`, `twitter_user_tweets`, `twitter_trending`, `twitter_feed`) hit X login walls and return timeouts. This server has no authentication support; its practical scope is public profile lookups only.
 
 The Playwright MCP (global) is available for browser QA, page-state inspection, and New Showbiz site verification.
 
@@ -76,12 +77,12 @@ The Playwright MCP (global) is available for browser QA, page-state inspection, 
 
 Four servers are configured in `~/.hermes/profiles/newshowbiz/config.yaml` and documented in [hermes-config.example.yaml](docs/10-hermes/hermes-config.example.yaml):
 
-| Server | Source | Status | Role |
+| Server | Source | Status | Tested result |
 |---|---|---|---|
-| `x-mcp-read` | `@barresider/x-mcp` | **enabled** | Primary authenticated X reads — search, scrape, trends, timeline |
-| `x-mcp-write` | `@barresider/x-mcp` | **disabled** | Approved post/thread/reply/quote — enable at Phase 3 |
-| `twitter-mcp` | `miles0sage/twitter-mcp` (git) | **enabled** | Supplemental stateless public scrape — no auth required |
-| `social-mcp` | `kitadmin01/social_mcp` (git) | **disabled** | Reference only — contains mass-engagement tools; never enable autonomously |
+| `x-mcp-read` | `@barresider/x-mcp` | **enabled** | Connects, 8 tools registered, login.js patched — auth pending (rate limit) |
+| `x-mcp-write` | `@barresider/x-mcp` | **disabled** | Not tested — disabled until Phase 3 content pipeline exists |
+| `twitter-mcp` | `miles0sage/twitter-mcp` (git) | **enabled** | `twitter_user` confirmed working; all other tools hit X login walls |
+| `social-mcp` | `kitadmin01/social_mcp` (git) | **disabled** | Source inspected — `engage_twitter` mass-liking tool confirmed present; keep disabled |
 
 Barresider was chosen as the primary adapter over alternatives because it has explicit tool boundaries, persistent session support, proxy configuration, and a clear MCP interface. The spec discussion is in [X MCP Options](docs/20-system-spec/x-mcp-options-and-discussions.md).
 
@@ -91,16 +92,26 @@ Write tools (`tweet`, `thread`, `reply_to_post`, `quote_tweet`) exist in `x-mcp-
 
 ### Phase 1 workflow
 
-Until the content pipeline is built, the operator runs in assisted-draft mode:
+Until authentication is complete and the content pipeline is built, the operator runs in assisted-draft mode:
 
+**Step 0 (one-time): Complete x-mcp-read authentication**
+1. Wait for X rate limit to clear (a few hours after 2026-06-01 testing)
+2. `hermes -p newshowbiz`
+3. Call the `login` tool — authenticates and saves session to `~/.hermes/profiles/newshowbiz/x-auth/twitter.json`
+4. Verify: the tool should return success and the session file should exist
+
+**Ongoing assisted-draft loop**
 1. Open `hermes -p newshowbiz`
-2. Use `audience-researcher` to pull X search/trend data and surface film discourse opportunities
-3. Use `x-editor` or `product-explainer` to draft posts from source material
-4. Use `brand-director` to review drafts against Kakusu Protocol and brand rules
-5. Copy approved text and post manually from the X account
-6. No autonomous publishing, no scheduled posts, no replies without human review
+2. Use `audience-researcher` + `search_twitter`/`scrape_trending` to surface film discourse and trend signals
+3. Use `twitter_user` to pull competitor or reference account profiles (no auth needed)
+4. Use `x-editor` or `product-explainer` to draft posts from source material
+5. Use `brand-director` to review drafts against Kakusu Protocol and brand rules
+6. Copy approved text and post manually from the X account
+7. No autonomous publishing, no scheduled posts, no replies without human review
 
-This is the correct Phase 1 posture. The content pipeline (ContentJob → ValidateAgent → PublishAgent → receipt) is what makes Phase 3 writes safe. Do not shortcut by enabling `x-mcp-write` before that pipeline exists.
+Until the session is saved, `audience-researcher` can only use `twitter_user` for public profile lookups. All search and trending tools require the authenticated session from Step 0.
+
+This is the correct Phase 1 posture. The content pipeline (ContentJob → ValidateAgent → PublishAgent → receipt) is what makes Phase 3 writes safe. Do not shortcut by enabling `x-mcp-write` before that pipeline exists. Full test findings: [X MCP Test Log](docs/30-operations/x-mcp-test-log.md).
 
 ## Reading Path
 
@@ -119,7 +130,7 @@ This is the correct Phase 1 posture. The content pipeline (ContentJob → Valida
 | Documentation package | Active | Keep this repo as the canonical spec package |
 | Documentation governance | Active | Use the scope, consistency, evidence, safety, and verification loops for every docs change |
 | Hermes runtime | **Live** — `newshowbiz` profile deployed | Profile operational; update when Hermes upgrades past v0.14.0 |
-| X read integration | **Live** — Barresider `x-mcp-read` + `miles0sage/twitter-mcp` | Canary reads active; verify session health before relying on data |
+| X read integration | **Partial** — `twitter_user` live; Barresider auth pending | `twitter_user` confirmed; x-mcp-read session blocked by rate limit from 2026-06-01 testing — retry login after rate limit clears |
 | X write integration | Configured, disabled | Build ContentJob store, policy engine, approval path, and receipt store; then enable `x-mcp-write` |
 | New Showbiz domain store | Specified, not implemented | Build durable stores for ContentJob, EngagementJob, EscalationRecord, PerformanceSnapshot |
 | Content creation pipeline | Specified, not implemented | PersonaRegistry, TaskRouter, ContentJob schema, template libraries, manual-review workflow |
