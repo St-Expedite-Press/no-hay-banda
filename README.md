@@ -44,7 +44,7 @@ flowchart TD
 
 **Profile:** `hermes -p newshowbiz`
 
-The `newshowbiz` Hermes profile is deployed and operational. SOUL.md, AGENTS.md, all 7 personality overlays, and the full X MCP stack are live.
+The `newshowbiz` Hermes profile is deployed and operational. AGENTS.md, all 7 personality overlays, and the full X MCP stack are live. SOUL.md was found to contain the generic default Hermes identity rather than the New Showbiz marketing operator identity on 2026-06-01 and was corrected.
 
 ### What works now
 
@@ -56,7 +56,9 @@ hermes -p newshowbiz
 /personality growth-analyst    → pull X profile/timeline data, structure performance notes
 ```
 
-**`x-mcp-read` (Barresider) — authenticated reads, session pending.** The server connects and all 8 tools are registered with engagement tools excluded. Authentication was blocked by a temporary X rate limit from rapid login attempts during canary testing. Once the rate limit clears, call `login` once to save the session to `x-auth/`; all read tools (`search_twitter`, `search_viral`, `scrape_trending`, `scrape_timeline`, `scrape_posts`, `scrape_profile`, `scrape_comments`) will be operational. Four bugs in Barresider's `login.js` were found and patched (stale URL, selector drift, headless mode, auth path).
+**3 domain skills installed (2026-06-01).** `content-draft-from-movie-data`, `x-publish-with-receipt`, and `escalation-record-create` are live in the newshowbiz profile at `~/.hermes/profiles/newshowbiz/skills/`. All three are enabled and appear in `hermes -p newshowbiz skills list`. `x-publish-with-receipt` carries its Phase 3 gate explicitly — the agent will not attempt write operations before the ContentJob store and policy engine exist.
+
+**`x-mcp-read` (Barresider) — authenticated reads, session pending.** The server connects and all 8 tools are registered with engagement tools excluded. Authentication was blocked by a temporary X rate limit from rapid login attempts during canary testing. Once the rate limit clears, call `login` once to save the session to `x-auth/`; all read tools (`search_twitter`, `search_viral`, `scrape_trending`, `scrape_timeline`, `scrape_posts`, `scrape_profile`, `scrape_comments`) will be operational. Six bugs in Barresider's `login.js` were found and patched (stale URL, username selector drift, Next button selector drift, headless mode, auth file path, stdio channel pollution). Full patch notes: [X MCP Test Log](docs/30-operations/x-mcp-test-log.md).
 
 **`twitter-mcp` (miles0sage) — `twitter_user` only without auth.** Tested live: profile lookup for `@new_show_biz` returned correct name, bio, and follower counts. All other tools (`twitter_search`, `twitter_user_tweets`, `twitter_trending`, `twitter_feed`) hit X login walls and return timeouts. This server has no authentication support; its practical scope is public profile lookups only.
 
@@ -129,7 +131,8 @@ This is the correct Phase 1 posture. The content pipeline (ContentJob → Valida
 |---|---|---|
 | Documentation package | Active | Keep this repo as the canonical spec package |
 | Documentation governance | Active | Use the scope, consistency, evidence, safety, and verification loops for every docs change |
-| Hermes runtime | **Live** — `newshowbiz` profile deployed | Profile operational; update when Hermes upgrades past v0.14.0 |
+| Hermes runtime | **Live** — `newshowbiz` profile deployed | SOUL.md identity corrected 2026-06-01; 3 domain skills installed; update when Hermes upgrades past v0.14.0 |
+| Domain skills | **3 installed** — content-draft, x-publish, escalation | Install vault infrastructure skills after domain store path is decided; build remaining runtime skills as pipeline phases activate |
 | X read integration | **Partial** — `twitter_user` live; Barresider auth pending | `twitter_user` confirmed; x-mcp-read session blocked by rate limit from 2026-06-01 testing — retry login after rate limit clears |
 | X write integration | Configured, disabled | Build ContentJob store, policy engine, approval path, and receipt store; then enable `x-mcp-write` |
 | New Showbiz domain store | Specified, not implemented | Build durable stores for ContentJob, EngagementJob, EscalationRecord, PerformanceSnapshot |

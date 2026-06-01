@@ -13,7 +13,7 @@
 
 Both X MCP servers connect and their tool registrations are correct. `twitter_user` (profile lookups) works without authentication. All other tools across both servers require authentication. Barresider's login flow was traced to completion: the login page loads, username fills, password fills, but authentication was blocked by a temporary rate limit that X applied after rapid repeated login attempts from a new EC2 IP. The login mechanics are correct; the account needs to recover before a session can be saved.
 
-Four bugs were found and patched in Barresider's `login.js` — all relate to X's login flow having changed since the library was written.
+Six bugs were found and patched in Barresider's `login.js` — all relate to X's login flow having changed since the library was written.
 
 ---
 
