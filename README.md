@@ -1,6 +1,6 @@
 # New Showbiz Operator Specification Package
 
-This repository is the build-ready documentation package for the New Showbiz marketing operator. It is not a runnable application. It specifies how to build a Hermes-backed, human-governed marketing system for `newshow.biz`, including prompt architecture, agent orchestration, channel tools, persistence contracts, risk controls, environment setup, rollout phases, and verification gates.
+This repository is the build-ready documentation package for the New Showbiz marketing operator. It specifies how to build a Hermes-backed, human-governed marketing system for `newshow.biz`. The `newshowbiz` Hermes profile is now live on the operator's EC2 instance with X read integration active. Writing and content pipelines remain Phase 1 manual-review scope.
 
 The central technical reference is [Hermes System Prompt Architecture](docs/10-hermes/HERMES_PROMPT_ARCHITECTURE.md). Every implementation decision in this package should respect that prompt model: stable identity in `SOUL.md`, project context in `AGENTS.md`, worker roles in `system_message`, dynamic task instructions in `ephemeral_system_prompt`, and durable business truth outside Hermes sessions.
 
@@ -32,10 +32,75 @@ flowchart TD
 | Environment | [Environment Setup](docs/30-operations/env-setup.md) | Required and optional environment variables without secret values |
 | Documentation governance | [Documentation Governance](docs/30-operations/documentation-governance.md) | How this spec package is updated, verified, and kept coherent |
 | Agents | [Subagent Execution Plan](docs/40-agents/subagent-execution-plan.md) | How subagents complete implementation and operations work |
-| Source specs | [Agent Source Index](docs/40-agents/source/_index.md) | Preserved orchestrator, roster, skill, and queue specs |
+| Source specs | [Agent Source Index](docs/40-agents/source/_index.md) | Orchestrator, roster, skill, and queue specs |
 | Rollout | [Phased Checklist](docs/50-rollout/phased-checklist.md) | Phase gates, dependencies, and exit criteria |
 | Models | [Runtime Model Selection](docs/60-models/runtime-model-selection.md) | Model-card guidance and runtime migration notes |
 | Diagrams | [Diagram Index](docs/diagrams/README.md) | Mermaid diagram catalog and authoring standard |
+
+## Live Implementation State
+
+**Instance:** EC2 (i-05451add3165b57ff) · Hermes v0.14.0 · Node.js v22 · Python 3.11
+
+**Profile:** `hermes -p newshowbiz`
+
+The `newshowbiz` Hermes profile is deployed and operational. SOUL.md, AGENTS.md, all 7 personality overlays, and the full X MCP stack are live.
+
+### What works now
+
+```
+hermes -p newshowbiz
+/personality x-editor          → draft X posts from source material
+/personality audience-researcher → search X for film discourse, trends, source candidates
+/personality brand-director    → review and approve or reject draft copy
+/personality growth-analyst    → pull X profile/timeline data, structure performance notes
+```
+
+The X read toolset (`mcp-x-mcp-read`) is active. Available tools: `login`, `search_twitter`, `search_viral`, `scrape_trending`, `scrape_timeline`, `scrape_posts`, `scrape_profile`, `scrape_comments`. On first session, call `login` to authenticate and persist the session to `x-auth/`.
+
+`miles0sage/twitter-mcp` is also active as a supplemental stateless read path (no authentication, public content only): `twitter_search`, `twitter_user`, `twitter_user_tweets`, `twitter_trending`, `twitter_feed`.
+
+The Playwright MCP (global) is available for browser QA, page-state inspection, and New Showbiz site verification.
+
+### What is not yet operational
+
+| Capability | Blocked by |
+|---|---|
+| Autonomous X posts | `x-mcp-write` is disabled — enable only after ContentJob store, policy engine, human approval path, and receipt store exist |
+| Content creation pipeline | ContentJob schema and domain store not yet built |
+| Policy engine | Not built — required before any write path |
+| Telegram oversight | Gateway not configured — required before Phase 4 autonomy |
+| Engagement automation | Permanently excluded from all MCP configs (`like`, `retweet`, `bookmark`) |
+| Instagram | Deferred — no channel spec written yet |
+
+### X MCP configuration decisions
+
+Four servers are configured in `~/.hermes/profiles/newshowbiz/config.yaml` and documented in [hermes-config.example.yaml](docs/10-hermes/hermes-config.example.yaml):
+
+| Server | Source | Status | Role |
+|---|---|---|---|
+| `x-mcp-read` | `@barresider/x-mcp` | **enabled** | Primary authenticated X reads — search, scrape, trends, timeline |
+| `x-mcp-write` | `@barresider/x-mcp` | **disabled** | Approved post/thread/reply/quote — enable at Phase 3 |
+| `twitter-mcp` | `miles0sage/twitter-mcp` (git) | **enabled** | Supplemental stateless public scrape — no auth required |
+| `social-mcp` | `kitadmin01/social_mcp` (git) | **disabled** | Reference only — contains mass-engagement tools; never enable autonomously |
+
+Barresider was chosen as the primary adapter over alternatives because it has explicit tool boundaries, persistent session support, proxy configuration, and a clear MCP interface. The spec discussion is in [X MCP Options](docs/20-system-spec/x-mcp-options-and-discussions.md).
+
+Engagement tools (`like_post`, `retweet_post`, `bookmark_post`, and equivalents) are excluded from all server configs at the Hermes MCP filter level — they do not appear in any agent's toolset regardless of what task is requested.
+
+Write tools (`tweet`, `thread`, `reply_to_post`, `quote_tweet`) exist in `x-mcp-write` but that server is `enabled: false`. Flipping it requires all Phase 3 acceptance criteria to pass first — see [Acceptance Criteria](docs/50-rollout/acceptance-criteria.md).
+
+### Phase 1 workflow
+
+Until the content pipeline is built, the operator runs in assisted-draft mode:
+
+1. Open `hermes -p newshowbiz`
+2. Use `audience-researcher` to pull X search/trend data and surface film discourse opportunities
+3. Use `x-editor` or `product-explainer` to draft posts from source material
+4. Use `brand-director` to review drafts against Kakusu Protocol and brand rules
+5. Copy approved text and post manually from the X account
+6. No autonomous publishing, no scheduled posts, no replies without human review
+
+This is the correct Phase 1 posture. The content pipeline (ContentJob → ValidateAgent → PublishAgent → receipt) is what makes Phase 3 writes safe. Do not shortcut by enabling `x-mcp-write` before that pipeline exists.
 
 ## Reading Path
 
@@ -53,12 +118,13 @@ flowchart TD
 |---|---|---|
 | Documentation package | Active | Keep this repo as the canonical spec package |
 | Documentation governance | Active | Use the scope, consistency, evidence, safety, and verification loops for every docs change |
-| Hermes runtime | External dependency | Install and configure a dedicated `newshowbiz` profile |
-| New Showbiz domain store | Specified, not implemented here | Build durable stores for jobs, receipts, metrics, incidents, and source evidence |
-| X read integration | Phase 1 read-only | Use Scweet only with a throwaway read account and kill switch |
-| X write integration | Phase 3+ | Wrap X MCP tools behind reviewed New Showbiz toolsets |
+| Hermes runtime | **Live** — `newshowbiz` profile deployed | Profile operational; update when Hermes upgrades past v0.14.0 |
+| X read integration | **Live** — Barresider `x-mcp-read` + `miles0sage/twitter-mcp` | Canary reads active; verify session health before relying on data |
+| X write integration | Configured, disabled | Build ContentJob store, policy engine, approval path, and receipt store; then enable `x-mcp-write` |
+| New Showbiz domain store | Specified, not implemented | Build durable stores for ContentJob, EngagementJob, EscalationRecord, PerformanceSnapshot |
+| Content creation pipeline | Specified, not implemented | PersonaRegistry, TaskRouter, ContentJob schema, template libraries, manual-review workflow |
 | Instagram integration | Deferred spec | Do not implement writes until channel contracts are written |
-| Telegram oversight | Design spec | Use Hermes gateway or equivalent oversight path for approvals and reports |
+| Telegram oversight | Design spec | Configure Hermes gateway with bot token and allowlisted chat IDs |
 | Metrics attribution | Specified | Implement UTM/site analytics/donation joins before optimization |
 | Local `.env` | Private operator state | Keep local, never commit, never copy values into docs |
 
