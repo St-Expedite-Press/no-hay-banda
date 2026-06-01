@@ -1,4 +1,4 @@
-﻿---
+---
 title: Skill Registry
 record_type: skill-index
 status: canonical
@@ -28,11 +28,23 @@ To convert a skill: route to [SkillBuildingAgent](../roster/skill-builder.md) wi
 
 ## Registry
 
+### New Showbiz domain skills
+
 | Name | Description | Status | Added | Proposed By |
 |------|-------------|--------|-------|-------------|
-| [vault-query-routing](vault-query-routing.md) | Route vault queries through the index hierarchy (MASTER_INDEX → section → ledger) before opening content files | validated | 2026-05-20 | orchestrator |
-| [session-log-write](session-log-write.md) | Write or append to the session log for the current date; handles task-close, pre-op-snapshot, failure, and escalation entry types | validated | 2026-05-20 | orchestrator |
-| [ledger-update](ledger-update.md) | Add or update an entry in any of the 7 canonical vault ledgers; requires pre-op snapshot and drift-check | validated | 2026-05-20 | ingest-agent |
+| [content-draft-from-movie-data](content-draft-from-movie-data.md) | Turn a New Showbiz movie page or research memo into channel-ready draft variants for X or Instagram | validated | 2026-05-21 | orchestrator |
+| [x-publish-with-receipt](x-publish-with-receipt.md) | Publish an approved ContentJob through newshowbiz_x_publish_reviewed and return a durable receipt | validated | 2026-05-21 | orchestrator |
+| [escalation-record-create](escalation-record-create.md) | Create an EscalationRecord when a ContentJob or EngagementJob triggers a risk class that blocks autonomous action | validated | 2026-05-21 | orchestrator |
+
+### Vault infrastructure skills (portable, path-adapted)
+
+These skills were developed for the Sandbatch Vault OS and are portable to any file-based vault structure. Before using them in a New Showbiz deployment, replace the hardcoded `infernalis/` path references with the actual store root (see `docs/20-system-spec/modules/vault.md`).
+
+| Name | Description | Status | Added | Proposed By |
+|------|-------------|--------|-------|-------------|
+| [vault-query-routing](vault-query-routing.md) | Route vault queries through the index hierarchy before opening content files; prevents broad reads | validated | 2026-05-20 | orchestrator |
+| [session-log-write](session-log-write.md) | Write or append to the session log; handles task-close, pre-op-snapshot, failure, and escalation entry types | validated | 2026-05-20 | orchestrator |
+| [ledger-update](ledger-update.md) | Add or update an entry in a canonical vault ledger; requires pre-op snapshot and drift-check | validated | 2026-05-20 | ingest-agent |
 | [record-create](record-create.md) | Create a new canonical record file from template with schema validation; always followed by ledger-update and drift-check | validated | 2026-05-20 | ingest-agent |
 | [drift-check](drift-check.md) | Verify ledger entries, _index.md listings, and canonical_path resolution after any write that changes file structure | validated | 2026-05-20 | lint-agent |
 

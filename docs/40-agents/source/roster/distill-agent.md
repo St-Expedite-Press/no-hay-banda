@@ -1,4 +1,4 @@
-﻿---
+---
 title: DistillAgent
 record_type: agent-spec
 status: canonical

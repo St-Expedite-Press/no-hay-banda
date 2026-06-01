@@ -1,4 +1,4 @@
-﻿---
+---
 title: FetchAgent
 record_type: agent-spec
 status: canonical

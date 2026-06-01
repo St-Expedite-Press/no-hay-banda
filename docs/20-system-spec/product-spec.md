@@ -1,4 +1,4 @@
-﻿# New Showbiz Marketing Operator Product Spec
+# New Showbiz Marketing Operator Product Spec
 
 ## Product Summary
 

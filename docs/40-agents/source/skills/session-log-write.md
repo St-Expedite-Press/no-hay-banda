@@ -1,4 +1,4 @@
-﻿---
+---
 name: session-log-write
 description: |
   Write or append to the session log for the current date. Use at the close of any task

@@ -1,4 +1,4 @@
-﻿# New Showbiz Marketing Operator
+# New Showbiz Marketing Operator
 
 This documentation defines a Hermes-backed marketing operator for `newshow.biz`. The operator plans, publishes, engages, measures, and escalates across `X` and `Instagram` while preserving one public brand voice and hard business-risk boundaries.
 

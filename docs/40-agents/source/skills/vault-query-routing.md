@@ -1,4 +1,4 @@
-﻿---
+---
 name: vault-query-routing
 description: |
   Route any vault question through the index hierarchy before opening content files.

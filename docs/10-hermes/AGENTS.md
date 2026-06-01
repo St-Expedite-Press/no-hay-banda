@@ -1,4 +1,4 @@
-﻿# docs/10-hermes/AGENTS.md - New Showbiz Documentation Package Contract
+# docs/10-hermes/AGENTS.md - New Showbiz Documentation Package Contract
 
 This file is the documentation-package version of the New Showbiz operator contract. In a future Hermes runtime profile, copy or adapt it as the profile `docs/10-hermes/AGENTS.md` context file.
 

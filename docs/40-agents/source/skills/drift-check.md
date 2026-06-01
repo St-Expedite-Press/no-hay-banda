@@ -1,4 +1,4 @@
-﻿---
+---
 name: drift-check
 description: |
   Verify that control surfaces remain consistent after a write operation. Use after any

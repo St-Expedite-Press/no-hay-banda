@@ -1,4 +1,4 @@
-﻿# Hermes System Prompt Architecture
+# Hermes System Prompt Architecture
 ### A Reference for Agent Orchestration
 
 > Derived from source at `/usr/local/lib/hermes-agent/agent/system_prompt.py`,
@@ -10,7 +10,7 @@
 
 1. [The Three-Tier Model](#1-the-three-tier-model)
 2. [Tier 1: Stable](#2-tier-1-stable)
-   - [1a. Identity â€” docs/10-hermes/SOUL.md](#1a-identity--soulmd)
+   - [1a. Identity — docs/10-hermes/SOUL.md](#1a-identity--soulmd)
    - [1b. Tool-Aware Guidance Blocks](#1b-tool-aware-guidance-blocks)
    - [1c. Tool-Use Enforcement and Model-Family Guidance](#1c-tool-use-enforcement-and-model-family-guidance)
    - [1d. Skills Prompt](#1d-skills-prompt)
@@ -47,19 +47,19 @@
 Every LLM call Hermes makes sends a single assembled system prompt built from three ordered tiers:
 
 ```
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚  STABLE                                 â”‚  â† Built once at agent init, cached
-â”‚  identity Â· tools Â· skills Â· env        â”‚    for the entire session lifetime
-â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-â”‚  CONTEXT                                â”‚  â† Session-stable, CWD-dependent
-â”‚  system_message Â· project files         â”‚    can differ across agents
-â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-â”‚  VOLATILE                               â”‚  â† Per-session/turn state
-â”‚  memory Â· user profile Â· timestamp      â”‚    never prefix-cached
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+┌─────────────────────────────────────────┐
+│  STABLE                                 │  ← Built once at agent init, cached
+│  identity · tools · skills · env        │    for the entire session lifetime
+├─────────────────────────────────────────┤
+│  CONTEXT                                │  ← Session-stable, CWD-dependent
+│  system_message · project files         │    can differ across agents
+├─────────────────────────────────────────┤
+│  VOLATILE                               │  ← Per-session/turn state
+│  memory · user profile · timestamp      │    never prefix-cached
+└─────────────────────────────────────────┘
 ```
 
-The tiers are joined with `\n\n` and the full string is cached on `agent._cached_system_prompt`. It is **never partially rebuilt mid-session** â€” only a context compression event triggers a full rebuild. This is a deliberate cache strategy: keeping the prefix stable across all turns maximizes upstream LLM prefix cache hits and reduces latency and cost.
+The tiers are joined with `\n\n` and the full string is cached on `agent._cached_system_prompt`. It is **never partially rebuilt mid-session** — only a context compression event triggers a full rebuild. This is a deliberate cache strategy: keeping the prefix stable across all turns maximizes upstream LLM prefix cache hits and reduces latency and cost.
 
 The only exception is `ephemeral_system_prompt`, which is injected at API-call time on every turn and intentionally bypasses the cache entirely.
 
@@ -69,42 +69,42 @@ The only exception is `ephemeral_system_prompt`, which is injected at API-call t
 
 The stable tier is the longest and most expensive part of the prompt. It is assembled in a fixed order from the components below.
 
-Source: `agent/system_prompt.py` â†’ `build_system_prompt_parts()`, lines 83â€“219.
+Source: `agent/system_prompt.py` → `build_system_prompt_parts()`, lines 83–219.
 
 ---
 
-### 1a. Identity â€” docs/10-hermes/SOUL.md
+### 1a. Identity — docs/10-hermes/SOUL.md
 
 **Position:** First thing in the entire system prompt.
 
 **Source:** `/.hermes/docs/10-hermes/SOUL.md` (read via `load_soul_md()` in `prompt_builder.py:1313`).
 
 **Behavior:**
-- Read from disk at session start (not every turn â€” the result is cached into stable)
+- Read from disk at session start (not every turn — the result is cached into stable)
 - Scanned for prompt injection before use (see [Injection Security Scanner](#6-injection-security-scanner))
 - Truncated at a configurable char limit with head/tail preservation
 - If the file is empty or missing, falls back to the hardcoded `DEFAULT_AGENT_IDENTITY` constant
 
-**Hot-reload:** Because docs/10-hermes/SOUL.md is read once at session init and then cached into the stable tier, changes to the file take effect on the **next session start**, not the next message. The `load_soul_md()` function does read from disk each time it is called, but `build_system_prompt_parts()` only calls it once â€” at the moment the stable tier is first assembled.
+**Hot-reload:** Because docs/10-hermes/SOUL.md is read once at session init and then cached into the stable tier, changes to the file take effect on the **next session start**, not the next message. The `load_soul_md()` function does read from disk each time it is called, but `build_system_prompt_parts()` only calls it once — at the moment the stable tier is first assembled.
 
 **For orchestration:**
 
-docs/10-hermes/SOUL.md is the orchestrator's identity. It defines personality, operating principles, constraints, and communication style for the top-level agent. Worker agents spawned programmatically should not inherit this â€” use `skip_context_files=True` and `load_soul_identity=False` to give them a clean slate.
+docs/10-hermes/SOUL.md is the orchestrator's identity. It defines personality, operating principles, constraints, and communication style for the top-level agent. Worker agents spawned programmatically should not inherit this — use `skip_context_files=True` and `load_soul_identity=False` to give them a clean slate.
 
 ```python
-# Orchestrator â€” uses docs/10-hermes/SOUL.md persona
+# Orchestrator — uses docs/10-hermes/SOUL.md persona
 orchestrator = AIAgent(
     load_soul_identity=True,
 )
 
-# Worker â€” no persona, no project files, fully task-driven
+# Worker — no persona, no project files, fully task-driven
 worker = AIAgent(
     skip_context_files=True,
     load_soul_identity=False,
     system_message="You are a JSON extractor. Return only valid JSON, no commentary.",
 )
 
-# Cron/gateway worker â€” keeps persona, skips project files
+# Cron/gateway worker — keeps persona, skips project files
 scheduled_agent = AIAgent(
     skip_context_files=True,
     load_soul_identity=True,  # Still reads docs/10-hermes/SOUL.md as identity
@@ -129,9 +129,9 @@ These are constant strings from `prompt_builder.py`, each injected **only if the
 | `HERMES_KANBAN_TASK` env set | `KANBAN_GUIDANCE` | Worker/orchestrator lifecycle, completion reporting |
 | `"computer_use"` in tools | `COMPUTER_USE_GUIDANCE` | macOS automation behavior and safety |
 
-The kanban block deserves special attention: it is only injected when the `HERMES_KANBAN_TASK` environment variable is present on the process. This means normal interactive sessions never see orchestration instructions â€” the distinction between orchestrator and worker is enforced at the environment level.
+The kanban block deserves special attention: it is only injected when the `HERMES_KANBAN_TASK` environment variable is present on the process. This means normal interactive sessions never see orchestration instructions — the distinction between orchestrator and worker is enforced at the environment level.
 
-**For orchestration:** Use `enabled_toolsets` and `disabled_toolsets` at spawn time to give workers a minimal, role-appropriate toolset. A worker that only does file I/O doesn't need memory or session-search tools â€” and without those tools, those guidance blocks are omitted, keeping the context lean.
+**For orchestration:** Use `enabled_toolsets` and `disabled_toolsets` at spawn time to give workers a minimal, role-appropriate toolset. A worker that only does file I/O doesn't need memory or session-search tools — and without those tools, those guidance blocks are omitted, keeping the context lean.
 
 ```python
 # Minimal file-processing worker
@@ -172,7 +172,7 @@ These are injected automatically based on `agent.model`. For orchestration acros
 
 **Position:** After enforcement blocks.
 
-Injected when the agent has any of `skills_list`, `skill_view`, or `skill_manage` in its toolset. Contains a compact index of all skills available in `/.hermes/skills/` â€” each skill is a markdown file describing a reusable behavior pattern.
+Injected when the agent has any of `skills_list`, `skill_view`, or `skill_manage` in its toolset. Contains a compact index of all skills available in `/.hermes/skills/` — each skill is a markdown file describing a reusable behavior pattern.
 
 **Skills are global.** They live at `/.hermes/skills/` and are shared across all agent instances on the machine. A worker that creates a skill via `skill_manage` makes it immediately available to the orchestrator and all future workers. This is Hermes's self-improvement mechanism: the agent fleet learns collectively.
 
@@ -184,7 +184,7 @@ For orchestration, skills are the right place to encode reusable sub-procedures:
 
 **Position:** Last items in the stable tier.
 
-**Environment hints** (`build_environment_hints()`) auto-detect the runtime environment â€” WSL, Termux, Docker, bare Linux â€” and inject relevant facts (path translation rules, shell differences, etc.). These are fully automatic.
+**Environment hints** (`build_environment_hints()`) auto-detect the runtime environment — WSL, Termux, Docker, bare Linux — and inject relevant facts (path translation rules, shell differences, etc.). These are fully automatic.
 
 **Platform hints** are controlled by the `platform` parameter at spawn time. Supported values: `"cli"`, `"telegram"`, `"discord"`, `"whatsapp"`. Each injects a formatting hint block telling the agent how to structure responses for that delivery channel.
 
@@ -205,7 +205,7 @@ For multi-platform deployments, set `platform` per agent based on where its outp
 
 Session-stable context. Built once per session alongside stable, but varies based on the working directory and caller-supplied instructions.
 
-Source: `agent/system_prompt.py` â†’ `build_system_prompt_parts()`, lines 221â€“238.
+Source: `agent/system_prompt.py` → `build_system_prompt_parts()`, lines 221–238.
 
 ---
 
@@ -239,27 +239,27 @@ Do not produce any other output. If you find no issues, return an empty array []
 
 ### 2b. Context File Priority Cascade
 
-When `skip_context_files=False`, Hermes auto-discovers project context from the working directory (`TERMINAL_CWD` env var, or `os.getcwd()` as fallback). Exactly **one** project context type is loaded â€” the first match wins:
+When `skip_context_files=False`, Hermes auto-discovers project context from the working directory (`TERMINAL_CWD` env var, or `os.getcwd()` as fallback). Exactly **one** project context type is loaded — the first match wins:
 
 ```
-Priority 1: .hermes.md or HERMES.md    â† walks up to git root
-Priority 2: docs/10-hermes/AGENTS.md or agents.md     â† CWD only
-Priority 3: legacy Claude context file or claude.md     â† CWD only
-Priority 4: .cursorrules               â† CWD only
-            .cursor/rules/*.mdc        â† CWD only (all .mdc files, sorted)
+Priority 1: .hermes.md or HERMES.md    ← walks up to git root
+Priority 2: docs/10-hermes/AGENTS.md or agents.md     ← CWD only
+Priority 3: legacy Claude context file or claude.md     ← CWD only
+Priority 4: .cursorrules               ← CWD only
+            .cursor/rules/*.mdc        ← CWD only (all .mdc files, sorted)
 ```
 
-docs/10-hermes/SOUL.md from `HERMES_HOME` is independent and **always** included when present (unless `skip_context_files=True`). It is not part of the cascade â€” it is loaded separately as the identity block.
+docs/10-hermes/SOUL.md from `HERMES_HOME` is independent and **always** included when present (unless `skip_context_files=True`). It is not part of the cascade — it is loaded separately as the identity block.
 
 **File details:**
 
-`.hermes.md` / `HERMES.md` â€” Hermes's native project context format. Walks up to the git root, so a file at the repo root covers all subdirectories. Preferred over docs/10-hermes/AGENTS.md for Hermes-specific projects.
+`.hermes.md` / `HERMES.md` — Hermes's native project context format. Walks up to the git root, so a file at the repo root covers all subdirectories. Preferred over docs/10-hermes/AGENTS.md for Hermes-specific projects.
 
-`docs/10-hermes/AGENTS.md` â€” CWD-scoped. Compatible with other agent frameworks (Claude Code, etc.). Use when the project needs to be portable across agent systems.
+`docs/10-hermes/AGENTS.md` — CWD-scoped. Compatible with other agent frameworks (Claude Code, etc.). Use when the project needs to be portable across agent systems.
 
-`legacy Claude context file` â€” CWD-scoped. Claude Code's native format. Hermes reads it as a fallback, so a Claude Code project works in Hermes without modification.
+`legacy Claude context file` — CWD-scoped. Claude Code's native format. Hermes reads it as a fallback, so a Claude Code project works in Hermes without modification.
 
-`.cursorrules` / `.cursor/rules/*.mdc` â€” Cursor IDE format. Lowest priority. Hermes reads these as a last resort for compatibility with Cursor-configured repos.
+`.cursorrules` / `.cursor/rules/*.mdc` — Cursor IDE format. Lowest priority. Hermes reads these as a last resort for compatibility with Cursor-configured repos.
 
 **For orchestration across multiple repositories:**
 
@@ -283,7 +283,7 @@ def spawn_worker_for_repo(repo_path: str, task: str) -> AIAgent:
 
 ### 2c. ephemeral_system_prompt
 
-Not strictly part of the three tiers â€” this is injected at API-call time on **every LLM call**, separately from the cached system prompt string.
+Not strictly part of the three tiers — this is injected at API-call time on **every LLM call**, separately from the cached system prompt string.
 
 ```python
 # agent/agent_init.py line 157:
@@ -291,10 +291,10 @@ ephemeral_system_prompt: str = None
 ```
 
 Key properties:
-- **Not cached** â€” changes take effect immediately on the next call
-- **Not saved to trajectories** â€” invisible to session replay and data collection
-- **Not stored** â€” does not persist in `agent._cached_system_prompt`
-- **Injected fresh every turn** â€” the orchestrator can change it between turns
+- **Not cached** — changes take effect immediately on the next call
+- **Not saved to trajectories** — invisible to session replay and data collection
+- **Not stored** — does not persist in `agent._cached_system_prompt`
+- **Injected fresh every turn** — the orchestrator can change it between turns
 
 This is the **dynamic task channel** for runtime orchestration. It does not invalidate the warm prefix cache on stable/context/volatile because it is appended at call time, not baked into the cached string.
 
@@ -322,7 +322,7 @@ Use `ephemeral_system_prompt` when the instruction is:
 
 Per-session state that changes at compression boundaries and on fresh session starts. Always at the bottom of the assembled prompt.
 
-Source: `agent/system_prompt.py` â†’ `build_system_prompt_parts()`, lines 241â€“278.
+Source: `agent/system_prompt.py` → `build_system_prompt_parts()`, lines 241–278.
 
 ---
 
@@ -353,7 +353,7 @@ isolated_worker = AIAgent()  # now reads from /tmp/worker-42-home/memories/
 
 ### 3b. USER.md Profile
 
-A persistent profile document about the human user â€” preferences, working style, context. Stored under the `user` namespace in the memory store. Injected when `agent._user_profile_enabled` is `True`.
+A persistent profile document about the human user — preferences, working style, context. Stored under the `user` namespace in the memory store. Injected when `agent._user_profile_enabled` is `True`.
 
 In gateway deployments, this is populated per `user_id`, so different users get personalized behavior from the same agent process. An agent that learns a user prefers concise responses will write that to their USER.md profile, and every future session for that user starts with that preference already loaded.
 
@@ -372,7 +372,7 @@ Model: <model name>
 Provider: <provider name>
 ```
 
-The timestamp is **date-only, not minute-precision**. This is an explicit cache optimization â€” minute-precision timestamps invalidate the prefix cache on every rebuild (compression boundary, fresh gateway turn, session resume without a stored prompt). The model can query exact wall-clock time via tools if it actually needs it.
+The timestamp is **date-only, not minute-precision**. This is an explicit cache optimization — minute-precision timestamps invalidate the prefix cache on every rebuild (compression boundary, fresh gateway turn, session resume without a stored prompt). The model can query exact wall-clock time via tools if it actually needs it.
 
 Session ID is only included when `pass_session_id=True`. Model and provider lines are always included when set.
 
@@ -391,20 +391,20 @@ Understanding the caching model is critical for writing efficient orchestration 
 
 | Action | Hits cache | Cost |
 |---|---|---|
-| Calling the agent again on the same session | Yes â€” stable/context/volatile prefix cached | Low |
-| Changing `ephemeral_system_prompt` between turns | Partial â€” stable/context/volatile still cached | Low |
-| Spawning a new agent with the same docs/10-hermes/SOUL.md | No â€” new object, cold cache | Medium (one-time) |
-| Triggering a compression event | No â€” full rebuild | High (once, then re-cached) |
+| Calling the agent again on the same session | Yes — stable/context/volatile prefix cached | Low |
+| Changing `ephemeral_system_prompt` between turns | Partial — stable/context/volatile still cached | Low |
+| Spawning a new agent with the same docs/10-hermes/SOUL.md | No — new object, cold cache | Medium (one-time) |
+| Triggering a compression event | No — full rebuild | High (once, then re-cached) |
 
 **Implication for long-running workers:** a worker that runs for many turns will keep its stable/context/volatile tiers warm in the upstream LLM's KV cache indefinitely, as long as those tiers don't change. Changing `ephemeral_system_prompt` each turn is cheap because it appends to a warm prefix rather than replacing it.
 
-**Implication for worker pools:** if you spawn many workers with identical configuration (same docs/10-hermes/SOUL.md, same system_message, same toolset), they all share the same upstream prefix cache â€” the LLM provider only needs to process the common prefix once. Build your worker configs to maximize shared prefix length.
+**Implication for worker pools:** if you spawn many workers with identical configuration (same docs/10-hermes/SOUL.md, same system_message, same toolset), they all share the same upstream prefix cache — the LLM provider only needs to process the common prefix once. Build your worker configs to maximize shared prefix length.
 
 ---
 
 ## 6. Injection Security Scanner
 
-All context files â€” docs/10-hermes/SOUL.md, .hermes.md, docs/10-hermes/AGENTS.md, legacy Claude context file, .cursorrules â€” pass through `_scan_context_content()` in `prompt_builder.py` before being injected into any prompt tier.
+All context files — docs/10-hermes/SOUL.md, .hermes.md, docs/10-hermes/AGENTS.md, legacy Claude context file, .cursorrules — pass through `_scan_context_content()` in `prompt_builder.py` before being injected into any prompt tier.
 
 **Blocked patterns:**
 
@@ -463,7 +463,7 @@ def dispatch_kanban_worker(task_id: str, model: str = "gpt-4o"):
 ```python
 from agent.iteration_budget import IterationBudget
 
-# Create a shared budget â€” all agents consume from the same pool
+# Create a shared budget — all agents consume from the same pool
 budget = IterationBudget(max_iterations=200)
 
 orchestrator = AIAgent(iteration_budget=budget, model="claude-opus-4-7")
@@ -500,7 +500,7 @@ worker = AIAgent(
 )
 ```
 
-Links the worker's session record to its parent in the session database (`/.hermes/sessions/`). Enables `session_search` to traverse the parent-child graph â€” a future agent debugging a past run can reconstruct the full execution tree, see which worker handled which task, and inspect intermediate outputs.
+Links the worker's session record to its parent in the session database (`/.hermes/sessions/`). Enables `session_search` to traverse the parent-child graph — a future agent debugging a past run can reconstruct the full execution tree, see which worker handled which task, and inspect intermediate outputs.
 
 Set `pass_session_id=True` on workers so the session ID appears in their volatile tier, which makes it available to tools and logging.
 
@@ -524,7 +524,7 @@ worker = AIAgent(
 )
 ```
 
-This is the right way to hand off one worker's output to the next without re-spending tokens to explain it. The prefill is injected as if that conversation already happened â€” the worker starts with full context of the prior step.
+This is the right way to hand off one worker's output to the next without re-spending tokens to explain it. The prefill is injected as if that conversation already happened — the worker starts with full context of the prior step.
 
 **Important:** Anthropic Sonnet 4.6+ and Opus 4.6+ reject conversations ending on an `assistant` role turn (HTTP 400). For those models, end `prefill_messages` on a `user` turn, or use `system_message` to pass the prior context instead.
 
@@ -536,31 +536,31 @@ Complete reference of `AIAgent.__init__` parameters relevant to orchestration:
 
 ```python
 AIAgent(
-    # â”€â”€ Model and provider â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # ── Model and provider ────────────────────────────────────────
     model="claude-opus-4-7",          # Model to use
     provider="anthropic",             # Provider hint for routing
     base_url=None,                    # Custom endpoint (local models, proxies)
     api_key=None,                     # Override env var
     api_mode=None,                    # "chat_completions" | "codex_responses" | "anthropic_messages"
 
-    # â”€â”€ Prompt tiers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    system_message=None,              # â†’ Context tier slot 1. Role definition, output contract.
-    ephemeral_system_prompt=None,     # â†’ Injected per-call, never cached, never saved.
-    prefill_messages=None,            # â†’ Synthetic history prepended before first user turn.
+    # ── Prompt tiers ──────────────────────────────────────────────
+    system_message=None,              # → Context tier slot 1. Role definition, output contract.
+    ephemeral_system_prompt=None,     # → Injected per-call, never cached, never saved.
+    prefill_messages=None,            # → Synthetic history prepended before first user turn.
 
-    # â”€â”€ Identity and context files â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    skip_context_files=False,         # True â†’ skip docs/10-hermes/SOUL.md, docs/10-hermes/AGENTS.md, .cursorrules, legacy Claude context file
-    load_soul_identity=False,         # True â†’ load docs/10-hermes/SOUL.md even when skip_context_files=True
+    # ── Identity and context files ────────────────────────────────
+    skip_context_files=False,         # True → skip docs/10-hermes/SOUL.md, docs/10-hermes/AGENTS.md, .cursorrules, legacy Claude context file
+    load_soul_identity=False,         # True → load docs/10-hermes/SOUL.md even when skip_context_files=True
     platform=None,                    # "cli" | "telegram" | "discord" | "whatsapp"
 
-    # â”€â”€ Toolset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # ── Toolset ───────────────────────────────────────────────────
     enabled_toolsets=None,            # Allowlist: only load these toolsets
     disabled_toolsets=None,           # Denylist: skip these toolsets
 
-    # â”€â”€ Memory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    skip_memory=False,                # True â†’ no memory/USER.md in volatile tier
+    # ── Memory ────────────────────────────────────────────────────
+    skip_memory=False,                # True → no memory/USER.md in volatile tier
 
-    # â”€â”€ Session and identity â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # ── Session and identity ──────────────────────────────────────
     session_id=None,                  # Pre-assign session ID (auto-generated if None)
     parent_session_id=None,           # Link to parent orchestrator session
     pass_session_id=False,            # Include session ID in volatile tier timestamp line
@@ -572,19 +572,19 @@ AIAgent(
     thread_id=None,
     gateway_session_key=None,         # Stable per-chat key (e.g. "agent:main:telegram:dm:123")
 
-    # â”€â”€ Execution limits â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # ── Execution limits ──────────────────────────────────────────
     max_iterations=90,                # Max tool-calling iterations
     iteration_budget=None,            # Shared IterationBudget object (pass same instance to workers)
     max_tokens=None,                  # Max response tokens (uses model default if None)
     tool_delay=1.0,                   # Seconds between tool calls
 
-    # â”€â”€ Shared resources â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # ── Shared resources ──────────────────────────────────────────
     credential_pool=None,             # Shared CredentialPool for rotating keys
 
-    # â”€â”€ Trajectory saving â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # ── Trajectory saving ─────────────────────────────────────────
     save_trajectories=False,          # Save conversation to JSONL (excludes ephemeral_system_prompt)
 
-    # â”€â”€ Callbacks (for streaming orchestration) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # ── Callbacks (for streaming orchestration) ───────────────────
     tool_progress_callback=None,      # fn(tool_name, args_preview)
     tool_start_callback=None,
     tool_complete_callback=None,
@@ -625,7 +625,7 @@ def spawn_worker(role: str, task: str):
         load_soul_identity=False,
         skip_memory=True,
         enabled_toolsets=["bash", "files"],
-        iteration_budget=budget,          # Same budget â€” shared cap
+        iteration_budget=budget,          # Same budget — shared cap
         parent_session_id=orchestrator.session_id,
         ephemeral_system_prompt=task,
     )
@@ -669,7 +669,7 @@ final_result = context
 Different workers get different capabilities by varying `enabled_toolsets`. This also controls which guidance blocks appear in their stable tiers.
 
 ```python
-# Researcher: can search and browse, read files â€” no write access
+# Researcher: can search and browse, read files — no write access
 researcher = AIAgent(
     system_message="Research the topic and return a structured findings report.",
     enabled_toolsets=["web_search", "browser", "files_read"],
@@ -691,7 +691,7 @@ writer = AIAgent(
 # Reviewer: read-only, memory enabled so it can learn review patterns
 reviewer = AIAgent(
     system_message="Review the draft for accuracy and clarity. Return structured feedback.",
-    enabled_toolsets=["files_read", "memory"],  # memory tool â†’ MEMORY_GUIDANCE injected
+    enabled_toolsets=["files_read", "memory"],  # memory tool → MEMORY_GUIDANCE injected
     skip_context_files=True,
     load_soul_identity=False,
 )
@@ -728,7 +728,7 @@ CONSTRAINTS: {task['constraints']}
     task_queue.complete(task['id'], result)
 ```
 
-The session accumulates history across all tasks â€” the worker has full context of what it processed previously, which can help it handle edge cases and pattern-match against earlier successes.
+The session accumulates history across all tasks — the worker has full context of what it processed previously, which can help it handle edge cases and pattern-match against earlier successes.
 
 ---
 
@@ -774,19 +774,19 @@ for repo_path, worker in workers:
 |---|---|---|
 | Define the orchestrator's personality and principles | `/.hermes/docs/10-hermes/SOUL.md` | Stable (identity) |
 | Give a worker a specific role and output contract | `system_message=` at spawn | Context |
-| Inject the current task dynamically, turn-by-turn | `agent.ephemeral_system_prompt` | (bypass â€” per call) |
+| Inject the current task dynamically, turn-by-turn | `agent.ephemeral_system_prompt` | (bypass — per call) |
 | Give a project's agents shared repo-level instructions | `.hermes.md` at git root | Context (auto-discovered) |
 | Hand off one worker's output to the next | `prefill_messages=` | (message history) |
-| Strip persona from automated batch workers | `skip_context_files=True, load_soul_identity=False` | â€” |
+| Strip persona from automated batch workers | `skip_context_files=True, load_soul_identity=False` | — |
 | Keep docs/10-hermes/SOUL.md persona on cron/gateway workers | `load_soul_identity=True, skip_context_files=True` | Stable |
-| Share learned facts across all agents | Memory store (default â€” no config) | Volatile |
-| Isolate worker memory from orchestrator | `skip_memory=True` | â€” |
-| Cap total LLM turns across a multi-agent run | Shared `IterationBudget` | â€” |
-| Prevent workers from seeing each other's state | Separate `HERMES_HOME` per worker | â€” |
+| Share learned facts across all agents | Memory store (default — no config) | Volatile |
+| Isolate worker memory from orchestrator | `skip_memory=True` | — |
+| Cap total LLM turns across a multi-agent run | Shared `IterationBudget` | — |
+| Prevent workers from seeing each other's state | Separate `HERMES_HOME` per worker | — |
 | Route agent output to a messaging platform | `platform="telegram"` etc. | Stable (hints) |
 | Give different workers different capabilities | `enabled_toolsets=[...]` | Stable (tool guidance) |
 | Use the native task dispatch system | Kanban via `HERMES_KANBAN_TASK` + `kanban_show` | Stable (guidance) |
-| Link worker sessions to their orchestrator | `parent_session_id=orchestrator.session_id` | â€” |
-| Inject structured context without saving to trajectories | `ephemeral_system_prompt` | (bypass â€” per call) |
+| Link worker sessions to their orchestrator | `parent_session_id=orchestrator.session_id` | — |
+| Inject structured context without saving to trajectories | `ephemeral_system_prompt` | (bypass — per call) |
 | Teach the fleet a reusable pattern | Write a skill to `/.hermes/skills/` | Stable (skills prompt) |
 

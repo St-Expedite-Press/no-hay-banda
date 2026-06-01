@@ -1,4 +1,4 @@
-﻿---
+---
 title: Worked Example — Ingest Task, 12-Phase Trace
 record_type: worked-example
 status: canonical

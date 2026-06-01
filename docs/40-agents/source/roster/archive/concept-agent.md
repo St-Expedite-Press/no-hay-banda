@@ -1,4 +1,4 @@
-﻿---
+---
 title: ConceptAgent
 record_type: agent-spec
 status: canonical

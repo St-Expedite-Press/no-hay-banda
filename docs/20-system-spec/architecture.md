@@ -1,4 +1,4 @@
-﻿# New Showbiz Marketing Operator Architecture
+# New Showbiz Marketing Operator Architecture
 
 ## Architecture Thesis
 

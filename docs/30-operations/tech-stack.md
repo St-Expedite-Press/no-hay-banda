@@ -1,4 +1,4 @@
-﻿# Tech Stack
+# Tech Stack
 
 This package defines the target stack. It does not ship runnable implementation code.
 

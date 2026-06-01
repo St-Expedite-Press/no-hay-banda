@@ -1,4 +1,4 @@
-﻿---
+---
 title: ComposerAgent
 record_type: agent-spec
 status: canonical

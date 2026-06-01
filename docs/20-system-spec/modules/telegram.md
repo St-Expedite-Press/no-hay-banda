@@ -1,8 +1,8 @@
-﻿---
+---
 title: Telegram Module
 record_type: module-spec
 status: canonical
-canonical_path: modules/telegram/README.md
+canonical_path: docs/20-system-spec/modules/telegram.md
 implementation_note: >
   Telegram platform is bundled in hermes-agent (gateway/platforms/telegram.py).
   The future newshowbiz gateway implementation should add operator-specific
@@ -16,7 +16,7 @@ Human-in-the-loop oversight for the New Showbiz operator through Telegram. This 
 
 ## Purpose
 
-Telegram is the oversight surface for a human operator â€” not a public social channel. It handles:
+Telegram is the oversight surface for a human operator — not a public social channel. It handles:
 
 - escalation notifications and human approval requests
 - report delivery (daily and weekly)
@@ -41,15 +41,15 @@ Hermes supports Telegram natively as a gateway platform. Enable it in the `new-s
 
 | Message type | Routed to |
 |---|---|
-| `APPROVE` reply to draft request | PublishAgent â€” signals ContentJob status change to `APPROVED` |
-| `REJECT` reply to draft request | ContentAgent â€” returns ContentJob to `DRAFT` with rejection note |
-| `YES` reply to escalation | EscalationAgent â€” marks EscalationRecord human_owner action: approve |
-| `NO` reply to escalation | EscalationAgent â€” marks EscalationRecord as rejected; holds ContentJob |
-| `REVIEW` reply to escalation | ReportAgent â€” returns full EscalationRecord context |
-| `PAUSE` command | Orchestrator â†’ PublishAgent â†’ all ContentJobs set to HOLD |
-| `STATUS` command | Orchestrator â†’ QueryAgent â†’ ReportAgent â€” returns pending queue summary |
-| `REPORT` command | Orchestrator â†’ MetricsAgent â†’ ReportAgent â€” returns latest report |
-| Freeform query | Orchestrator â†’ appropriate agent â†’ ReportAgent |
+| `APPROVE` reply to draft request | PublishAgent — signals ContentJob status change to `APPROVED` |
+| `REJECT` reply to draft request | ContentAgent — returns ContentJob to `DRAFT` with rejection note |
+| `YES` reply to escalation | EscalationAgent — marks EscalationRecord human_owner action: approve |
+| `NO` reply to escalation | EscalationAgent — marks EscalationRecord as rejected; holds ContentJob |
+| `REVIEW` reply to escalation | ReportAgent — returns full EscalationRecord context |
+| `PAUSE` command | Orchestrator → PublishAgent → all ContentJobs set to HOLD |
+| `STATUS` command | Orchestrator → QueryAgent → ReportAgent — returns pending queue summary |
+| `REPORT` command | Orchestrator → MetricsAgent → ReportAgent — returns latest report |
+| Freeform query | Orchestrator → appropriate agent → ReportAgent |
 
 ## Notification Format
 
@@ -101,7 +101,7 @@ Top performer: {content_job_id}
 ## Guardrails
 
 - This module is never a publishing path to X or Instagram. Approval here signals status; PublishAgent performs the actual write.
-- No draft content is modified through this module â€” only approved or rejected.
+- No draft content is modified through this module — only approved or rejected.
 - Sensitive escalation details (creator complaints, legal threats) are delivered here for human review; autonomous action is blocked until resolved.
 - The oversight user list is fixed in gateway config; it is not reconfigurable through chat commands.
 - `critical` severity escalations are routed immediately and do not queue.

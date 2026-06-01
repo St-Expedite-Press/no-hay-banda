@@ -1,4 +1,4 @@
-﻿# Skill: Escalation Record Create
+# Skill: Escalation Record Create
 
 ## When to Use
 

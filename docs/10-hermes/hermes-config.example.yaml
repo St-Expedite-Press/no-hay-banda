@@ -1,46 +1,151 @@
-﻿# docs/10-hermes/hermes-config.example.yaml â€” New Showbiz Operator
+# docs/10-hermes/hermes-config.example.yaml — New Showbiz Operator
 #
-# Copy to ~/.hermes/profiles/new-showbiz/config.yaml for profile-scoped use,
-# or merge into ~/.hermes/config.yaml for global use.
+# Copy to ~/.hermes/profiles/newshowbiz/config.yaml for profile-scoped use.
 #
-# Quick start (profile-scoped, recommended):
-#   mkdir -p ~/.hermes/profiles/new-showbiz
-#   cp docs/10-hermes/hermes-config.example.yaml ~/.hermes/profiles/new-showbiz/config.yaml
-#   cp docs/10-hermes/SOUL.md ~/.hermes/profiles/new-showbiz/docs/10-hermes/SOUL.md
-#   pip install -e ".[telegram,anthropic]"   # registers plugins
-#   hermes plugins enable newshowbiz-vault
-#   hermes plugins enable newshowbiz-gateway
-#   hermes -p new-showbiz
+# Quick start:
+#   mkdir -p ~/.hermes/profiles/newshowbiz/docs/10-hermes
+#   cp docs/10-hermes/hermes-config.example.yaml ~/.hermes/profiles/newshowbiz/config.yaml
+#   cp docs/10-hermes/SOUL.md ~/.hermes/profiles/newshowbiz/docs/10-hermes/SOUL.md
+#   cp docs/10-hermes/AGENTS.md ~/.hermes/profiles/newshowbiz/docs/10-hermes/AGENTS.md
+#   cp docs/30-operations/.env.example ~/.hermes/profiles/newshowbiz/.env
+#   # Edit .env with real credentials (never commit it)
+#   mkdir -p ~/.hermes/profiles/newshowbiz/x-auth
+#   mkdir -p ~/.hermes/profiles/newshowbiz/logs
+#   hermes -p newshowbiz
 #
 # Usage in the Hermes CLI:
 #   /personality brand-director
 #   /personality x-editor
 #   /personality provocateur
-#   /ns-status        (newshowbiz-gateway command)
+#   /ns-status        (newshowbiz-gateway command, Phase 3+)
 #   /ns-escalations
 #   /ns-pause / /ns-resume
 #
-# Each personality overlay activates a mode and tells the agent which roster
-# file governs it. The roster file is the full spec; the personality entry
-# is just the activation switch. Read the roster file before proceeding.
+# On first session, call the login tool once to authenticate x-mcp-read and
+# save the session to x-auth/. Subsequent sessions load from stored state.
 
 # ---------------------------------------------------------------------------
-# Plugin activation
+# MCP servers — X integration
+#
+# Four servers, two tiers:
+#
+# Tier 1 — Barresider/x-mcp (primary X adapter)
+#   Playwright browser automation for authenticated X reads and writes.
+#   x-mcp-read:  enabled now. Read-only tools only.
+#   x-mcp-write: disabled. Enable in Phase 3 after ContentJob store,
+#                policy engine, human approval path, and receipt store exist.
+#   Engagement tools (like, retweet, bookmark) excluded from both permanently.
+#
+# Tier 2 — microsoft/playwright-mcp (browser fallback)
+#   General browser control for page QA, login-wall diagnosis, and
+#   New Showbiz site verification. Inherited from global config if present;
+#   add here for profile-scoped isolation.
+#
+# Tier 3 — miles0sage/twitter-mcp (experimental, no auth)
+#   Stateless read-only Playwright scraper. No session persistence.
+#   Supplement only; do not rely on for authenticated reads.
+#   Clone to ~/.hermes/mcp/twitter-mcp and install dependencies first.
+#
+# Tier 4 — kitadmin01/social_mcp (reference, disabled)
+#   Contains engage_twitter mass-engagement tool. Keep disabled.
+#   Requires Google Sheets credentials. Reference for session/retry patterns.
+#   Clone to ~/.hermes/mcp/social_mcp and install dependencies first.
 # ---------------------------------------------------------------------------
-# Both plugins ship as pip entry-points (pip install -e . from repo root).
-# They are disabled by default per Hermes convention; enable them once after install.
-# CLI: hermes plugins enable newshowbiz-vault && hermes plugins enable newshowbiz-gateway
 
-plugins:
-  enabled:
-    - newshowbiz-vault
-    - newshowbiz-gateway
+mcp_servers:
+
+  # --- Tier 1: Barresider/x-mcp ---
+
+  x-mcp-read:
+    command: npx
+    args:
+      - -y
+      - "@barresider/x-mcp"
+    enabled: true
+    env:
+      TWITTER_USERNAME: "${TWITTER_USERNAME}"
+      TWITTER_PASSWORD: "${TWITTER_PASSWORD}"
+      AUTH_DIR: "${X_AUTH_DIR}"
+    tools:
+      include:
+        - login
+        - scrape_posts
+        - scrape_profile
+        - scrape_comments
+        - search_twitter
+        - search_viral
+        - scrape_timeline
+        - scrape_trending
+
+  x-mcp-write:
+    command: npx
+    args:
+      - -y
+      - "@barresider/x-mcp"
+    enabled: false
+    env:
+      TWITTER_USERNAME: "${TWITTER_USERNAME}"
+      TWITTER_PASSWORD: "${TWITTER_PASSWORD}"
+      AUTH_DIR: "${X_AUTH_DIR}"
+    tools:
+      include:
+        - login
+        - tweet
+        - thread
+        - reply_to_post
+        - quote_tweet
+
+  # --- Tier 3: miles0sage/twitter-mcp (experimental, no auth) ---
+  # Clone: git clone https://github.com/Miles0sage/twitter-mcp.git ~/.hermes/mcp/twitter-mcp
+  # Install: cd ~/.hermes/mcp/twitter-mcp && python3.11 -m venv venv && ./venv/bin/pip install mcp playwright && ./venv/bin/playwright install chromium
+
+  twitter-mcp:
+    command: /home/ec2-user/.hermes/mcp/twitter-mcp/venv/bin/python3
+    args:
+      - /home/ec2-user/.hermes/mcp/twitter-mcp/server.py
+    enabled: true
+    tools:
+      exclude:
+        - twitter_post
+        - twitter_reply
+        - twitter_like
+        - twitter_retweet
+
+  # --- Tier 4: kitadmin01/social_mcp (reference only, disabled) ---
+  # Clone: git clone https://github.com/kitadmin01/social_mcp.git ~/.hermes/mcp/social_mcp
+  # Install: cd ~/.hermes/mcp/social_mcp && python3.11 -m venv venv && ./venv/bin/pip install -r requirements.txt && ./venv/bin/playwright install chromium
+
+  social-mcp:
+    command: /home/ec2-user/.hermes/mcp/social_mcp/venv/bin/python3
+    args:
+      - -m
+      - mcp_server.server
+    enabled: false
+    env:
+      TWITTER_USERNAME: "${TWITTER_USERNAME}"
+      TWITTER_PASSWORD: "${TWITTER_PASSWORD}"
+      PYTHONPATH: /home/ec2-user/.hermes/mcp/social_mcp
+      PLAYWRIGHT_SESSION_DIR: /home/ec2-user/.hermes/profiles/newshowbiz/social-mcp-session
 
 # ---------------------------------------------------------------------------
-# Telegram gateway
+# Toolsets available in this profile.
+# Hermes auto-registers mcp-{server-name} for each enabled MCP server.
+# Add mcp-x-mcp-write when enabling Phase 3 writes.
 # ---------------------------------------------------------------------------
-# Hermes has Telegram built in. Set TELEGRAM_BOT_TOKEN and TELEGRAM_ALLOWED_CHAT_IDS
-# in .env, then launch the gateway with: hermes gateway -p new-showbiz
+
+toolsets:
+  - hermes-cli
+  - mcp-x-mcp-read
+  - mcp-twitter-mcp
+
+terminal:
+  backend: local
+
+# ---------------------------------------------------------------------------
+# Telegram gateway (Phase 3+)
+# Set TELEGRAM_BOT_TOKEN and TELEGRAM_ALLOWED_CHAT_IDS in .env first.
+# Launch: hermes gateway -p newshowbiz
+# ---------------------------------------------------------------------------
 
 gateway:
   platform: telegram
@@ -49,7 +154,7 @@ gateway:
     allowed_chat_ids: "${TELEGRAM_ALLOWED_CHAT_IDS}"
 
 # ---------------------------------------------------------------------------
-# Personalities
+# Personalities — activate via /personality <name> in Hermes CLI
 # ---------------------------------------------------------------------------
 
 agent:
@@ -70,7 +175,7 @@ agent:
       Read agents/roster/movie-research-agent.md in full before proceeding.
       Your role: find demand the product already satisfies but has not located
       publicly. What conversations are happening right now about films we have?
-      What source objects â€” specific movies, score ranges, categories â€” are
+      What source objects — specific movies, score ranges, categories — are
       highest-leverage this week? You surface findings; you do not draft copy.
       Bring results to ContentAgent or X Editor.
 
@@ -97,7 +202,7 @@ agent:
       Read agents/roster/content-agent.md in full before proceeding.
       Generate captions, carousel copy, and visual sequencing notes.
       The platform is visual; your copy supports imagery you cannot control
-      â€” say what the image cannot say. Same voice rules as X: Kakusu Protocol,
+      — say what the image cannot say. Same voice rules as X: Kakusu Protocol,
       no fabricated claims, no emoji lead, two hashtags maximum.
       Phase 3+ scope. Draft only until Instagram toolsets are live.
 
@@ -121,22 +226,3 @@ agent:
       The question is always: did this produce a user who engaged with the
       product? Report gaps honestly. Do not fabricate attribution. If the join
       is not there, say so. Bring findings to MetricsAgent for PerformanceSnapshot.
-
-# ---------------------------------------------------------------------------
-# Install instructions
-# ---------------------------------------------------------------------------
-#
-# Option A â€” Global Hermes config (applies to all projects):
-#   1. Open ~/.hermes/config.yaml
-#   2. Merge the agent.personalities block above into it
-#
-# Option B â€” Profile-scoped (recommended for isolation):
-#   1. mkdir -p ~/.hermes/profiles/new-showbiz
-#   2. Copy this file to ~/.hermes/profiles/new-showbiz/config.yaml
-#   3. Copy docs/10-hermes/SOUL.md to ~/.hermes/profiles/new-showbiz/docs/10-hermes/SOUL.md
-#   4. Run Hermes with: hermes -p new-showbiz
-#
-# The docs/10-hermes/SOUL.md at the profile root establishes New Showbiz as the operator
-# identity. The personality overlays route to internal personas on demand.
-# The full agent specs live in agents/roster/ and are read at activation time.
-

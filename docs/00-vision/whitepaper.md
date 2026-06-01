@@ -1,4 +1,4 @@
-﻿# Whitepaper: A Hermes-Backed Marketing Operator for New Showbiz
+# Whitepaper: A Hermes-Backed Marketing Operator for New Showbiz
 
 ## Executive Summary
 

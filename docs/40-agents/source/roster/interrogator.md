@@ -1,4 +1,4 @@
-﻿---
+---
 title: Interrogator Agent
 record_type: agent-spec
 status: canonical

@@ -1,4 +1,4 @@
-﻿# Hermes Profile Setup
+# Hermes Profile Setup
 
 This is the target profile shape for the future runnable implementation. This documentation package does not install Hermes or run the operator.
 
@@ -19,12 +19,14 @@ flowchart TD
 
 ## Installation Shape
 
-1. Create `~/.hermes/profiles/newshowbiz/`.
-2. Copy the package's `docs/10-hermes/SOUL.md` to the profile root.
-3. Copy the package's `docs/10-hermes/AGENTS.md` to the profile root.
-4. Translate `docs/10-hermes/hermes-config.example.yaml` into the active Hermes `config.yaml` format used by the installed Hermes version.
-5. Populate a profile-local `.env` from `docs/30-operations/.env.example`.
-6. Install skills from `docs/40-agents/source/skills/` only after reviewing them against the current implementation.
+1. Create `~/.hermes/profiles/newshowbiz/docs/10-hermes/`.
+2. Copy `docs/10-hermes/SOUL.md` to `~/.hermes/profiles/newshowbiz/docs/10-hermes/SOUL.md`.
+3. Copy `docs/10-hermes/AGENTS.md` to `~/.hermes/profiles/newshowbiz/docs/10-hermes/AGENTS.md`.
+4. Copy `docs/10-hermes/hermes-config.example.yaml` to `~/.hermes/profiles/newshowbiz/config.yaml`.
+5. Copy `docs/30-operations/.env.example` to `~/.hermes/profiles/newshowbiz/.env` and populate with real credentials.
+6. Create `~/.hermes/profiles/newshowbiz/x-auth/` for Barresider session persistence.
+7. For the git-cloned MCP servers (twitter-mcp, social-mcp), update the absolute paths in config.yaml to match your machine.
+8. Install skills from `docs/40-agents/source/skills/` only after reviewing them against the current implementation.
 
 ## Profile Boundaries
 

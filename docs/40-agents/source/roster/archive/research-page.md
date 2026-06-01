@@ -1,4 +1,4 @@
-﻿---
+---
 title: ResearchPageAgent
 record_type: agent-spec
 status: canonical

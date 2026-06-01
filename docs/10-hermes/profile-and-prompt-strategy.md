@@ -1,4 +1,4 @@
-﻿# Profile and Prompt Strategy
+# Profile and Prompt Strategy
 
 New Showbiz should use Hermes as a runtime substrate, not as the business product. The operator profile must keep identity, project rules, skills, worker roles, volatile memory, and dynamic task payloads in their correct prompt channels.
 

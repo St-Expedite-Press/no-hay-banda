@@ -1,60 +1,61 @@
-﻿# Phased Checklist
+# Phased Checklist
 
 ## Phase 0: Documentation, Brand Rules, and Runtime Decision
 
-*Last reviewed: 2026-05-20. Items marked âœ… are complete at the documentation level.*
+*Last reviewed: 2026-06-01. Items marked ✅ are complete at the documentation level.*
 
 ### Deliverables
 
-- [x] âœ… Approve one-sentence product promise. â€” *"Watch more of what matters to you."* (docs/10-hermes/AGENTS.md)
-- [x] âœ… Approve public voice constraints. â€” Kakusu Protocol, em dash ban, 2-hashtag cap, film-critic register (docs/10-hermes/AGENTS.md Brand and Voice Rules)
-- [x] âœ… Approve banned claims. â€” No fabricated facts, no invented social proof, no fake certainty about AI analysis (docs/10-hermes/AGENTS.md)
-- [x] âœ… Approve donation language. â€” Independent project, not tax-deductible, crypto irreversible and non-refundable, no financial advice (docs/10-hermes/AGENTS.md)
-- [x] âœ… Approve crypto-support language and non-tax-deductible contribution language. â€” Same as above.
-- [x] âœ… Approve `TROLL` mode boundary. â€” X only, fact-bound, policy-bound, incident-reviewed, suspendable; permanently blocked channels defined (docs/10-hermes/AGENTS.md)
-- [ ] Approve persona contracts. â€” Seven personas defined in `03-personas-and-behavior-modes.md`; formal PersonaRegistry mapping personas to agents not yet written.
-- [x] âœ… Approve risk classes and escalation triggers. â€” 12 classes defined and consistent across all docs (docs/10-hermes/AGENTS.md, retired clarity map, agent specs)
-- [x] âœ… Approve Hermes as runtime substrate. â€” Phase 3+ runtime; three-layer architecture documented in retired overview and docs/10-hermes/AGENTS.md
-- [x] âœ… Approve that `X` and Instagram require custom tools. â€” Five named New Showbiz toolsets defined; no third-party MCP exposed directly (docs/10-hermes/AGENTS.md)
-- [x] âœ… Approve `Barresider/x-mcp` as the first X-specific MCP candidate. â€” Phase 3+ scope; confirmed in docs/10-hermes/AGENTS.md and retired clarity map
-- [x] âœ… Approve `microsoft/playwright-mcp` as the general browser fallback. â€” QA and browser inspection only; not an unsupervised publishing fallback (docs/10-hermes/AGENTS.md)
-- [x] âœ… Approve that `kitadmin01/social_mcp` is reference material, not the default runtime. â€” Tier 3 reference for session/retry design (docs/10-hermes/AGENTS.md)
-- [x] âœ… Approve that `miles0sage` remains experimental. â€” Tier 4; do not rely on (docs/10-hermes/AGENTS.md)
+- [x] ✅ Approve one-sentence product promise. — *"Watch more of what matters to you."* (docs/10-hermes/AGENTS.md)
+- [x] ✅ Approve public voice constraints. — Kakusu Protocol, em dash ban, 2-hashtag cap, film-critic register (docs/10-hermes/AGENTS.md Brand and Voice Rules)
+- [x] ✅ Approve banned claims. — No fabricated facts, no invented social proof, no fake certainty about AI analysis (docs/10-hermes/AGENTS.md)
+- [x] ✅ Approve donation language. — Independent project, not tax-deductible, crypto irreversible and non-refundable, no financial advice (docs/10-hermes/AGENTS.md)
+- [x] ✅ Approve crypto-support language and non-tax-deductible contribution language. — Same as above.
+- [x] ✅ Approve `TROLL` mode boundary. — X only, fact-bound, policy-bound, incident-reviewed, suspendable; permanently blocked channels defined (docs/10-hermes/AGENTS.md)
+- [ ] Approve persona contracts. — Seven personas defined in `03-personas-and-behavior-modes.md`; formal PersonaRegistry mapping personas to agents not yet written.
+- [x] ✅ Approve risk classes and escalation triggers. — 12 classes defined and consistent across all docs (docs/10-hermes/AGENTS.md, retired clarity map, agent specs)
+- [x] ✅ Approve Hermes as runtime substrate. — Phase 3+ runtime; three-layer architecture documented in retired overview and docs/10-hermes/AGENTS.md
+- [x] ✅ Approve that `X` and Instagram require custom tools. — Five named New Showbiz toolsets defined; no third-party MCP exposed directly (docs/10-hermes/AGENTS.md)
+- [x] ✅ Approve `Barresider/x-mcp` as the first X-specific MCP candidate. — Phase 3+ scope; confirmed in docs/10-hermes/AGENTS.md and retired clarity map
+- [x] ✅ Approve `microsoft/playwright-mcp` as the general browser fallback. — QA and browser inspection only; not an unsupervised publishing fallback (docs/10-hermes/AGENTS.md)
+- [x] ✅ Approve that `kitadmin01/social_mcp` is reference material, not the default runtime. — Tier 3 reference for session/retry design (docs/10-hermes/AGENTS.md)
+- [x] ✅ Approve that `miles0sage` remains experimental. — Tier 4; do not rely on (docs/10-hermes/AGENTS.md)
 - [x] Approve documentation governance loop. - Scope, consistency, evidence, safety, and verification loops are defined in `docs/30-operations/documentation-governance.md`; root `AGENTS.md` and root `MEMORY.md` are local ignored workspace guidance/state.
 - [x] Approve simple task fast path. - Orchestrator may bypass full DAG construction for single-hop low-risk work when all fast-path gates pass.
 - [x] Approve PythonStandardsAgent. - Active operations agent for evidence-scored Python standards, tooling, typing, testing, and packaging guidance.
 
 ### Exit Criteria
 
-- [x] âœ… Two builders can distinguish Hermes-native capabilities from New Showbiz custom work. â€” Explicit three-layer boundary in docs/10-hermes/AGENTS.md and retired overview Â§4
-- [x] âœ… Two builders can distinguish X MCP adapters from New Showbiz policy, wrapper, and persistence layers. â€” Toolset wrapper model and MCP ranking documented in docs/10-hermes/AGENTS.md
-- [x] âœ… Brand rules are specific enough to produce consistent copy. â€” Kakusu Protocol + formatting rules + banned terms in docs/10-hermes/AGENTS.md
-- [x] âœ… Money, legal, partnership, and creator-complaint escalation rules are unambiguous. â€” 12 risk classes with definitions in docs/10-hermes/AGENTS.md
-- [x] âœ… `TROLL` mode is channel-restricted, fact-bound, and suspendable. â€” Full TROLL policy in docs/10-hermes/AGENTS.md with permanent block list
+- [x] ✅ Two builders can distinguish Hermes-native capabilities from New Showbiz custom work. — Explicit three-layer boundary in docs/10-hermes/AGENTS.md and retired overview §4
+- [x] ✅ Two builders can distinguish X MCP adapters from New Showbiz policy, wrapper, and persistence layers. — Toolset wrapper model and MCP ranking documented in docs/10-hermes/AGENTS.md
+- [x] ✅ Brand rules are specific enough to produce consistent copy. — Kakusu Protocol + formatting rules + banned terms in docs/10-hermes/AGENTS.md
+- [x] ✅ Money, legal, partnership, and creator-complaint escalation rules are unambiguous. — 12 risk classes with definitions in docs/10-hermes/AGENTS.md
+- [x] ✅ `TROLL` mode is channel-restricted, fact-bound, and suspendable. — Full TROLL policy in docs/10-hermes/AGENTS.md with permanent block list
 
 ### Risks to Watch
 
-- [ ] Brand voice remains too vague. â€” *Mitigated: Kakusu Protocol and film-critic register are specific. Monitor first drafts.*
-- [ ] Hidden disagreement on how sharp `X` should be. â€” *Mitigated: TROLL mode boundary is explicit. Open: no examples of TROLL content yet.*
-- [ ] Donation language is emotionally manipulative or legally sloppy. â€” *Mitigated: constraints are specific and conservative.*
-- [ ] Hermes is treated as a complete social stack rather than a runtime. â€” *Mitigated: Layer boundary is the most-emphasized constraint in docs/10-hermes/AGENTS.md.*
-- [ ] X MCP tools are mistaken for permission to automate engagement. â€” *Mitigated: Phase 1 is draft-only; Barresider is Phase 3+ scope explicitly.*
+- [ ] Brand voice remains too vague. — *Mitigated: Kakusu Protocol and film-critic register are specific. Monitor first drafts.*
+- [ ] Hidden disagreement on how sharp `X` should be. — *Mitigated: TROLL mode boundary is explicit. Open: no examples of TROLL content yet.*
+- [ ] Donation language is emotionally manipulative or legally sloppy. — *Mitigated: constraints are specific and conservative.*
+- [ ] Hermes is treated as a complete social stack rather than a runtime. — *Mitigated: Layer boundary is the most-emphasized constraint in docs/10-hermes/AGENTS.md.*
+- [ ] X MCP tools are mistaken for permission to automate engagement. — *Mitigated: Phase 1 is draft-only; Barresider is Phase 3+ scope explicitly.*
 
 ### Human Decisions Required
 
-- [x] âœ… Final public tone. â€” Locked in docs/10-hermes/AGENTS.md Brand and Voice Rules.
-- [x] âœ… Final donation language. â€” Locked in docs/10-hermes/AGENTS.md Risk Rules.
-- [x] âœ… Final `TROLL` policy. â€” Locked in docs/10-hermes/AGENTS.md TROLL Mode section.
-- [ ] Human owner for escalations. â€” Not yet named. Required before Phase 4 (autonomous publishing).
+- [x] ✅ Final public tone. — Locked in docs/10-hermes/AGENTS.md Brand and Voice Rules.
+- [x] ✅ Final donation language. — Locked in docs/10-hermes/AGENTS.md Risk Rules.
+- [x] ✅ Final `TROLL` policy. — Locked in docs/10-hermes/AGENTS.md TROLL Mode section.
+- [ ] Human owner for escalations. — Not yet named. Required before Phase 4 (autonomous publishing).
 
 ## Phase 1: Hermes Profile and Manual-Review Drafting
 
 ### Deliverables
 
-- [x] âœ… Create dedicated Hermes profile for `newshow.biz`. â€” *docs/10-hermes/hermes-config.example.yaml complete with plugin activation block, gateway config, and personalities. `future implementation package metadata` registers vault and gateway plugins as entry-points. Install: `pip install -e ".[telegram,anthropic]"` then `hermes plugins enable newshowbiz-vault && hermes plugins enable newshowbiz-gateway`. Profile copy: `mkdir -p ~/.hermes/profiles/new-showbiz && cp docs/10-hermes/hermes-config.example.yaml ~/.hermes/profiles/new-showbiz/config.yaml && cp docs/10-hermes/SOUL.md ~/.hermes/profiles/new-showbiz/docs/10-hermes/SOUL.md`. Updated 2026-05-21.*
-- [x] âœ… Write profile-scoped `docs/10-hermes/SOUL.md`. â€” *Written 2026-05-20. At `New_Show_Bot/docs/10-hermes/SOUL.md` and `no-hay-banda/docs/docs/10-hermes/SOUL.md`.*
-- [x] âœ… Write project `docs/10-hermes/AGENTS.md`. â€” *Complete with three-module architecture, Agent Activation Protocol, Task-to-Agent Routing Table, persona overlay registration, and full brand/escalation rules. Reformatted 2026-05-21.*
-- [x] âœ… Define initial skills for content drafting, X publishing, and escalation. â€” *`content-draft-from-movie-data`, `x-publish-with-receipt`, `escalation-record-create` written 2026-05-21. Campaign planning and reporting skills remain.*
+- [x] ✅ Create dedicated Hermes profile for `newshow.biz`. — *Profile `newshowbiz` deployed at `~/.hermes/profiles/newshowbiz/` on 2026-06-01. Includes SOUL.md, AGENTS.md, full MCP servers block (x-mcp-read enabled, x-mcp-write disabled, twitter-mcp enabled, social-mcp disabled), toolsets, and Telegram gateway config. Reference: `docs/10-hermes/hermes-config.example.yaml`.*
+- [x] ✅ Configure X MCP servers. — *All four candidates deployed: Barresider/x-mcp (primary, read-only now), microsoft/playwright-mcp (fallback, inherited from global), miles0sage/twitter-mcp (experimental, enabled), kitadmin01/social_mcp (reference, disabled). Engagement tools excluded from all entries. Write path disabled until Phase 3 gates pass. 2026-06-01.*
+- [x] ✅ Write profile-scoped `docs/10-hermes/SOUL.md`. — *Written 2026-05-20.*
+- [x] ✅ Write project `docs/10-hermes/AGENTS.md`. — *Complete with three-module architecture, Agent Activation Protocol, Task-to-Agent Routing Table, persona overlay registration, and full brand/escalation rules.*
+- [x] ✅ Define initial skills for content drafting, X publishing, and escalation. — *`content-draft-from-movie-data`, `x-publish-with-receipt`, `escalation-record-create` written 2026-05-21. Registered in skills/_index.md 2026-06-01.*
 - [ ] Define `PersonaRegistry`.
 - [ ] Define `TaskRouter`.
 - [ ] Define `ContentJob`, `EngagementJob`, `EscalationRecord`, and `PerformanceSnapshot` schemas.

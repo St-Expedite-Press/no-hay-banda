@@ -1,4 +1,4 @@
-﻿---
+---
 name: ledger-update
 description: |
   Add a new entry to or update an existing entry in any canonical vault ledger.

@@ -1,4 +1,4 @@
-﻿---
+---
 title: Improvement Queue
 record_type: queue
 status: canonical

@@ -1,4 +1,4 @@
-﻿---
+---
 name: record-create
 description: |
   Create a new canonical record file for any record type (source, work, publication, outlet,

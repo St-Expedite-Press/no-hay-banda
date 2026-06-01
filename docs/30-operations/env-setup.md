@@ -20,10 +20,13 @@ flowchart TD
 | Variable | Required | Purpose |
 |---|---:|---|
 | `OPENAI_API_KEY` | yes | Phase 0-1 OpenAI/Codex generation |
-| `INGEST_ENABLED` | yes | Global X read kill switch |
-| `SCWEET_AUTH_TOKEN` | if X reads enabled | Throwaway read account cookie |
-| `SCWEET_CT0` | if X reads enabled | Throwaway read account CSRF cookie |
-| `SCWEET_ACCOUNT_USERNAME` | if X reads enabled | Audit identity for read account |
+| `INGEST_ENABLED` | yes | Global X read kill switch — set `false` to halt all X reads |
+| `TWITTER_USERNAME` | if x-mcp enabled | X account handle (without @) or email — use a dedicated account |
+| `TWITTER_PASSWORD` | if x-mcp enabled | X account password for Barresider/x-mcp |
+| `X_AUTH_DIR` | if x-mcp enabled | Absolute path for Barresider session persistence |
+| `SCWEET_AUTH_TOKEN` | if Scweet reads enabled | Alternative cookie-based read path |
+| `SCWEET_CT0` | if Scweet reads enabled | Throwaway read account CSRF cookie |
+| `SCWEET_ACCOUNT_USERNAME` | if Scweet reads enabled | Audit identity for read account |
 | `DRAFTS_BASE_DIR` | yes | Draft output base in future implementation |
 | `LOG_DIR` | yes | Structured logs and trace IDs |
 | `LOG_LEVEL` | yes | Runtime logging level |

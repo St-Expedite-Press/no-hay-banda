@@ -1,4 +1,4 @@
-﻿---
+---
 title: DiffAgent
 record_type: agent-spec
 status: canonical

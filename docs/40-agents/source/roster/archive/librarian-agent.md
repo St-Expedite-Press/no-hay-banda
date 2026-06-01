@@ -1,4 +1,4 @@
-﻿---
+---
 title: LibrarianAgent
 record_type: agent-spec
 status: canonical

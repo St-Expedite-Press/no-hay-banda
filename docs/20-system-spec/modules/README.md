@@ -1,4 +1,4 @@
-﻿---
+---
 title: Module Architecture
 record_type: architecture-overview
 status: canonical
@@ -16,7 +16,7 @@ Hermes provides: AIAgent run loop, prompt assembly (docs/10-hermes/SOUL.md + doc
 
 The modules provide: domain-specific agents, data schemas, channel integrations, and user-facing oversight.
 
-## Module 1 â€” Agent System (`agents/`)
+## Module 1 — Agent System (`agents/`)
 
 The New Showbiz marketing agent stack.
 
@@ -32,7 +32,7 @@ The New Showbiz marketing agent stack.
 
 See [`agents/_index.md`](../agents/_index.md) for the full agent system index.
 
-## Module 2 â€” Telegram (`modules/telegram/`)
+## Module 2 — Telegram (`modules/telegram/`)
 
 Human-in-the-loop oversight through Telegram.
 
@@ -48,7 +48,7 @@ Human-in-the-loop oversight through Telegram.
 
 See [`telegram/README.md`](telegram/README.md).
 
-## Module 3 â€” Vault (`modules/vault/`)
+## Module 3 — Vault (`modules/vault/`)
 
 Web research, movie data extraction, source records, and knowledge persistence.
 
@@ -68,20 +68,20 @@ See [`vault/README.md`](vault/README.md).
 
 ```
 Hermes (runtime, orchestrator, cron, memory, sessions)
-â”œâ”€â”€ agents/                        â† marketing agent system
-â”‚   â””â”€â”€ docs/20-system-spec/  â† operator docs
-â”œâ”€â”€ modules/telegram/              â† oversight and human-in-loop
-â””â”€â”€ modules/vault/                 â† knowledge and research
+├── agents/                        ← marketing agent system
+│   └── docs/20-system-spec/  ← operator docs
+├── modules/telegram/              ← oversight and human-in-loop
+└── modules/vault/                 ← knowledge and research
 ```
 
 ### Boundary contracts
 
 | Boundary | How it crosses |
 |---|---|
-| Agent system â†’ Vault | FetchAgent / MovieResearchAgent call vault toolset read tools |
-| Agent system â†’ Telegram | EscalationAgent / ReportAgent deliver output via Hermes gateway |
-| Telegram â†’ Agent system | Approval signals arrive as operator commands through the gateway |
-| Vault â†’ Agent system | Research memos and source records are passed as file paths in ContentJob metadata |
+| Agent system → Vault | FetchAgent / MovieResearchAgent call vault toolset read tools |
+| Agent system → Telegram | EscalationAgent / ReportAgent deliver output via Hermes gateway |
+| Telegram → Agent system | Approval signals arrive as operator commands through the gateway |
+| Vault → Agent system | Research memos and source records are passed as file paths in ContentJob metadata |
 
 No module writes directly to another module's stores. Handoffs are always through agent output fields and the shared status vocabulary (`CLEAR`, `BLOCKED`, `PARTIAL`, `COMPLETE`).
 

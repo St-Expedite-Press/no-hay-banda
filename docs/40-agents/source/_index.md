@@ -1,4 +1,4 @@
-﻿---
+---
 title: Agent System Index
 record_type: agent-index
 status: canonical
@@ -6,59 +6,61 @@ canonical_path: agents/_index.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-23
+updated: 2026-06-01
 ---
 
 # Agent System Index
 
-Canonical routing surface for the live agent system outside `infernalis/`.
+Canonical routing surface for the New Showbiz agent system.
 
 ## Entry Points
 
-- [Orchestrator](orchestrator.md) - central router for vault, research, ingest, maintenance, and composition tasks
-- [Agent Roster](roster/_index.md) - specialist and subagent directory
+- [Orchestrator](orchestrator.md) — central router for content creation, engagement triage, metrics, and self-improvement tasks
+- [Agent Roster](roster/_index.md) — specialist and subagent directory
 
 ## Shared Contract
 
 All agents in this system must:
 
-1. Obey the root session loop in [`legacy Claude context file`](../legacy Claude context file).
-2. Route through [`infernalis/_Index/MASTER_INDEX.md`](../infernalis/_Index/MASTER_INDEX.md) before broad vault reading.
-3. Use the minimum relevant section index, ledger, queue, report, summary, or local `_index.md` before opening content notes.
-4. Respect authored writing as human-owned unless the user explicitly asks for revision.
-5. Update changed control surfaces in the same pass when they materially drift.
-6. Prefer canonical records, ledgers, and indexes over ad hoc narrative notes when establishing machine truth.
-7. At subtask or task close: if a reusable procedure was executed that has no entry in `agents/skills/_index.md`, append a `skill-proposal` to `agents/queues/improvement-queue.md`.
-8. At subtask or task close: if a gap or ambiguity in your own spec materially complicated the task, append a targeted `agent-refinement` proposal to `agents/queues/improvement-queue.md`.
+1. Read their own spec file in full before proceeding with any task.
+2. Use the minimum context needed — pass only task-specific state to workers.
+3. Respect the prompt placement contract in `docs/10-hermes/profile-and-prompt-strategy.md`.
+4. Preserve source evidence for all factual and score-based claims.
+5. Return structured outputs with status, claims, artifacts, and blockers.
+6. Update affected indexes and control surfaces in the same pass as substantive changes.
+7. At task close: if a reusable procedure was executed that has no entry in `agents/skills/_index.md`, append a `skill-proposal` to `agents/queues/improvement-queue.md`.
+8. At task close: if a gap in your own spec materially complicated the task, append a targeted `agent-refinement` proposal to `agents/queues/improvement-queue.md`.
 
 ## Pipeline Families
 
+New Showbiz operator pipelines:
+
 - Simple task fast path: `User / Interrogator -> Orchestrator -> ExecuteAgent / one specialist -> ReportAgent`
-- Vault query: `Interrogator -> Orchestrator -> QueryAgent -> ReportAgent`
-- Source ingest: `Interrogator -> Orchestrator -> ValidateAgent -> FetchAgent -> TransformAgent -> IngestAgent -> ReportAgent`
-- Structural maintenance: `Interrogator -> Orchestrator -> QueryAgent / LintAgent / DiffAgent / ConceptAgent -> ReportAgent`
-- Python standards review: `Interrogator -> Orchestrator -> PythonStandardsAgent -> ReportAgent`
-- Historical research: `Interrogator -> Orchestrator -> ResearchPageAgent -> HistorianAgent -> ReportAgent`
-- Generative composition: `Interrogator -> Orchestrator -> ComposerAgent -> ReportAgent`
-- Translation: `Interrogator -> Orchestrator -> ComposerTranslatorAgent -> ReportAgent`
-- Reusable workflow execution: `Interrogator -> Orchestrator -> ExecuteAgent -> ReportAgent`
+- Content creation: `Interrogator -> Orchestrator -> MovieResearchAgent -> ContentAgent -> ValidateAgent -> PublishAgent -> ReportAgent`
+- Scheduled publishing: `Cron -> Orchestrator -> ContentAgent -> ValidateAgent -> PublishAgent -> MetricsAgent`
+- Engagement triage: `Orchestrator -> EngagementAgent -> EscalationAgent or MetricsAgent`
+- Factual dispute: `EngagementAgent -> EscalationAgent -> MovieResearchAgent -> human review -> ReportAgent`
+- Metrics reporting: `Orchestrator -> MetricsAgent -> AnalysisAgent -> ReportAgent`
+- Python standards review: `Orchestrator -> PythonStandardsAgent -> ReportAgent`
+- Generative composition: `Orchestrator -> ComposerAgent -> ReportAgent`
 - Self-improvement: `Any Agent -> improvement-queue -> Orchestrator -> SkillBuildingAgent -> ReportAgent`
 
 ## Shared Status Vocabulary
 
-- `CLEAR` - safe to proceed
-- `BLOCKED` - do not continue without user input or policy change
-- `PARTIAL` - usable but incomplete
-- `INSUFFICIENT` - evidence does not support a claim yet
-- `NO BASELINE` - comparison requested without a prior state
-- `COMPLETE` - taskable handoff returned with no blocker
+- `CLEAR` — safe to proceed
+- `BLOCKED` — do not continue without user input or policy change
+- `PARTIAL` — usable but incomplete
+- `INSUFFICIENT` — evidence does not support a claim yet
+- `NO BASELINE` — comparison requested without a prior state
+- `COMPLETE` — taskable handoff returned with no blocker
 
 ## Tool Routing
 
-- Vault-local reading and editing: local file tools first
-- Lightweight inspection and automation: shell second
-- External verification or acquisition: web or connector tools only when needed
-- Drive or other remote systems: treat as external sources, then ingest into canonical vault surfaces if the task calls for permanence
+- New Showbiz source data: `newshowbiz_read` toolset
+- X reads: `mcp-x-mcp-read` toolset (Barresider) or `mcp-twitter-mcp` (experimental)
+- X writes: `mcp-x-mcp-write` toolset — disabled until Phase 3
+- Browser QA: `playwright` MCP (global) or `mcp-twitter-mcp` fallback
+- Escalation records: `newshowbiz_escalation` toolset
+- Metrics and reporting: `newshowbiz_metrics_read`, `newshowbiz_reporting` toolsets
 
-Last updated: 2026-05-23 - added Simple Task Fast Path and PythonStandardsAgent routing.
-
+Last updated: 2026-06-01 — rewritten for New Showbiz operator; removed stale vault OS references.

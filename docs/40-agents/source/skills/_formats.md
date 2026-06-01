@@ -1,4 +1,4 @@
-﻿---
+---
 title: Skill Format Reference
 record_type: format-reference
 status: canonical

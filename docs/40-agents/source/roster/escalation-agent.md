@@ -1,4 +1,4 @@
-﻿---
+---
 title: EscalationAgent
 record_type: agent-spec
 status: canonical

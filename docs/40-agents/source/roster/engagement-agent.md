@@ -1,4 +1,4 @@
-﻿---
+---
 title: EngagementAgent
 record_type: agent-spec
 status: canonical

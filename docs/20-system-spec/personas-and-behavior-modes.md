@@ -1,4 +1,4 @@
-﻿# Personas and Behavior Modes
+# Personas and Behavior Modes
 
 ## One Public Voice
 

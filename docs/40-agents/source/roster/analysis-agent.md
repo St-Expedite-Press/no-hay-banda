@@ -1,4 +1,4 @@
-﻿---
+---
 title: AnalysisAgent
 record_type: agent-spec
 status: canonical
