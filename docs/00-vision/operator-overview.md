@@ -14,15 +14,17 @@ The marketing operator is an autonomous agent system — built on a customized H
 
 ## System State as of 2026-06-05
 
-The operator is deployed and partially operational on EC2 (i-05451add3165b57ff). The Hermes instance is live. The 29-agent three-tier architecture is in place. The content pipeline — from movie data to ContentJob review queue — is implemented. What remains to complete Phase 1 is: one X authentication call, then the first human-supervised content production run.
+The operator is deployed and operational on EC2 (i-05451add3165b57ff). Oneshot mode is confirmed working. The content pipeline has been exercised: DeepSeek V4 Pro was handed film data, read the template library, and produced on-brand drafts that passed Kakusu Protocol constraints. Two bootstrapped ContentJob JSON files sit in the review queue awaiting human decisions. What remains to complete Phase 1 is X authentication, followed by a production content run with fresh research.
 
 | Layer | State |
 |---|---|
 | Hermes runtime | **Live** — v0.15.1, DeepSeek V4 Pro/Flash via OpenRouter |
+| Oneshot mode (`hermes -p newshowbiz --yolo -z`) | **Confirmed working** — profile config bug found and fixed |
 | Three-tier agent system | **Live** — 29 agents (Tier 0/1/2), all tier declarations in place |
 | Anti-fabrication enforcement | **Live** — present at SOUL, contract, and every agent file |
-| Content pipeline | **Live** — templates → draft → ContentJob store → review queue |
-| Human review workflow | **Live** — procedure doc + review-decision-record skill |
+| Content pipeline | **Confirmed working** — templates read, drafts produced, ContentJob store populated |
+| First content run (DeepSeek output) | **Complete** — discovery post (255 chars) and 3-post thread on Racial & Ethnic (9.6 score) |
+| Human review workflow | **Live** — procedure doc + review-decision-record skill; 2 drafts pending review |
 | X read tools (twitter-mcp) | **Partially live** — public profile lookup confirmed; search requires auth |
 | X read tools (x-mcp-read) | **Built, auth pending** — Barresider local fork patched and compiled; login not yet called |
 | X write tools | **Configured, disabled** — Phase 3 gate enforced at config level |
@@ -78,6 +80,8 @@ All of these have been grafted onto the Hermes base. The patches to Barresider's
 
 This framing also has a practical implication: **Hermes updates require care**. A `hermes update` could change the config schema (already happened: v24 → v25), alter how personas are loaded, or break assumptions baked into the SOUL.md system. Updates should be tested in isolation before applying to the live operator session.
 
+One instance of this already occurred. Hermes in interactive mode reads the global config and therefore picked up the model definition from there. Oneshot mode (`-z`) reads only the profile config. Because `~/.hermes/profiles/newshowbiz/config.yaml` had no `model` block, oneshot silently returned empty responses. The fix was adding `model.default: deepseek/deepseek-v4-pro` and `delegation.model: deepseek/deepseek-v4-flash` directly to the profile config. The lesson is broader than this one bug: **profile configs must be self-contained**. Any operator running `hermes -p <profile> -z` should audit their profile config independently of the global config, because the two are not merged in oneshot mode.
+
 ---
 
 ## What New Showbiz Is Actually Selling
@@ -113,23 +117,25 @@ These are not preferences. They are constraints baked into the system at the age
 
 ## Assessment: Where the Project Stands
 
-**The infrastructure work is done.** A hacker building a governed social agent from scratch would spend most of Phase 1 on exactly what has been completed: installing the runtime, building the agent hierarchy, wiring the MCP stack, implementing the content store, writing the templates, and establishing the review workflow. All of that is done.
+**The content pipeline works.** This is no longer a theoretical claim. DeepSeek V4 Pro, operating through the newshowbiz profile in oneshot mode, read the template library without prompting, applied the correct structural constraints, enforced Kakusu Protocol character limits and term prohibitions, and produced drafts that are on-brand. The discovery post came in at 255 characters. The thread-breakdown on Racial and Ethnic representation ran three posts against a 9.6 score. The model verified character counts before returning. It did not use loaded advocacy language. It framed scores as analytical observations: "The multiverse is not a metaphor for diversity; it is built from it." That is the film-critic register working as designed.
 
-**The Kakusu Protocol is the creative breakthrough.** Most social AI systems fail on the content quality problem: posts are either too cautious (bland, disengaging) or too aggressive (politically framed, alienating). The Kakusu Protocol sidesteps this entirely by shifting the register to film criticism. A film critic can discuss representation with analytical precision and aesthetic appreciation without advocacy signaling. That framing is unusual and it is the right call for this audience.
+**The model block bug is a good example of why the hacked-instance framing matters.** Interactive mode worked for weeks. Oneshot mode silently failed. The root cause was non-obvious and required reading the Hermes source to understand how profile configs are loaded in `-z` mode versus interactive mode. This is not a Hermes bug — it is a consequence of running a customized deployment where interactive and oneshot modes have different config resolution paths. Anyone operating this system should treat the profile config as fully independent of the global config and verify that both modes work after any config change.
 
-**The remaining Phase 1 work is execution, not architecture.** One X authentication call, then a first supervised content run: research 3–5 films, generate drafts using the template library, run them through human review, build a 7-day approved queue. The system supports all of that today.
+**The Kakusu Protocol creative decision is validated.** The concern going in was whether an LLM instructed to avoid advocacy framing would produce flat, hedged copy as a result. It did not. DeepSeek reached naturally for film-structural analysis — cinematic architecture, directorial choices, narrative function — when the templates prohibited the loaded terms. This is not a constraint working around quality; it is a constraint producing quality. The protocol exists for brand safety reasons, but it turns out to be editorially correct as well.
 
-**Phase 3 (autonomous publish) is the real gate.** Everything before Phase 3 is governed by a human with final say on every post. Phase 3 introduces the policy engine and receipt store that allow the system to publish without asking. That is where the risk/reward calculus changes and where the Telegram oversight gate becomes mandatory.
+**The remaining gap is not "does the system work" — it is "does the output survive human review at production volume."** Two bootstrapped drafts are in the queue. They were produced from film data handed directly to the agent, not from the agent doing its own research. A full production cycle means the agent finds the film, pulls the score data, applies the template, and produces a draft that earns a human approval — not because the human is being lenient, but because the content is actually ready to post. That cycle has not run yet. When it runs three to five times in sequence, and the reviewer is making real approve/reject decisions rather than bootstrapping examples, that is when Phase 1 is genuinely complete.
 
 **The operator has no audience yet.** The X account (`@new_show_biz`) exists and has some following. Growing a relevant audience for a representation-scored movie catalog requires a consistent content strategy over weeks and months. The operator is ready to execute that strategy. The decisions about which films to lead with, what cadence to run, and what CTA to emphasize are human decisions that have not yet been made.
+
+**Phase 3 (autonomous publish) is the real gate.** Everything before Phase 3 is governed by a human with final say on every post. Phase 3 introduces the policy engine and receipt store that allow the system to publish without asking. That is where the risk/reward calculus changes and where the Telegram oversight gate becomes mandatory.
 
 ---
 
 ## Next Actions (Phase 1 Completion)
 
-1. **X authentication** — `hermes -p newshowbiz`, invoke the `login` tool, verify `x-auth/twitter.json` written
-2. **Human decisions** — campaign priorities, post cadence (X vs Instagram split), CTA preference (browse / signup / donate), review SLA
-3. **First content run** — 3–5 films researched, drafted, reviewed, approved
+1. **X authentication** — invoke the `login` tool in interactive mode (`hermes -p newshowbiz`), verify `x-auth/twitter.json` is written, confirm x-mcp-read search works
+2. **Production content run** — agent researches 3–5 films independently (not from data handed to it), produces drafts using the template library, all drafts go through real human review decisions
+3. **Human decisions** — campaign priorities, post cadence (X vs Instagram split), CTA preference (browse / signup / donate), review SLA
 4. **Build 7-day queue** — 14–21 approved posts across X and Instagram
 5. **Phase 1 exit report** — `report-agent` over store/ → commit to `docs/50-rollout/phase-1-exit-report.md`
 

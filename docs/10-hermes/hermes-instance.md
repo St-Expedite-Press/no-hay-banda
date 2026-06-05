@@ -355,7 +355,7 @@ hermes -p newshowbiz
 | `store/rejected/` | Rejected ContentJobs |
 | `store/review-log.jsonl` | Audit trail (one JSON line per decision) |
 | `skills/` | Global bundled skills + 6 custom New Showbiz skills + template library |
-| `sessions/` | Conversation session history (3 sessions) |
+| `sessions/` | Conversation session history (16 sessions) |
 | `memories/` | Agent memory store (currently empty) |
 | `cron/` | Scheduled job state |
 | `logs/` | Session and MCP logs |
@@ -370,6 +370,22 @@ hermes -p newshowbiz
 | `social-mcp` | — | **Disabled** | Reference only — `engage_twitter` permanently excluded |
 
 **Active toolsets:** `hermes-cli`, `mcp-x-mcp-read`, `mcp-twitter-mcp`
+
+### Profile model configuration
+
+**Critical:** The profile config must define its own `model` block. Hermes oneshot mode (`-z`) reads only the profile's `config.yaml` — it does not merge the global config. Without a local model definition, oneshot silently returns an empty response and exits with code 1.
+
+```yaml
+model:
+  default: deepseek/deepseek-v4-pro
+  provider: openrouter
+
+delegation:
+  model: deepseek/deepseek-v4-flash
+  provider: openrouter
+```
+
+Interactive mode (`hermes -p newshowbiz`) is not affected — it merges global config. Only oneshot mode hits this path. This is a Hermes architectural behavior, not a bug that will be fixed upstream.
 
 ### Profile personalities
 
@@ -457,8 +473,14 @@ Not New Showbiz specific. Available to all agents in this profile:
 ## 9. Session Commands
 
 ```bash
-# Start a newshowbiz operator session
+# Start a newshowbiz operator session (interactive)
 hermes -p newshowbiz
+
+# Run a single task and return only the final response (oneshot mode)
+hermes -p newshowbiz --yolo -z "your task here"
+
+# Example: draft content from movie data
+hermes -p newshowbiz --yolo -z "Draft an X post for [film] using the template at ~/.hermes/profiles/newshowbiz/skills/templates/x/original-discovery.md"
 
 # Start a standard global session (no profile)
 hermes
@@ -481,6 +503,8 @@ cat ~/.hermes/profiles/newshowbiz/store/review-log.jsonl
 # Verify x-auth session exists
 ls ~/.hermes/profiles/newshowbiz/x-auth/
 ```
+
+**Oneshot mode note:** `--yolo` auto-approves all tool calls and shell hooks (required for non-interactive use). Without it, file reads and skill invocations stall waiting for approval. Oneshot requires the profile config to have a `model` block — see Profile model configuration above.
 
 ---
 

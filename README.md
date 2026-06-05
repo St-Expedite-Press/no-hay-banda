@@ -1,8 +1,8 @@
 # New Showbiz Marketing Operator
 
-**What this is:** A deployed autonomous marketing operator for [newshow.biz](https://newshow.biz) built on a heavily customized ("hacked") instance of Hermes Agent v0.15.1. The system uses a 29-agent, three-tier architecture to research films from the New Showbiz catalog, generate governed social content, route it through human review, and (in Phase 3) publish to X and Instagram. It is live on EC2. This repository is the documentation package, canonical spec, and operational reference for that system.
+**What this is:** A deployed autonomous marketing operator for [newshow.biz](https://newshow.biz) built on a heavily customized ("hacked") instance of Hermes Agent v0.15.1. The system uses a 29-agent, three-tier architecture to research films from the New Showbiz catalog, generate governed social content, route it through human review, and (in Phase 3) publish to X and Instagram. It is live on EC2 and has produced content. This repository is the documentation package, canonical spec, and operational reference for that system.
 
-**This is not a spec-for-something-to-build.** The agent system is deployed. The Hermes instance is running. The newshowbiz profile, all 29 agents, the template library, the ContentJob store, and the MCP stack are live. This repo documents what exists and what's next.
+**Status:** Phase 1 operational. Content pipeline confirmed working. X authentication pending.
 
 ---
 
@@ -21,8 +21,10 @@
 | **Active MCP servers** | x-mcp-read (Barresider fork), twitter-mcp, playwright, github |
 | **Custom skills** | 6 New Showbiz domain skills + 8-template library |
 | **Content pipeline** | Flat-file ContentJob store (Phase 1) |
-| **Phase** | Phase 1 (~80% complete) |
-| **Current phase gate** | X auth retry → first content run → 7-day approved queue |
+| **Sessions recorded** | 16 (including debugging sessions) |
+| **Drafts in review queue** | 2 (awaiting first human review decision) |
+| **Phase** | Phase 1 (~90% complete) |
+| **Phase gate** | X auth → production content run → 7-day approved queue |
 
 ---
 
@@ -58,29 +60,26 @@ Stock Hermes has a flat persona system — one SOUL.md, one session, worker agen
 | **1** | Pipeline Agents | Can spawn Tier 2; cannot spawn other Tier 1 | 7 |
 | **2** | Leaf Subagents | Cannot delegate further | 21 |
 
-The 30 persona files in `~/.hermes/personas/` map out this hierarchy. Each agent file opens with a tier declaration so the agent understands its authority limits before receiving any task.
+Each agent file opens with a tier declaration so the agent understands its authority limits before receiving any task.
 
 ### 2. Anti-Fabrication Enforcement
 
-DeepSeek V4 Flash (the subagent model) has a documented failure mode: it may substitute plausible-sounding fabricated output when a tool call fails, rather than reporting the failure. This is addressed at every layer of the system:
+DeepSeek V4 Flash (the subagent model) has a documented failure mode: it may substitute plausible-sounding fabricated output when a tool call fails, rather than reporting the failure. Addressed at every layer:
 
-- `~/.hermes/SOUL.md` — operational rule: "Anti-fabrication (critical): You are running on DeepSeek..."
-- `~/.hermes/personas/_shared-contract.md` — Section 4: named DeepSeek failure mode, explicit BLOCKED reporting rules
-- All 28 agent persona files — "If a tool call, file read, or API call fails, report the blocker as BLOCKED..."
-- `~/.hermes/prefill_messages.json` — few-shot priming demonstrating a correct BLOCKED response in a Tier 0 → Tier 1 → Tier 2 delegation cycle
+- `~/.hermes/SOUL.md` — global operational rule against fabrication
+- `~/.hermes/personas/_shared-contract.md` — Section 4: named DeepSeek failure mode, BLOCKED reporting rules
+- All 28 agent persona files — explicit anti-fabrication clause
+- `~/.hermes/prefill_messages.json` — few-shot priming demonstrating correct BLOCKED response
 
 ### 3. DeepSeek Model Split
 
-Stock Hermes uses one model for all turns. This deployment routes:
-- Orchestrator/session turns → `deepseek/deepseek-v4-pro` (higher reasoning, higher cost)
-- Delegated subagent calls → `deepseek/deepseek-v4-flash` (fast, cheap, acceptable quality for leaf tasks)
+- Orchestrator/session turns → `deepseek/deepseek-v4-pro`
+- Delegated subagent calls → `deepseek/deepseek-v4-flash`
 - Any failure → `anthropic/claude-sonnet-4` via OpenRouter fallback
 
 ### 4. Barresider Local Fork
 
-The upstream `@barresider/x-mcp` package has bugs that prevent login from EC2 IP ranges. The npx cache is ephemeral — patches applied once will be lost on cache clear. Resolution: a permanent git clone at `~/.hermes/mcp/x-mcp/` with patches applied to the TypeScript source and rebuilt.
-
-Five patches applied to `src/behaviors/login.ts`:
+Five patches applied to `src/behaviors/login.ts`, rebuilt to `dist/`:
 
 | Bug | Fix |
 |---|---|
@@ -90,19 +89,37 @@ Five patches applied to `src/behaviors/login.ts`:
 | Auth dir not created | Added `fs.mkdirSync(authDir, { recursive: true })` before first write |
 | stdio pollution | All `console.log` → `console.error` (stdout is the MCP JSON-RPC channel) |
 
-Profile config uses `node /home/ec2-user/.hermes/mcp/x-mcp/dist/mcp.js` — npx never re-downloads the upstream package.
+Profile config uses `node /home/ec2-user/.hermes/mcp/x-mcp/dist/mcp.js` — npx never re-downloads the upstream unpatched package.
 
-### 5. ContentJob Flat-File Store
+### 5. Profile Must Define Its Own Model Block
 
-Stock Hermes has no content persistence. This deployment adds a domain-specific store at `~/.hermes/profiles/newshowbiz/store/` with a human-readable file layout, three write skills, and an append-only audit trail.
+**Critical operational finding (2026-06-05):** Hermes oneshot mode (`hermes -p newshowbiz -z`) reads only the profile's `config.yaml` — it does not merge the global config. Without a `model` block in the profile config, oneshot silently returns an empty response and exits with code 1 (`hermes -z: no final response was produced`). Interactive mode is not affected because it merges both configs.
 
-### 6. Content Template Library
+Fix applied: the profile config now includes:
 
-8 platform-specific templates at `~/.hermes/profiles/newshowbiz/skills/templates/` (5 X, 3 Instagram). Each template encodes objective, character limits, hashtag ceilings, structural skeleton, Kakusu Protocol enforcement, and a prohibition list. The `content-draft-from-movie-data` skill selects a template before drafting.
+```yaml
+model:
+  default: deepseek/deepseek-v4-pro
+  provider: openrouter
 
-### 7. Kakusu Protocol (Brand Rule)
+delegation:
+  model: deepseek/deepseek-v4-flash
+  provider: openrouter
+```
 
-All content agents operate under a brand constraint: frame representation analysis as cinematic analysis, not advocacy. Loaded vocabulary is prohibited across all templates and agent files: "woke," "DEI," "subversive," "progressive," "political activism." Analysis is presented as film criticism.
+This is a Hermes architectural behavior, not a fixable bug. Any profile intended for oneshot use must be self-contained.
+
+### 6. ContentJob Flat-File Store
+
+Domain-specific store at `~/.hermes/profiles/newshowbiz/store/` with human-readable file layout, three write skills, and an append-only audit trail. Currently holds 2 bootstrapped draft ContentJobs pending human review.
+
+### 7. Content Template Library
+
+8 platform-specific templates at `~/.hermes/profiles/newshowbiz/skills/templates/` (5 X, 3 Instagram). Confirmed working: DeepSeek V4 Pro reads templates correctly, enforces Kakusu Protocol, respects character limits, and produces on-brand content.
+
+### 8. Kakusu Protocol (Brand Rule)
+
+All content agents operate under a brand constraint: frame representation analysis as cinematic analysis, not advocacy. Prohibited vocabulary across all templates and agent files: "woke," "DEI," "subversive," "progressive," "political activism." Confirmed working in live content run.
 
 ---
 
@@ -110,7 +127,7 @@ All content agents operate under a brand constraint: frame representation analys
 
 ### Tier 0 — Session Director
 
-**`~/.hermes/SOUL.md`** is loaded as the first stable prompt block in every session. It contains: the three-tier architecture table, quick routing reference by task type, 7-step workflow, authorized pipeline list, and anti-fabrication rules.
+**`~/.hermes/SOUL.md`** is loaded as the first stable prompt block in every session. Contains: three-tier architecture table, routing reference by task type, 7-step workflow, authorized pipeline list, anti-fabrication rules.
 
 ### Tier 1 — Pipeline Agents (7)
 
@@ -130,24 +147,24 @@ analysis-agent · compose · composer-translator · diff-agent · engagement-age
 
 ### Routing Registry
 
-`~/.hermes/personas/_routing.md` — 27 canonical task types mapped to agents with tier, pipeline pattern, and authorized spawn paths. It is read by SOUL.md and the orchestrator. Callable spec: [docs/20-system-spec/task-router.md](docs/20-system-spec/task-router.md).
+`~/.hermes/personas/_routing.md` — 27 canonical task types mapped to agents with tier, pipeline pattern, and authorized spawn paths. Callable spec: [docs/20-system-spec/task-router.md](docs/20-system-spec/task-router.md).
 
 ---
 
 ## MCP Stack
 
-All X interaction uses Playwright browser automation. EC2 IP ranges receive 403s from Cloudflare on direct HTTP to x.com — raw API/HTTP calls to X will fail.
+EC2 IP ranges return 403 from Cloudflare on direct HTTP to x.com. All X interaction uses Playwright browser automation.
 
 | Server | Location | Status | Auth | Tools |
 |---|---|---|---|---|
-| `x-mcp-read` | `~/.hermes/mcp/x-mcp/` (Barresider fork) | **Enabled** | X credentials | login, search_twitter, scrape_trending, scrape_timeline, scrape_posts, scrape_profile, scrape_comments (7 read tools) |
+| `x-mcp-read` | `~/.hermes/mcp/x-mcp/` (Barresider fork) | **Enabled** | X credentials (pending login) | login, search_twitter, scrape_trending, scrape_timeline, scrape_posts, scrape_profile, scrape_comments (7 read tools) |
 | `x-mcp-write` | `~/.hermes/mcp/x-mcp/` (Barresider fork) | **Disabled** (Phase 3 gate) | X credentials | tweet, thread, reply_to_post, quote_tweet |
 | `twitter-mcp` | `~/.hermes/mcp/twitter-mcp/` (miles0sage) | **Enabled** | None | twitter_user (public profile only; other tools hit X login walls) |
 | `social-mcp` | `~/.hermes/mcp/social_mcp/` (kitadmin01) | **Disabled** (reference) | Google Sheets | Contains engage_twitter mass-like tool — keep disabled |
 | `playwright` | npx (global) | **Enabled** | None | Full browser automation fallback |
 | `github` | npx (global) | **Enabled** | GitHub PAT | Repo operations |
 
-Engagement tools (`like_post`, `retweet_post`, `bookmark_post`, and equivalents) are excluded from all server configs at the Hermes MCP filter level.
+Engagement tools (`like_post`, `retweet_post`, `bookmark_post`) are excluded from all server configs at the Hermes MCP filter level.
 
 ---
 
@@ -191,9 +208,55 @@ x-publish-with-receipt skill
   → writes durable receipt
 ```
 
-**ContentJob ID format:** `{ISO-date}T{HHmmss}-{4-char-hex}` (e.g., `2026-06-05T143022-a3f1`)
+**ContentJob ID format:** `{ISO-date}T{HHmmss}-{4-char-hex}` (e.g., `2026-06-05T140012-e98f`)
 
-**Risk classification:** low / medium / high / blocked — all drafts must carry one. Medium and above triggers escalation-agent review before moving to review-queue.
+**Risk classification:** low / medium / high / blocked — required on every draft. Medium and above triggers escalation-agent review before moving to review-queue.
+
+---
+
+## Running It
+
+```bash
+# Interactive session — full agent system, all MCP servers, personality overlays
+hermes -p newshowbiz
+
+# Oneshot — single task, non-interactive, returns only the final response
+hermes -p newshowbiz --yolo -z "your task here"
+
+# Example: draft content for a specific film
+hermes -p newshowbiz --yolo -z "Read the template at ~/.hermes/profiles/newshowbiz/skills/templates/x/original-discovery.md. Draft one X post for Moonlight (2016). Scores from newshow.biz: Overall 9.1, LGBTQ+ 9.8, Racial/Ethnic 9.5."
+
+# Activate a personality overlay (interactive sessions only)
+/personality x-editor
+/personality audience-researcher
+/personality brand-director
+/personality product-explainer
+/personality growth-analyst
+
+# Check what's in the review queue
+ls ~/.hermes/profiles/newshowbiz/store/review-queue/
+
+# Read the audit log
+cat ~/.hermes/profiles/newshowbiz/store/review-log.jsonl
+
+# List skills
+hermes -p newshowbiz skills list
+```
+
+**Authenticate x-mcp-read (one-time, still pending):**
+```bash
+hermes -p newshowbiz
+# In session: invoke the login tool
+# Verify: ls ~/.hermes/profiles/newshowbiz/x-auth/
+```
+
+**Rebuild Barresider after source edits:**
+```bash
+cd ~/.hermes/mcp/x-mcp
+# edit src/behaviors/login.ts
+npm run build
+hermes gateway restart   # if gateway is running
+```
 
 ---
 
@@ -204,7 +267,7 @@ x-publish-with-receipt skill
 ```
 docs/
   00-vision/
-    operator-overview.md              ← Product thesis and system assessment
+    operator-overview.md              ← Product thesis and live system assessment
     whitepaper.md                     ← Strategic argument for a governed operator
   10-hermes/
     hermes-instance.md                ← Full technical reference for the hacked instance ★
@@ -257,15 +320,10 @@ docs/
   prefill_messages.json               ← Delegation cycle priming (4 messages)
   state.db                            ← 15 MB SQLite (Hermes internal state)
   personas/                           ← 30 files (28 agents + 2 contracts)
-    SOUL.md                           ← Session Director persona (symlink or copy)
     _shared-contract.md               ← Governing contract for all agents
     _routing.md                       ← Task-to-agent routing registry
-    orchestrator.md                   ← Tier 1
-    content-agent.md                  ← Tier 1
-    publish-agent.md                  ← Tier 1
-    metrics-agent.md                  ← Tier 1
-    fetch-agent.md                    ← Tier 1
-    distill-agent.md                  ← Tier 1
+    orchestrator.md / content-agent.md / publish-agent.md   ← Tier 1
+    fetch-agent.md / metrics-agent.md / distill-agent.md    ← Tier 1
     project-manager.md                ← Tier 1
     [21 Tier 2 agent files]
   mcp/
@@ -278,17 +336,17 @@ docs/
       server.py
     social_mcp/                       ← kitadmin01 fork (293 MB, disabled)
   profiles/newshowbiz/
-    config.yaml                       ← Profile MCP, toolsets, personalities
+    config.yaml                       ← Profile MCP, toolsets, personalities, model block
     SOUL.md                           ← Marketing operator identity
     .env                              ← TWITTER_USERNAME, TWITTER_PASSWORD, OPENROUTER_API_KEY
-    x-auth/                           ← Barresider session (twitter.json after login)
+    x-auth/                           ← Barresider session (twitter.json after login — PENDING)
     store/
-      jobs/                           ← ContentJob JSON files (canonical)
-      escalations/                    ← EscalationRecord JSON files
-      review-queue/                   ← Drafts pending human review
-      approved/                       ← Approved ContentJobs
-      rejected/                       ← Rejected ContentJobs
-      review-log.jsonl                ← Append-only decision audit trail
+      jobs/                           ← 2 ContentJob JSON files (bootstrapped drafts)
+      escalations/                    ← EscalationRecord JSON files (empty)
+      review-queue/                   ← 2 drafts pending human review
+      approved/                       ← Empty — no decisions made yet
+      rejected/                       ← Empty — no decisions made yet
+      review-log.jsonl                ← Append-only audit trail (empty)
     skills/
       content-draft-from-movie-data/SKILL.md
       content-job-write/SKILL.md
@@ -298,99 +356,53 @@ docs/
       escalation-record-create/SKILL.md
       templates/
         _index.md                     ← Template selection logic
-        x/original-discovery.md
-        x/thread-breakdown.md
-        x/comparison-post.md
-        x/reactive-hook.md
-        x/utility-post.md
-        instagram/caption-standard.md
-        instagram/carousel-intro.md
-        instagram/caption-utility.md
-    sessions/                         ← 3 recorded sessions
-    memories/                         ← Agent memory store (empty — not yet used)
-    logs/                             ← Session and MCP logs
-```
-
----
-
-## Running It
-
-```bash
-# Start a newshowbiz session (all 29 agents available, all MCP servers connected)
-hermes -p newshowbiz
-
-# Activate a personality overlay within the session
-/personality x-editor
-/personality audience-researcher
-/personality brand-director
-/personality product-explainer
-/personality growth-analyst
-
-# Check what's in the review queue
-ls ~/.hermes/profiles/newshowbiz/store/review-queue/
-
-# Read the audit log
-cat ~/.hermes/profiles/newshowbiz/store/review-log.jsonl
-
-# List skills
-hermes -p newshowbiz skills list
-
-# Check Hermes version
-hermes --version
-```
-
-**Authenticate x-mcp-read (pending — one-time step):**
-```bash
-hermes -p newshowbiz
-# In session: invoke the login tool
-# Verify: ls ~/.hermes/profiles/newshowbiz/x-auth/
-```
-
-Note: call login once. If X returns a rate limit or challenge, wait several hours and retry once. Do not loop. See [X MCP Test Log](docs/30-operations/x-mcp-test-log.md) for the 2026-06-01 rate-limit incident.
-
-**Rebuild Barresider after source edits:**
-```bash
-cd ~/.hermes/mcp/x-mcp
-# edit src/behaviors/login.ts
-npm run build
-hermes gateway restart   # if gateway is running
+        x/original-discovery.md · thread-breakdown.md · comparison-post.md
+        x/reactive-hook.md · utility-post.md
+        instagram/caption-standard.md · carousel-intro.md · caption-utility.md
+    sessions/                         ← 16 recorded sessions
+    memories/                         ← Agent memory store (empty)
+    logs/
+      agent.log                       ← Session logs
+      mcp-stderr.log                  ← MCP server startup logs
 ```
 
 ---
 
 ## Current Status — Phase 1
 
-### What is fully operational
+### What is operational
 
 | Capability | State |
 |---|---|
 | Hermes runtime | Live — v0.15.1, DeepSeek V4 Pro/Flash |
-| Three-tier agent system | Live — 29 agents, all tier declarations and contracts in place |
+| Three-tier agent system | Live — 29 agents, tier declarations and contracts in place |
 | Anti-fabrication enforcement | Live — present at every layer |
+| Profile model configuration | Live — model block in profile config enables oneshot mode |
+| Oneshot mode | Live — `hermes -p newshowbiz --yolo -z "..."` confirmed working |
+| Content pipeline (template → draft) | **Confirmed working** — DeepSeek reads templates, applies Kakusu Protocol, counts characters |
 | `twitter-mcp` public lookups | Live — `twitter_user` confirmed working |
 | Barresider local fork | Built — 5 patches applied, compiled, profile wired |
 | 7 personality overlays | Live — brand-director, audience-researcher, product-explainer, x-editor, instagram-editor, provocateur, growth-analyst |
 | Template library | Live — 5 X templates + 3 Instagram templates |
-| ContentJob flat-file store | Live — directory structure + 3 write skills |
+| ContentJob flat-file store | Live — 2 bootstrapped drafts in review queue |
 | Manual review workflow | Live — procedure doc + review-decision-record skill |
-| Persona registry | Live — 7 personalities mapped to agents/toolsets/phase gates |
-| Task router | Live — callable spec wrapping the routing registry |
 | VS Code server cleanup | Live — systemd timer, weekly Sunday midnight |
 
 ### What is pending
 
 | Capability | Blocker |
 |---|---|
-| `x-mcp-read` authenticated search | X auth retry not yet run (rate limit has cleared — needs one login call) |
-| First content run | Requires human decisions: campaign priorities, cadence, CTA preference, review SLA |
-| 7-day approved draft queue | Depends on first content run |
-| Phase 1 exit report | Follows first content run |
+| `x-mcp-read` authenticated search | Login tool call not yet executed — one `hermes -p newshowbiz` session, invoke login tool |
+| Production content run | Requires: (1) human decisions on campaign priorities, cadence, CTA; (2) research 3–5 films from live newshow.biz data via movie-research-agent |
+| Human review decisions | 2 drafts sitting in review-queue since 2026-06-05 |
+| 7-day approved draft queue | Follows production content run |
+| Phase 1 exit report | Follows approved queue |
 
 ### What is intentionally disabled
 
 | Capability | Reason |
 |---|---|
-| `x-mcp-write` (tweet/thread) | Phase 3 gate — requires ContentJob store, policy engine, human approval path, and receipt store (all Phase 3) |
+| `x-mcp-write` (tweet/thread) | Phase 3 gate — requires ContentJob store, policy engine, human approval path, receipt store |
 | `social-mcp` | Contains mass-engagement tools (`engage_twitter`) — permanently excluded |
 | Engagement tools (like/retweet/bookmark) | Filtered at Hermes MCP level across all servers |
 | Autonomous publishing | Phase 3 — not before full policy engine and Telegram oversight |
@@ -401,12 +413,12 @@ hermes gateway restart   # if gateway is running
 | Phase | Status | Exit Criteria |
 |---|---|---|
 | **Phase 0** — Documentation | Complete | Spec package published to GitHub |
-| **Phase 1** — Governed draft production | ~80% complete | 7-day approved draft queue, X auth live, review workflow exercised |
+| **Phase 1** — Governed draft production | ~90% complete | 7-day approved draft queue, X auth live, review workflow exercised |
 | **Phase 2** — Scheduled content | Not started | Cron pipeline, ContentJob → EngagementJob flow |
 | **Phase 3** — Supervised publish | Not started | `x-mcp-write` enabled, policy engine, receipt store, Telegram oversight |
 | **Phase 4** — Analytics loop | Not started | UTM attribution, PerformanceSnapshot, campaign optimization |
 | **Phase 5** — Instagram | Not started | Channel contract, caption pipeline, approval flow |
-| **Phase 6** — Full autonomy | Not started | All prior phases stable; Telegram oversight required before any unattended operation |
+| **Phase 6** — Full autonomy | Not started | All prior phases stable; Telegram oversight required |
 
 ---
 
@@ -437,13 +449,13 @@ hermes gateway restart   # if gateway is running
 | Rule | Detail |
 |---|---|
 | Never commit `.env` | Profile `.env` has X credentials and OPENROUTER_API_KEY |
-| Never commit `config.yaml` | Global config has GitHub PAT in plaintext (github MCP entry) |
-| Never commit `x-auth/` | Contains live X session cookies |
-| x-mcp-write disabled | Will not be enabled before Phase 3 acceptance criteria pass |
+| Never commit global `config.yaml` | Contains GitHub PAT in plaintext (github MCP server entry) |
+| Never commit `x-auth/` | Will contain live X session cookies after login |
+| `x-mcp-write` disabled | Will not be enabled before Phase 3 acceptance criteria pass |
 | Engagement tools excluded | Filtered at MCP config level — not accessible to any agent |
 | GitHub PAT | Stored as `GITHUB_PAT_WRITE` in `~/.hermes/.env`; owned by `CSandbatch` (St-Expedite-Press org) |
 | Secrets policy | Full policy: [docs/30-operations/secrets-policy.md](docs/30-operations/secrets-policy.md) |
 
 ---
 
-*Hermes v0.15.1 · DeepSeek V4 Pro/Flash via OpenRouter · EC2 i-05451add3165b57ff · Phase 1 active · 2026-06-05*
+*Hermes v0.15.1 · DeepSeek V4 Pro/Flash via OpenRouter · EC2 i-05451add3165b57ff · Phase 1 operational · 2026-06-05*
