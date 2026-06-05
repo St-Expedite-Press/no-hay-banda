@@ -38,47 +38,38 @@ The user-facing orchestrator. Receives all requests, routes to the appropriate t
 
 ## Tier 1 — Pipeline Agents
 
-These 7 agents manage multi-step workflows and are authorized to spawn Tier 2 subagents via `delegate_task`.
+These 6 agents manage multi-step workflows and are authorized to spawn Tier 2 subagents via `delegate_task`.
 
 | Agent | Pipeline | Authorized Tier 2 Subagents |
 |---|---|---|
 | **Orchestrator** | classify → plan → route | All Tier 2 |
-| **ContentAgent** | validate → draft → report | validate-agent, writer, compose, movie-research-agent, report-agent, escalation-agent |
+| **ContentAgent** | validate → draft → report | validate-agent, movie-research-agent, writer, editor, report-agent, escalation-agent |
 | **PublishAgent** | validate → publish → report | validate-agent, report-agent, escalation-agent |
-| **MetricsAgent** | collect → analysis → report | analysis-agent, query-agent, report-agent |
+| **MetricsAgent** | collect → analysis → report | analysis-agent, report-agent |
 | **FetchAgent** | validate → fetch → transform → report | validate-agent, transform-agent, report-agent |
-| **DistillAgent** | evaluate → skill-builder → report | skill-builder, report-agent |
 | **ProjectManager** | plan → dispatch → consolidate | All Tier 2 |
 
 ---
 
 ## Tier 2 — Subagents
 
-These 21 agents are atomic leaf-node executors. They do not call `delegate_task`.
+These 13 agents are atomic leaf-node executors. They do not call `delegate_task`.
 
 | Agent | Domain |
 |---|---|
 | interrogator | Intake / clarification |
-| researcher | Web research |
+| researcher | Web research, general lookups |
 | movie-research-agent | Film evidence |
-| compose | Literary voice (C. Composer) |
 | writer | General prose |
-| composer-translator | Translation |
-| designer | Visual / diagrams |
 | editor | Editing / proofreading |
 | analysis-agent | Data computation |
-| query-agent | Vault lookups |
-| diff-agent | Snapshot comparison |
 | validate-agent | Access / schema gating |
 | transform-agent | Normalization |
-| lint-agent | Structural health |
-| python-standards-agent | Code standards |
+| lint-agent | Structural health, version comparison |
 | execute-agent | Known procedure execution |
 | engagement-agent | Inbox triage |
 | escalation-agent | Risk incident handling |
-| skill-builder | Skill construction |
 | report-agent | Output formatting |
-| librarian | Vault / PKM |
 
 ---
 

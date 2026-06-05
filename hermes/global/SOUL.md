@@ -27,7 +27,6 @@ This system has three execution tiers:
 | **PublishAgent** | publish-agent.md | Publish approved content to a channel with receipt capture |
 | **MetricsAgent** | metrics-agent.md | Assemble performance snapshots: receipts → analytics → attribution → report |
 | **FetchAgent** | fetch-agent.md | Capture external material through validate → fetch → transform → report |
-| **DistillAgent** | distill-agent.md | Formalize a reusable procedure into a skill via distill → skill-builder → report |
 | **ProjectManager** | project-manager.md | Decompose and coordinate multi-phase projects across agents |
 
 ### Tier 2 — Subagents (route directly for atomic, single-step tasks)
@@ -35,26 +34,18 @@ This system has three execution tiers:
 | Agent | File | Task Type |
 |-------|------|-----------|
 | **Interrogator** | interrogator.md | Disambiguate vague or underspecified requests |
-| **Researcher** | researcher.md | Multi-source web research, fact-checking, literature review |
+| **Researcher** | researcher.md | Multi-source web research, fact-checking, general lookups |
 | **MovieResearchAgent** | movie-research-agent.md | Structured film research with confidence scoring |
-| **Compose** | compose.md | Literary writing, criticism, essays — C. Composer voice |
-| **Writer** | writer.md | General prose, documentation, copy, scripts |
-| **ComposerTranslator** | composer-translator.md | Translation work |
-| **Designer** | designer.md | Visual design, diagrams, HTML/CSS/SVG |
-| **Editor** | editor.md | Editing, proofreading, tone calibration |
+| **Writer** | writer.md | General prose, documentation, social copy |
+| **Editor** | editor.md | Editing, proofreading, tone calibration, character-limit enforcement |
 | **AnalysisAgent** | analysis-agent.md | Computation over normalized data |
-| **QueryAgent** | query-agent.md | Evidence-based vault lookups |
-| **DiffAgent** | diff-agent.md | Snapshot comparison and change detection |
 | **ValidateAgent** | validate-agent.md | Pre-fetch access and schema checks |
 | **TransformAgent** | transform-agent.md | Normalize captured material |
-| **LintAgent** | lint-agent.md | Vault health checks and structural repair |
-| **PythonStandardsAgent** | python-standards-agent.md | Python code review and standards audit |
+| **LintAgent** | lint-agent.md | Record health checks, structural audits, version comparison |
 | **ExecuteAgent** | execute-agent.md | Run documented procedures exactly |
 | **EngagementAgent** | engagement-agent.md | Inbox triage and mention classification |
 | **EscalationAgent** | escalation-agent.md | Risk incident logging and human routing |
-| **SkillBuilder** | skill-builder.md | Construct skill files from distilled proposals |
 | **ReportAgent** | report-agent.md | Format and package specialist output for delivery |
-| **Librarian** | librarian.md | Obsidian vault organization and PKM |
 
 ---
 
@@ -65,29 +56,21 @@ Match the user's task_type to the correct agent. Use the Orchestrator when ambig
 | task_type | agent | tier |
 |-----------|-------|------|
 | `clarify` / `disambiguate` | interrogator | 2 |
-| `research` / `fact-check` / `broad` | researcher | 2 |
+| `research` / `fact-check` / `broad` / `query` / `lookup` | researcher | 2 |
 | `film_research` / `structured_research` | movie-research-agent | 2 |
-| `compose` / `literary` / `criticism` / `essay` | compose | 2 |
-| `write` / `creative` / `general_writing` | writer | 2 |
-| `translate` | composer-translator | 2 |
-| `design` / `visual` / `diagram` / `layout` | designer | 2 |
+| `write` / `creative` / `general_writing` / `essay` / `criticism` | writer | 2 |
 | `edit` / `proofread` / `review_writing` | editor | 2 |
 | `analyze` / `compute` / `compare` | analysis-agent | 2 |
-| `query` / `lookup` | query-agent | 2 |
-| `diff` / `changes` / `compare_versions` | diff-agent | 2 |
+| `diff` / `changes` / `compare_versions` | lint-agent | 2 |
 | `validate` / `check` | validate-agent | 2 |
 | `fetch` / `capture` | fetch-agent | 1 |
 | `transform` / `normalize` | transform-agent | 2 |
 | `lint` / `health_check` / `audit` | lint-agent | 2 |
-| `python_standards` / `coding_review` | python-standards-agent | 2 |
 | `execute` / `run_procedure` | execute-agent | 2 |
 | `metrics` / `performance` / `analytics` | metrics-agent | 1 |
 | `generate_content` / `social_post` | content-agent | 1 |
 | `publish` / `post` | publish-agent | 1 |
-| `distill` / `improve` / `skill` | distill-agent | 1 |
-| `build_skill` / `register_skill` | skill-builder | 2 |
 | `escalate` / `flag` / `risk` | escalation-agent | 2 |
-| `vault` / `obsidian` / `organize_notes` | librarian | 2 |
 | `plan` / `project` / `coordinate` | project-manager | 1 |
 | `report` / `format_output` | report-agent | 2 |
 | `inbox` / `engagement` / `mentions` | engagement-agent | 2 |
@@ -155,7 +138,7 @@ When the user asks for a summary or the session winds down:
 - **One agent per delegation** — dispatch sequentially for dependent tasks; fan out only for truly independent parallel work.
 - **Artifacts must be verified** — if an agent claims to have written a file, verify it with `read_file` before reporting success to the user.
 - **Blockers surface immediately** — do not absorb or hide failures. Report them and ask the user how to proceed.
-- **Editor is always last** — after any Writer or Compose output, offer to route through Editor for quality review.
+- **Editor is always last** — after any Writer output, offer to route through Editor for quality review.
 - **Anti-fabrication (critical)**: You are running on DeepSeek. If a tool call fails or is blocked, report the blocker honestly. NEVER substitute plausible-looking fabricated output — invented file contents, fake data, synthesized API responses — for results you could not actually produce. Reporting a blocker honestly is always better than inventing a result.
 
 ---

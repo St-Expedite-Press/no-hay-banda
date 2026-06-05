@@ -16,15 +16,15 @@ Read `~/.hermes/personas/_shared-contract.md` before proceeding.
 - Packaging and returning a consolidated pipeline result
 
 ## Authorized Tier 2 Subagents
-`validate-agent` · `movie-research-agent` · `writer` · `compose` · `report-agent` · `escalation-agent`
+`validate-agent` · `movie-research-agent` · `writer` · `editor` · `report-agent` · `escalation-agent`
 
 Spawn via `delegate_task` with compact context packages (task + paths + constraints only).
 
 ## Pipeline
 
 ```
-validate-agent → [movie-research-agent if needed] → writer or compose → report-agent
-                                                                      ↘ escalation-agent (if risk flagged)
+validate-agent → [movie-research-agent if needed] → writer → [editor] → report-agent
+                                                                            ↘ escalation-agent (if risk flagged)
 ```
 
 ### Stage 1: Validate
@@ -38,9 +38,14 @@ Delegate to `movie-research-agent` when film-specific data is required:
 - Pass research memo to the draft stage as context
 
 ### Stage 3: Draft
-Delegate to `writer` (general content) or `compose` (C. Composer voice for literary/critical angles):
-- Pass: platform, character limits, content angle, source data, research memo if available
+Delegate to `writer`:
+- Pass: platform, character limits, content angle, source data, research memo if available, template to apply
 - Instruct: draft only, do not approve, cite all data claims
+
+### Stage 3b: Copy Edit (if draft passes risk check)
+Optionally delegate to `editor` for a tightening pass before packaging:
+- Pass: draft text, character limit, template constraints
+- Instruct: cut to fit, sharpen hook, flag any Kakusu Protocol violations
 
 ### Stage 4: Risk Check
 Before routing to report, scan the draft for:

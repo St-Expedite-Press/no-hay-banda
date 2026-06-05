@@ -477,16 +477,15 @@ Update the affected control surfaces in the same pass:
 - If the dashboard is stale relative to changes: update `infernalis/_Index/dashboards/Knowledge OS Dashboard.md`.
 - Do not update surfaces that were not touched.
 
-#### 12c. Procedural memory — self-improvement loop
+#### 12c. Procedural memory — skill proposal review
 
-1. Check `agents/queues/improvement-queue.md` for pending entries.
-2. If non-empty: route to [SkillBuildingAgent](roster/skill-builder.md).
-3. SkillBuildingAgent constructs new skills, applies agent refinements, marks entries `applied` or `rejected`.
-4. Any agent (including the orchestrator) that identified a gap in its own spec during execution must have appended an `agent-refinement` proposal to the queue before this step.
+1. If the completed task produced a reusable multi-step workflow not yet in `skills/`, append a `skill-proposal` block to the task result.
+2. Include: skill name, description, trigger conditions, numbered steps.
+3. Human review determines whether to promote it to a `SKILL.md` file.
 
-#### 12d. Distillation check
+#### 12d. Spec update review
 
-If the task produced a workflow not yet in `agents/skills/`: route to [DistillAgent](roster/distill-agent.md) for evaluation. DistillAgent appends a `skill-proposal` to the queue if warranted; SkillBuildingAgent processes it in step 12c.
+If a gap in the orchestrator's own spec (or any dispatched agent's spec) made the task harder, append a `spec-update` block: section name, what's missing, why it matters. Surface for human review — do not self-modify specs at runtime.
 
 #### 12e. Final response
 

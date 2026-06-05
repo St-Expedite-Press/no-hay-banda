@@ -44,30 +44,22 @@ All agents MUST return one of these status codes (see `_shared-contract.md` for 
 | task_type | agent | tier | pipeline |
 |-----------|-------|------|----------|
 | `clarify` / `disambiguate` | interrogator | 2 | simple |
-| `research` / `fact-check` / `broad` | researcher | 2 | simple |
+| `research` / `fact-check` / `broad` / `query` / `lookup` | researcher | 2 | simple |
 | `film_research` / `structured_research` / `evidence` | movie-research-agent | 2 | simple |
-| `compose` / `literary` / `criticism` / `essay` | compose | 2 | simple |
-| `write` / `creative` / `general_writing` | writer | 2 | simple |
-| `translate` | composer-translator | 2 | simple |
-| `design` / `visual` / `diagram` / `layout` | designer | 2 | simple |
+| `write` / `creative` / `general_writing` / `essay` / `criticism` | writer | 2 | simple |
 | `edit` / `proofread` / `review_writing` | editor | 2 | simple |
 | `analyze` / `compute` / `compare` | analysis-agent | 2 | simple |
-| `query` / `lookup` | query-agent | 2 | simple |
-| `diff` / `changes` / `compare_versions` | diff-agent | 2 | simple |
+| `diff` / `changes` / `compare_versions` | lint-agent | 2 | simple |
 | `validate` / `check` | validate-agent | 2 | simple |
 | `fetch` / `capture` | fetch-agent | 1 | validate → fetch → transform → report |
 | `transform` / `normalize` | transform-agent | 2 | simple |
 | `lint` / `health_check` / `audit` | lint-agent | 2 | simple |
-| `python_standards` / `coding_review` | python-standards-agent | 2 | simple |
 | `execute` / `run_procedure` | execute-agent | 2 | simple |
 | `generate_content` / `social_post` | content-agent | 1 | validate → content → publish → report |
 | `publish` / `post` | publish-agent | 1 | validate → publish → report |
 | `metrics` / `performance` / `analytics` | metrics-agent | 1 | metrics → analysis → report |
-| `distill` / `improve` / `skill` | distill-agent | 1 | distill → skill-builder → report |
-| `build_skill` / `register_skill` | skill-builder | 2 | simple |
 | `escalate` / `flag` / `risk` | escalation-agent | 2 | simple |
 | `inbox` / `engagement` / `mentions` | engagement-agent | 2 | simple |
-| `vault` / `obsidian` / `organize_notes` | librarian | 2 | simple |
 | `plan` / `project` / `coordinate` | project-manager | 1 | plan → [specialist agents] → report |
 | `report` / `format_output` | report-agent | 2 | simple |
 | *ambiguous / multi-domain* | orchestrator | 1 | classify → pipeline → execute |
@@ -94,11 +86,10 @@ Each Tier 1 agent may only spawn the subagents listed here:
 | Tier 1 Agent | Authorized Tier 2 Subagents |
 |---|---|
 | **orchestrator** | All Tier 2 agents |
-| **content-agent** | validate-agent, writer, compose, movie-research-agent, report-agent, escalation-agent |
+| **content-agent** | validate-agent, movie-research-agent, writer, editor, report-agent, escalation-agent |
 | **publish-agent** | validate-agent, report-agent, escalation-agent |
-| **metrics-agent** | analysis-agent, report-agent, query-agent |
+| **metrics-agent** | analysis-agent, report-agent |
 | **fetch-agent** | validate-agent, transform-agent, report-agent |
-| **distill-agent** | skill-builder, report-agent |
 | **project-manager** | All Tier 2 agents |
 
 ---
@@ -108,14 +99,14 @@ Each Tier 1 agent may only spawn the subagents listed here:
 | Category | Count |
 |----------|-------|
 | Tier 0 (Session Director) | 1 |
-| Tier 1 (Pipeline Agents) | 7 |
-| Tier 2 (Subagents) | 21 |
-| **Total** | **29** |
+| Tier 1 (Pipeline Agents) | 6 |
+| Tier 2 (Subagents) | 13 |
+| **Total** | **20** |
 
-**Tier 1:** orchestrator, content-agent, publish-agent, metrics-agent, fetch-agent, distill-agent, project-manager
+**Tier 1:** orchestrator, content-agent, publish-agent, metrics-agent, fetch-agent, project-manager
 
-**Tier 2:** analysis-agent, compose, composer-translator, diff-agent, engagement-agent, escalation-agent, execute-agent, interrogator, librarian, lint-agent, movie-research-agent, python-standards-agent, query-agent, report-agent, researcher, skill-builder, transform-agent, validate-agent, writer, designer, editor
+**Tier 2:** analysis-agent, editor, engagement-agent, escalation-agent, execute-agent, interrogator, lint-agent, movie-research-agent, report-agent, researcher, transform-agent, validate-agent, writer
 
 ---
 
-*Last updated: 2026-06-04*
+*Last updated: 2026-06-05*

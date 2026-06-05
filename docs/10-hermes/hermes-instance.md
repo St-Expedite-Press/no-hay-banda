@@ -94,9 +94,9 @@ Loads as the first stable prompt block in every session. Defines the Session Dir
 | File | Purpose |
 |---|---|
 | `_shared-contract.md` | 10-section governing contract for all agents: tier declaration, minimum context, anti-fabrication, output format, closing loops |
-| `_routing.md` | Canonical task-to-agent routing registry: 27 task types, 7 Tier 1 agents, 21 Tier 2 agents |
+| `_routing.md` | Canonical task-to-agent routing registry: 20 task types, 6 Tier 1 agents, 13 Tier 2 agents |
 
-#### Tier 1 — Pipeline agents (7)
+#### Tier 1 — Pipeline agents (6)
 
 | Agent | File | Purpose |
 |---|---|---|
@@ -105,10 +105,9 @@ Loads as the first stable prompt block in every session. Defines the Session Dir
 | `publish-agent` | `publish-agent.md` | Validated publish actions with receipts |
 | `metrics-agent` | `metrics-agent.md` | Data collection → analysis → report pipeline |
 | `fetch-agent` | `fetch-agent.md` | Source fetch → transform → report pipeline |
-| `distill-agent` | `distill-agent.md` | Skill extraction and improvement loop |
 | `project-manager` | `project-manager.md` | Multi-domain project decomposition; routes to all Tier 2 |
 
-#### Tier 2 — Leaf subagents (21)
+#### Tier 2 — Leaf subagents (13)
 
 **Intake:**
 
@@ -120,31 +119,21 @@ Loads as the first stable prompt block in every session. Defines the Session Dir
 
 | Agent | File | Purpose |
 |---|---|---|
-| `researcher` | `researcher.md` | Multi-source web research, fact-checking, literature review |
+| `researcher` | `researcher.md` | Multi-source web research, fact-checking, literature review; handles general query/lookup tasks |
 | `movie-research-agent` | `movie-research-agent.md` | Film evidence: production context, scores, representational claims |
 
 **Content and voice:**
 
 | Agent | File | Purpose |
 |---|---|---|
-| `compose` | `composer.md` | Literary writing, criticism, essays (C. Composer voice) |
-| `writer` | `writer.md` | General prose, documentation, marketing copy, scripts |
-| `composer-translator` | `composer-translator.md` | Golden Age Castilian translation in Composer register |
-| `editor` | `editor.md` | Editing, proofreading, tone calibration, quality gating |
-
-**Design:**
-
-| Agent | File | Purpose |
-|---|---|---|
-| `designer` | `designer.md` | Visual design, diagrams, HTML/CSS/SVG, layout |
+| `writer` | `writer.md` | General prose, marketing copy, social content drafts |
+| `editor` | `editor.md` | Editing, proofreading, tone calibration, character-limit enforcement |
 
 **Analysis and data:**
 
 | Agent | File | Purpose |
 |---|---|---|
 | `analysis-agent` | `analysis-agent.md` | Computation over normalized data, rankings, summaries |
-| `query-agent` | `query-agent.md` | Evidence-based vault lookups |
-| `diff-agent` | `diff-agent.md` | Snapshot comparison, change detection |
 | `validate-agent` | `validate-agent.md` | Pre-fetch access checks, schema gating |
 | `transform-agent` | `transform-agent.md` | Normalization of captured material |
 
@@ -152,8 +141,7 @@ Loads as the first stable prompt block in every session. Defines the Session Dir
 
 | Agent | File | Purpose |
 |---|---|---|
-| `lint-agent` | `lint-agent.md` | Vault/record health checks, structural repair |
-| `python-standards-agent` | `python-standards-agent.md` | Python code standards audit |
+| `lint-agent` | `lint-agent.md` | Record health checks, structural audits, version comparison |
 | `execute-agent` | `execute-agent.md` | Run known procedures from the live skill registry |
 
 **Content operations:**
@@ -163,18 +151,11 @@ Loads as the first stable prompt block in every session. Defines the Session Dir
 | `engagement-agent` | `engagement-agent.md` | Inbox triage, mention classification, escalation routing |
 | `escalation-agent` | `escalation-agent.md` | Risk incident logging, human routing, HOLD status |
 
-**System improvement:**
+**Output:**
 
 | Agent | File | Purpose |
 |---|---|---|
-| `skill-builder` | `skill-builder.md` | Construct skill files from distilled proposals |
 | `report-agent` | `report-agent.md` | Format and package specialist output for delivery |
-
-**Knowledge management:**
-
-| Agent | File | Purpose |
-|---|---|---|
-| `librarian` | `librarian.md` | Obsidian vault organization, MOCs, PKM |
 
 ---
 
@@ -191,8 +172,8 @@ This section documents everything that differs from a stock Hermes installation.
 | Tier | Identity | Spawn authority |
 |---|---|---|
 | **0** | Session Director (`SOUL.md`) | Routes to Tier 1 and Tier 2 directly |
-| **1** | Pipeline agents (7) | Can spawn Tier 2 via `delegate_task`; cannot spawn other Tier 1 |
-| **2** | Leaf subagents (21) | Cannot delegate further |
+| **1** | Pipeline agents (6) | Can spawn Tier 2 via `delegate_task`; cannot spawn other Tier 1 |
+| **2** | Leaf subagents (13) | Cannot delegate further |
 
 Runtime enforcement: `max_spawn_depth: 2` in the global delegation config. If a Tier 2 agent attempts `delegate_task`, the runtime rejects it before the call executes.
 

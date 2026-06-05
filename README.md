@@ -1,6 +1,6 @@
 # New Showbiz Marketing Operator
 
-**What this is:** A deployed autonomous marketing operator for [newshow.biz](https://newshow.biz) built on a heavily customized ("hacked") instance of Hermes Agent v0.15.1. The system uses a 29-agent, three-tier architecture to research films from the New Showbiz catalog, generate governed social content, route it through human review, and (in Phase 3) publish to X and Instagram. It is live on EC2 and has produced content. This repository is the documentation package, canonical spec, and operational reference for that system.
+**What this is:** A deployed autonomous marketing operator for [newshow.biz](https://newshow.biz) built on a heavily customized ("hacked") instance of Hermes Agent v0.15.1. The system uses a 20-agent, three-tier architecture to research films from the New Showbiz catalog, generate governed social content, route it through human review, and (in Phase 3) publish to X and Instagram. It is live on EC2 and has produced content. This repository is the documentation package, canonical spec, and operational reference for that system.
 
 **Status:** Phase 1 operational. Content pipeline confirmed working. X authentication pending.
 
@@ -17,7 +17,7 @@
 | **Orchestrator model** | `deepseek/deepseek-v4-pro` via OpenRouter |
 | **Subagent model** | `deepseek/deepseek-v4-flash` via OpenRouter |
 | **Fallback model** | `anthropic/claude-sonnet-4` via OpenRouter |
-| **Agent tiers** | Tier 0 (1) · Tier 1 (7) · Tier 2 (21) = 29 agents total |
+| **Agent tiers** | Tier 0 (1) · Tier 1 (6) · Tier 2 (13) = 20 agents total |
 | **Active MCP servers** | x-mcp-read (Barresider fork), twitter-mcp, playwright, github |
 | **Custom skills** | 6 New Showbiz domain skills + 8-template library |
 | **Content pipeline** | Flat-file ContentJob store (Phase 1) |
@@ -33,8 +33,8 @@
 ```mermaid
 flowchart TD
     A[hermes -p newshowbiz] --> B[SOUL.md\nSession Director — Tier 0]
-    B --> C[Tier 1 Pipeline Agents\norchestrator · content-agent · publish-agent\nmetrics-agent · fetch-agent · distill-agent · project-manager]
-    C --> D[Tier 2 Subagents — 21 leaf nodes\nresearcher · writer · movie-research-agent · escalation-agent\n validate-agent · report-agent · and 15 others]
+    B --> C[Tier 1 Pipeline Agents\norchestrator · content-agent · publish-agent\nmetrics-agent · fetch-agent · project-manager]
+    C --> D[Tier 2 Subagents — 13 leaf nodes\nresearcher · writer · editor · movie-research-agent\nescalation-agent · validate-agent · report-agent · and 6 others]
     D --> E[MCP Tools]
     E --> F[x-mcp-read\nBarresider fork\n~/.hermes/mcp/x-mcp/]
     E --> G[twitter-mcp\nmiles0sage\n~/.hermes/mcp/twitter-mcp/]
@@ -57,8 +57,8 @@ Stock Hermes has a flat persona system — one SOUL.md, one session, worker agen
 | Tier | Role | Spawn Authority | Count |
 |---|---|---|---|
 | **0** | Session Director (SOUL.md) | Routes to Tier 1 and Tier 2 | 1 |
-| **1** | Pipeline Agents | Can spawn Tier 2; cannot spawn other Tier 1 | 7 |
-| **2** | Leaf Subagents | Cannot delegate further | 21 |
+| **1** | Pipeline Agents | Can spawn Tier 2; cannot spawn other Tier 1 | 6 |
+| **2** | Leaf Subagents | Cannot delegate further | 13 |
 
 Each agent file opens with a tier declaration so the agent understands its authority limits before receiving any task.
 
@@ -68,7 +68,7 @@ DeepSeek V4 Flash (the subagent model) has a documented failure mode: it may sub
 
 - `~/.hermes/SOUL.md` — global operational rule against fabrication
 - `~/.hermes/personas/_shared-contract.md` — Section 4: named DeepSeek failure mode, BLOCKED reporting rules
-- All 28 agent persona files — explicit anti-fabrication clause
+- All 19 agent persona files — explicit anti-fabrication clause
 - `~/.hermes/prefill_messages.json` — few-shot priming demonstrating correct BLOCKED response
 
 ### 3. DeepSeek Model Split
@@ -129,25 +129,24 @@ All content agents operate under a brand constraint: frame representation analys
 
 **`~/.hermes/SOUL.md`** is loaded as the first stable prompt block in every session. Contains: three-tier architecture table, routing reference by task type, 7-step workflow, authorized pipeline list, anti-fabrication rules.
 
-### Tier 1 — Pipeline Agents (7)
+### Tier 1 — Pipeline Agents (6)
 
 | Agent | Purpose | Authorized Subagents |
 |---|---|---|
 | `orchestrator` | Classifies ambiguous tasks; routes across domains | All Tier 2 |
-| `content-agent` | Film research → draft → publish pipeline | validate, writer, compose, movie-research-agent, report, escalation |
+| `content-agent` | Film research → draft → publish pipeline | validate, movie-research-agent, writer, editor, report, escalation |
 | `publish-agent` | Validated publish with receipts | validate, report, escalation |
-| `metrics-agent` | Data collection → analysis → report | analysis, report, query |
+| `metrics-agent` | Data collection → analysis → report | analysis, report |
 | `fetch-agent` | Source fetch → transform → report | validate, transform, report |
-| `distill-agent` | Skill extraction and improvement loop | skill-builder, report |
 | `project-manager` | Multi-domain project decomposition | All Tier 2 |
 
-### Tier 2 — Leaf Subagents (21)
+### Tier 2 — Leaf Subagents (13)
 
-analysis-agent · compose · composer-translator · diff-agent · engagement-agent · escalation-agent · execute-agent · interrogator · librarian · lint-agent · movie-research-agent · python-standards-agent · query-agent · report-agent · researcher · skill-builder · transform-agent · validate-agent · writer · designer · editor
+analysis-agent · editor · engagement-agent · escalation-agent · execute-agent · interrogator · lint-agent · movie-research-agent · report-agent · researcher · transform-agent · validate-agent · writer
 
 ### Routing Registry
 
-`~/.hermes/personas/_routing.md` — 27 canonical task types mapped to agents with tier, pipeline pattern, and authorized spawn paths. Callable spec: [docs/20-system-spec/task-router.md](docs/20-system-spec/task-router.md).
+`~/.hermes/personas/_routing.md` — 20 canonical task types mapped to agents with tier, pipeline pattern, and authorized spawn paths. Callable spec: [docs/20-system-spec/task-router.md](docs/20-system-spec/task-router.md).
 
 ---
 
@@ -319,13 +318,12 @@ docs/
   SOUL.md                             ← Session Director — loaded every session
   prefill_messages.json               ← Delegation cycle priming (4 messages)
   state.db                            ← 15 MB SQLite (Hermes internal state)
-  personas/                           ← 30 files (28 agents + 2 contracts)
+  personas/                           ← 21 files (19 agents + 2 contracts)
     _shared-contract.md               ← Governing contract for all agents
     _routing.md                       ← Task-to-agent routing registry
     orchestrator.md / content-agent.md / publish-agent.md   ← Tier 1
-    fetch-agent.md / metrics-agent.md / distill-agent.md    ← Tier 1
-    project-manager.md                ← Tier 1
-    [21 Tier 2 agent files]
+    fetch-agent.md / metrics-agent.md / project-manager.md  ← Tier 1
+    [13 Tier 2 agent files]
   mcp/
     x-mcp/                            ← Barresider local fork (121 MB, patched)
       src/behaviors/login.ts          ← Patched source (5 fixes)

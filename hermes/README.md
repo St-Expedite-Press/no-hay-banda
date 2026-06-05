@@ -204,9 +204,20 @@ hermes/
       publish-agent.md        ← Tier 1
       metrics-agent.md        ← Tier 1
       fetch-agent.md          ← Tier 1
-      distill-agent.md        ← Tier 1
       project-manager.md      ← Tier 1
-      [21 Tier 2 agent files]
+      analysis-agent.md       ← Tier 2
+      editor.md               ← Tier 2
+      engagement-agent.md     ← Tier 2
+      escalation-agent.md     ← Tier 2
+      execute-agent.md        ← Tier 2
+      interrogator.md         ← Tier 2
+      lint-agent.md           ← Tier 2
+      movie-research-agent.md ← Tier 2
+      report-agent.md         ← Tier 2
+      researcher.md           ← Tier 2
+      transform-agent.md      ← Tier 2
+      validate-agent.md       ← Tier 2
+      writer.md               ← Tier 2
   profiles/
     newshowbiz/
       config.yaml             → ~/.hermes/profiles/newshowbiz/config.yaml

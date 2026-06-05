@@ -8,7 +8,7 @@ PersonaRegistry maps the 7 internal personas to their Hermes configuration key, 
 |---|---|---|---|---|---|
 | Brand Director | `brand-director` | `review_writing`, `validate`, `edit` | validate-agent → editor → report-agent | `newshowbiz_read` | Phase 1 |
 | Audience Researcher | `audience-researcher` | `research`, `film_research`, `fetch` | fetch-agent → movie-research-agent → report-agent | `newshowbiz_read`, `newshowbiz_metrics_read` | Phase 1 |
-| Product Explainer | `product-explainer` | `write`, `general_writing`, `compose` | content-agent → writer → report-agent | `newshowbiz_read` | Phase 1 |
+| Product Explainer | `product-explainer` | `write`, `general_writing`, `criticism` | content-agent → writer → report-agent | `newshowbiz_read` | Phase 1 |
 | X Editor | `x-editor` | `generate_content`, `social_post`, `publish` | content-agent → validate-agent → publish-agent → report-agent | `newshowbiz_read`, `newshowbiz_publish_x` | Phase 1 |
 | Instagram Editor | `instagram-editor` | `generate_content`, `social_post`, `design` | content-agent → validate-agent → publish-agent → report-agent | `newshowbiz_read`, `newshowbiz_publish_instagram` | Phase 2 |
 | Provocateur | `provocateur` | `generate_content`, `social_post` | content-agent → validate-agent → escalation-agent → publish-agent → report-agent | `newshowbiz_read`, `newshowbiz_publish_x`, `newshowbiz_escalation` | Phase 5 |

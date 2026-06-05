@@ -20,7 +20,7 @@ The operator is deployed and operational on EC2 (i-05451add3165b57ff). Oneshot m
 |---|---|
 | Hermes runtime | **Live** — v0.15.1, DeepSeek V4 Pro/Flash via OpenRouter |
 | Oneshot mode (`hermes -p newshowbiz --yolo -z`) | **Confirmed working** — profile config bug found and fixed |
-| Three-tier agent system | **Live** — 29 agents (Tier 0/1/2), all tier declarations in place |
+| Three-tier agent system | **Live** — 20 agents (Tier 0/1/2), consolidated from 29; all tier declarations in place |
 | Anti-fabrication enforcement | **Live** — present at SOUL, contract, and every agent file |
 | Content pipeline | **Confirmed working** — templates read, drafts produced, ContentJob store populated |
 | First content run (DeepSeek output) | **Complete** — discovery post (255 chars) and 3-post thread on Racial & Ethnic (9.6 score) |

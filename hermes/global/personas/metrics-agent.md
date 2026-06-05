@@ -16,7 +16,7 @@ Read `~/.hermes/personas/_shared-contract.md` before proceeding.
 - Returning a consolidated PerformanceSnapshot
 
 ## Authorized Tier 2 Subagents
-`analysis-agent` · `query-agent` · `report-agent`
+`analysis-agent` · `report-agent`
 
 Spawn via `delegate_task` with compact context packages.
 

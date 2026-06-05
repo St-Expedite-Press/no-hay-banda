@@ -43,14 +43,7 @@ These agents in the marketing system perform vault-oriented work as part of thei
 - [MovieResearchAgent](../../agents/roster/movie-research-agent.md) — researches film context, cast, reception before content creation
 - [ValidateAgent](../../agents/roster/validate-agent.md) — external access preflight before any fetch operation
 - [TransformAgent](../../agents/roster/transform-agent.md) — normalizes fetched data into structured content briefs
-- [QueryAgent](../../agents/roster/query-agent.md) — queries source records and ContentJob history
-
-**Archived vault agents** from the prior Sandbatch system are preserved in `agents/roster/archive/` for framework portability. They are not active in the New Showbiz operator but can be adapted:
-- `ingest-agent` — source record formalization
-- `concept-agent` — concept promotion
-- `librarian-agent` — organizational completeness
-- `historian` — structural historical analysis
-- `research-page` — archival retrieval
+- [Researcher](../../agents/roster/researcher.md) — queries source records, ContentJob history, and general lookups
 
 ## Pipelines
 
@@ -63,11 +56,11 @@ Use when pulling structured data from a newshow.biz movie page to populate a Con
 Use when capturing an article, press piece, or interview as research evidence.
 
 ### Knowledge query
-`Interrogator -> Orchestrator -> QueryAgent -> ReportAgent`  
+`Interrogator -> Orchestrator -> Researcher -> ReportAgent`  
 Use when retrieving facts, evidence, or prior research from the source store.
 
 ### Structural maintenance
-`Interrogator -> Orchestrator -> LintAgent / DiffAgent -> ReportAgent`  
+`Interrogator -> Orchestrator -> LintAgent -> ReportAgent`  
 Use for audits, drift repair, and index alignment.
 
 ## Store Structure

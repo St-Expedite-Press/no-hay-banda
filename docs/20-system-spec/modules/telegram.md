@@ -47,7 +47,7 @@ Hermes supports Telegram natively as a gateway platform. Enable it in the `new-s
 | `NO` reply to escalation | EscalationAgent — marks EscalationRecord as rejected; holds ContentJob |
 | `REVIEW` reply to escalation | ReportAgent — returns full EscalationRecord context |
 | `PAUSE` command | Orchestrator → PublishAgent → all ContentJobs set to HOLD |
-| `STATUS` command | Orchestrator → QueryAgent → ReportAgent — returns pending queue summary |
+| `STATUS` command | Orchestrator → Researcher → ReportAgent — returns pending queue summary |
 | `REPORT` command | Orchestrator → MetricsAgent → ReportAgent — returns latest report |
 | Freeform query | Orchestrator → appropriate agent → ReportAgent |
 

@@ -11,7 +11,7 @@ updated: 2026-05-20
 
 # Improvement Queue
 
-Pending skill proposals and agent refinement proposals from the self-improvement loops. Processed by [SkillBuildingAgent](../roster/skill-builder.md) at the close of each task.
+Pending skill proposals and agent refinement proposals. Proposals are appended by agents at task close and reviewed by a human before promotion to a `SKILL.md` file.
 
 ---
 

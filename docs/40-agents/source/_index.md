@@ -50,11 +50,9 @@ All agents in this system must follow [`_shared-contract.md`](_shared-contract.m
 | Publish with receipt | PublishAgent → validate → publish → report | 0 → 1 → 2 |
 | Metrics snapshot | MetricsAgent → analysis → report | 0 → 1 → 2 |
 | Data capture | FetchAgent → validate → fetch → transform → report | 0 → 1 → 2 |
-| Knowledge distillation | DistillAgent → skill-builder → report | 0 → 1 → 2 |
 | Project coordination | ProjectManager → [specialist agents] → report | 0 → 1 → 2 |
 | Engagement triage | Session Director → engagement-agent → escalation-agent | 0 → 2 → 2 |
 | Factual dispute | engagement-agent → escalation-agent → movie-research-agent → human | 2 → 2 → 2 |
-| Self-improvement | any agent → distill-agent → skill-builder → report | 1 → 2 |
 | Ambiguous task | Session Director → orchestrator → [planned pipeline] | 0 → 1 → 2 |
 
 ## Shared Status Vocabulary
