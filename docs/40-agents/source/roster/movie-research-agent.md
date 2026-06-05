@@ -6,7 +6,8 @@ canonical_path: agents/roster/movie-research-agent.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-23
+updated: 2026-06-05
+tier: 2 — Leaf node (cannot delegate further)
 part_of:
   - agent-system
   - newshowbiz-marketing
@@ -56,6 +57,7 @@ When a claim depends on a page number, secondary citation, inaccessible primary 
 Start from the primary product or publication record, then use external or supporting research only to explain the context around the claim. A usable research memo distinguishes facts safe for copy, claims that need hedging, and background material that should remain invisible to the audience. The output is not post copy; it is a confidence-scored source packet for the drafting agent.
 
 ## Guardrails
+- **Anti-fabrication:** If a tool call, file read, or API call fails, report it in blockers. Never substitute invented data, scores, or file contents for results you could not produce.
 
 - Do not fabricate production facts or cast credits.
 - Do not overclaim before the research corpus is built.

@@ -2,7 +2,7 @@
 
 ## Phase 0: Documentation, Brand Rules, and Runtime Decision
 
-*Last reviewed: 2026-06-01. Items marked ✅ are complete at the documentation level.*
+*Last reviewed: 2026-06-05. Items marked ✅ are complete at the documentation level.*
 
 ### Deliverables
 
@@ -56,6 +56,10 @@
 - [x] ✅ Write profile-scoped `docs/10-hermes/SOUL.md`. — *Written 2026-05-20. Bug identified 2026-06-01: the profile root `~/.hermes/profiles/newshowbiz/SOUL.md` contained the generic default Hermes identity rather than the New Showbiz marketing operator identity. Corrected by overwriting with the canonical content from `docs/10-hermes/SOUL.md`.*
 - [x] ✅ Write project `docs/10-hermes/AGENTS.md`. — *Complete with three-module architecture, Agent Activation Protocol, Task-to-Agent Routing Table, persona overlay registration, and full brand/escalation rules.*
 - [x] ✅ Define initial skills for content drafting, X publishing, and escalation. — *`content-draft-from-movie-data`, `x-publish-with-receipt`, `escalation-record-create` written 2026-05-21. Registered in skills/_index.md 2026-06-01. Installed in live profile at `~/.hermes/profiles/newshowbiz/skills/` 2026-06-01 — all three enabled and visible in `hermes -p newshowbiz skills list`. `x-publish-with-receipt` carries an explicit Phase 3 gate in the skill body.*
+- [x] ✅ Restructure agent system to three-tier execution model. — *Implemented 2026-06-05. Tier 0 (Session Director) → Tier 1 (7 pipeline agents) → Tier 2 (21 leaf subagents). `max_spawn_depth: 2` configured. All 28 agent spec files updated with tier declarations and anti-fabrication guardrails. 6 new active agents added (writer, designer, researcher, editor, librarian, project-manager). Shared contract and routing registry added as canonical source files.*
+- [x] ✅ Upgrade Hermes to v0.15.1. — *Upgraded 2026-06-05 from v0.14.0. 376 upstream commits. Config format updated v24→v25. 10 bundled skills updated.*
+- [x] ✅ Set runtime model. — *DeepSeek V4 Pro (orchestrator) + DeepSeek V4 Flash (subagents) via OpenRouter. Documented in `docs/60-models/runtime-model-selection.md`.*
+- [x] ✅ Add prefill_messages.json. — *Full delegation cycle example added 2026-06-05 at `~/.hermes/prefill_messages.json`. Demonstrates Tier 0 → Tier 1 → Tier 2 routing for a film research + content pipeline task.*
 - [ ] Define `PersonaRegistry`.
 - [ ] Define `TaskRouter`.
 - [ ] Define `ContentJob`, `EngagementJob`, `EscalationRecord`, and `PerformanceSnapshot` schemas.

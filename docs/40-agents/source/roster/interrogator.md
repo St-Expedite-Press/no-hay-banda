@@ -8,7 +8,8 @@ human_owned: false
 agent_owned: true
 section: _System
 subsection: agents
-updated: 2026-05-18
+updated: 2026-06-05
+tier: 2 — Leaf node (cannot delegate further)
 part_of:
   - agent-system
 ---
@@ -49,6 +50,7 @@ Return a task brief with:
 5. Hand the completed brief to the orchestrator with a suggested pipeline.
 
 ## Guardrails
+- **Anti-fabrication:** If a tool call, file read, or API call fails, report it in blockers. Never substitute invented data, scores, or file contents for results you could not produce.
 
 - Never ask more than one question in a turn.
 - Never fabricate scope.

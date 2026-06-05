@@ -4,6 +4,8 @@
 > Derived from source at `/usr/local/lib/hermes-agent/agent/system_prompt.py`,
 > `prompt_builder.py`, and `agent_init.py` on `hermes-dev` (i-05451add3165b57ff).
 
+> **Terminology note (added 2026-06-05):** This document uses "Tier 1/2/3" to describe Hermes's internal *prompt assembly* layers (stable identity / session context / volatile state). The New Showbiz agent execution architecture uses a separate "Tier 0/1/2" taxonomy to describe *agent spawn authority* (Session Director / Pipeline Agents / Leaf Subagents). These are orthogonal concepts. See [Tier Architecture](tier-architecture.md) for the agent execution model.
+
 ---
 
 ## Table of Contents

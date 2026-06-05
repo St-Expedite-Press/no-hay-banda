@@ -6,7 +6,8 @@ canonical_path: agents/roster/distill-agent.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-23
+updated: 2026-06-05
+tier: 1 — Pipeline Agent (can spawn Tier 2 subagents)
 part_of:
   - agent-system
 ---
@@ -96,6 +97,7 @@ durability_rationale: why this is invocable by at least two agents or pipeline f
 After multiple tasks require checking ledgers, local indexes, and canonical paths after writes, DistillAgent identifies the pattern as reusable across ingest, record creation, and maintenance workflows. It appends a structured `skill-proposal` for a drift-check procedure instead of writing the skill directly. The proposal includes triggers, inputs, verification, outputs, and a durability rationale.
 
 ## Guardrails
+- **Anti-fabrication:** If a tool call, file read, or API call fails, report it in blockers. Never substitute invented data, scores, or file contents for results you could not produce.
 
 - Do not write skill files directly. Append to the queue; SkillBuildingAgent constructs the file.
 - Do not distill one-off tasks into permanent doctrine.

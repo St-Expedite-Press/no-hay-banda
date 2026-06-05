@@ -6,7 +6,8 @@ canonical_path: agents/roster/publish-agent.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-23
+updated: 2026-06-05
+tier: 1 — Pipeline Agent (can spawn Tier 2 subagents)
 part_of:
   - agent-system
   - newshowbiz-marketing
@@ -56,6 +57,7 @@ Durable channel receipt appended to ContentJob:
 A publish action is complete only after the work, outlet or channel, timestamp, content hash, and publication state are written as a durable receipt. If a piece is live in an internal, partner, or organization context but not a fully public placement, record that distinction instead of flattening it into `SUCCESS`. The receipt should preserve the approved content, target surface, final state, and exact date.
 
 ## Guardrails
+- **Anti-fabrication:** If a tool call, file read, or API call fails, report it in blockers. Never substitute invented data, scores, or file contents for results you could not produce.
 
 - Never publish without `status: APPROVED` on the ContentJob.
 - Never use `microsoft/playwright-mcp` as a fallback if `newshowbiz_x_publish_reviewed` fails — escalate instead.

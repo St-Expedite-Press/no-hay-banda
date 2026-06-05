@@ -40,11 +40,13 @@ flowchart TD
 
 ## Live Implementation State
 
-**Instance:** EC2 (i-05451add3165b57ff) · Hermes v0.14.0 · Node.js v22 · Python 3.11
+**Instance:** EC2 (i-05451add3165b57ff) · Hermes v0.15.1 (2026-05-29) · Node.js v22 · Python 3.11
+
+**Default profile model:** `deepseek/deepseek-v4-pro` (orchestrator) · `deepseek/deepseek-v4-flash` (subagents) · Provider: OpenRouter
 
 **Profile:** `hermes -p newshowbiz`
 
-The `newshowbiz` Hermes profile is deployed and operational. AGENTS.md, all 7 personality overlays, and the full X MCP stack are live. SOUL.md was found to contain the generic default Hermes identity rather than the New Showbiz marketing operator identity on 2026-06-01 and was corrected.
+The `newshowbiz` Hermes profile is deployed and operational. AGENTS.md, all 7 personality overlays, and the full X MCP stack are live.
 
 ### What works now
 
@@ -57,6 +59,18 @@ hermes -p newshowbiz
 ```
 
 **3 domain skills installed (2026-06-01).** `content-draft-from-movie-data`, `x-publish-with-receipt`, and `escalation-record-create` are live in the newshowbiz profile at `~/.hermes/profiles/newshowbiz/skills/`. All three are enabled and appear in `hermes -p newshowbiz skills list`. `x-publish-with-receipt` carries its Phase 3 gate explicitly — the agent will not attempt write operations before the ContentJob store and policy engine exist.
+
+### Agent system upgraded (2026-06-05)
+
+The agent system has been restructured from a flat single-tier roster to a **three-tier execution architecture**. See [Tier Architecture](docs/10-hermes/tier-architecture.md) for the full model.
+
+- **Tier 0 — Session Director (SOUL.md):** User-facing orchestrator. Routes to Tier 1 and Tier 2.
+- **Tier 1 — Pipeline Agents (7):** Manage multi-step workflows. Can spawn Tier 2 subagents. `max_spawn_depth: 2`.
+- **Tier 2 — Subagents (21):** Atomic leaf-node executors. Cannot delegate further.
+
+All 28 agent spec files updated with tier declarations, anti-fabrication guardrails, and standardized Closing Loops. 6 new agents added to the active roster (writer, designer, researcher, editor, librarian, project-manager). Shared contract and routing registry added as canonical source files.
+
+Hermes upgraded from v0.14.0 → v0.15.1 (376 upstream commits). Model switched to DeepSeek V4 Pro/Flash via OpenRouter. `prefill_messages.json` added with a full delegation cycle example.
 
 **`x-mcp-read` (Barresider) — authenticated reads, session pending.** The server connects and all 8 tools are registered with engagement tools excluded. Authentication was blocked by a temporary X rate limit from rapid login attempts during canary testing. Once the rate limit clears, call `login` once to save the session to `x-auth/`; all read tools (`search_twitter`, `search_viral`, `scrape_trending`, `scrape_timeline`, `scrape_posts`, `scrape_profile`, `scrape_comments`) will be operational. Six bugs in Barresider's `login.js` were found and patched (stale URL, username selector drift, Next button selector drift, headless mode, auth file path, stdio channel pollution). Full patch notes: [X MCP Test Log](docs/30-operations/x-mcp-test-log.md).
 

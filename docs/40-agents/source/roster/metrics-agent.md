@@ -6,7 +6,8 @@ canonical_path: agents/roster/metrics-agent.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-23
+updated: 2026-06-05
+tier: 1 — Pipeline Agent (can spawn Tier 2 subagents)
 part_of:
   - agent-system
   - newshowbiz-marketing
@@ -60,6 +61,7 @@ PerformanceSnapshot:
 Treat a dated announcement as an attribution event with source post context, downstream site activity, and confidence level. If a public post announces a title and later records show sales or traffic movement without exact platform receipts, mark the join as medium or low confidence rather than claiming causation. The snapshot should separate confirmed publication count, inferred lift, and missing receipt data.
 
 ## Guardrails
+- **Anti-fabrication:** If a tool call, file read, or API call fails, report it in blockers. Never substitute invented data, scores, or file contents for results you could not produce.
 
 - Never fabricate channel metrics or attribution data.
 - Explicitly note confidence level on all attribution joins; do not round up to certainty.

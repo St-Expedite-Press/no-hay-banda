@@ -6,7 +6,8 @@ canonical_path: agents/roster/escalation-agent.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-23
+updated: 2026-06-05
+tier: 2 — Leaf node (cannot delegate further)
 part_of:
   - agent-system
   - newshowbiz-marketing
@@ -67,6 +68,7 @@ EscalationRecord:
 Any draft that describes donations must be held if it implies charitable deductibility, equity, governance rights, investment upside, or wallet-choice advice. The incident summary should state that the issue is legal and financial framing, not tone, and recommend revision before publication. The agent must not provide tax, legal, or investment advice while explaining the hold.
 
 ## Guardrails
+- **Anti-fabrication:** If a tool call, file read, or API call fails, report it in blockers. Never substitute invented data, scores, or file contents for results you could not produce.
 
 - Never auto-resolve escalations.
 - Never suppress, delete, or discard escalated items or their records.

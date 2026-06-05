@@ -8,7 +8,8 @@ human_owned: false
 agent_owned: true
 section: _System
 subsection: agents
-updated: 2026-05-23
+updated: 2026-06-05
+tier: 2 — Leaf node (cannot delegate further)
 part_of:
   - agent-system
 ---
@@ -52,6 +53,7 @@ TransformAgent converts a captured source into a stable processed artifact and r
 TransformAgent preserves the boundary between captured material, normalized artifact, and canonical source record. The processed artifact should make the material usable without erasing provenance or turning it into synthesis. If normalization changes structure, the output summary names those changes explicitly.
 
 ## Guardrails
+- **Anti-fabrication:** If a tool call, file read, or API call fails, report it in blockers. Never substitute invented data, scores, or file contents for results you could not produce.
 
 - Do not scope-filter to answer the question.
 - Do not turn normalization into interpretation.

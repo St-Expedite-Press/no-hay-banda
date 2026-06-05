@@ -6,7 +6,8 @@ canonical_path: agents/orchestrator.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-23
+updated: 2026-06-05
+tier: 1 — Pipeline Agent (can spawn Tier 2 subagents)
 part_of:
   - agent-system
 ---
@@ -676,5 +677,5 @@ Runs at task close whenever `agents/queues/improvement-queue.md` has pending ent
 
 ---
 
-Last updated: 2026-05-23 - added Simple Task Fast Path for single-hop low-risk work; added PythonStandardsAgent routing.
+Last updated: 2026-06-05
 

@@ -8,7 +8,8 @@ human_owned: false
 agent_owned: true
 section: _System
 subsection: agents
-updated: 2026-05-23
+updated: 2026-06-05
+tier: 2 — Leaf node (cannot delegate further)
 part_of:
   - agent-system
 ---
@@ -53,6 +54,7 @@ After a cleanup or migration, ReportAgent packages the outcome as a durable repo
 A final report should lead with the usable map or answer, then preserve caveats about approximate dates, missing confirmation, and unmodeled external placements. Do not smooth uncertain records into a clean narrative just because the output is user-facing. The report should make the current state actionable while keeping blockers visible.
 
 ## Guardrails
+- **Anti-fabrication:** If a tool call, file read, or API call fails, report it in blockers. Never substitute invented data, scores, or file contents for results you could not produce.
 
 - Do not reinterpret ambiguous specialist output.
 - Do not bury blockers in polished prose.

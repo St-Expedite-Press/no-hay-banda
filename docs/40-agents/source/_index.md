@@ -6,7 +6,7 @@ canonical_path: agents/_index.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-06-01
+updated: 2026-06-05
 ---
 
 # Agent System Index
@@ -15,44 +15,59 @@ Canonical routing surface for the New Showbiz agent system.
 
 ## Entry Points
 
-- [Orchestrator](orchestrator.md) — central router for content creation, engagement triage, metrics, and self-improvement tasks
-- [Agent Roster](roster/_index.md) — specialist and subagent directory
+- [Orchestrator](orchestrator.md) — Tier 1 pipeline agent; classifies tasks, constructs pipelines, validates outputs
+- [Agent Roster](roster/_index.md) — full specialist and subagent directory with tier assignments
+- [Tier Architecture](../../10-hermes/tier-architecture.md) — three-tier execution model (Tier 0/1/2)
+
+## Tier Architecture Summary
+
+| Tier | Count | Role | Spawn Authority |
+|------|-------|------|-----------------|
+| 0 | 1 | Session Director (SOUL.md) | Routes to Tier 1 and Tier 2 |
+| 1 | 7 | Pipeline Agents | Can spawn Tier 2 subagents |
+| 2 | 21 | Subagents / leaf nodes | Cannot delegate further |
+
+**Config:** `delegation.max_spawn_depth: 2`
 
 ## Shared Contract
 
-All agents in this system must:
+All agents in this system must follow [`_shared-contract.md`](_shared-contract.md):
 
-1. Read their own spec file in full before proceeding with any task.
-2. Use the minimum context needed — pass only task-specific state to workers.
-3. Respect the prompt placement contract in `docs/10-hermes/profile-and-prompt-strategy.md`.
-4. Preserve source evidence for all factual and score-based claims.
-5. Return structured outputs with status, claims, artifacts, and blockers.
-6. Update affected indexes and control surfaces in the same pass as substantive changes.
-7. At task close: if a reusable procedure was executed that has no entry in `agents/skills/_index.md`, append a `skill-proposal` to `agents/queues/improvement-queue.md`.
-8. At task close: if a gap in your own spec materially complicated the task, append a targeted `agent-refinement` proposal to `agents/queues/improvement-queue.md`.
+1. Read their own spec file in full before proceeding
+2. Use minimum context — pass only task-specific state to workers
+3. Respect the prompt placement contract in `docs/10-hermes/profile-and-prompt-strategy.md`
+4. Preserve source evidence for all factual and score-based claims
+5. Return structured outputs: `status`, `claims`, `artifacts`, `blockers`
+6. Anti-fabrication: report tool failures honestly; never substitute invented data
+7. Closing Loops: propose skills for reusable procedures; propose spec updates for gaps
 
 ## Pipeline Families
 
-New Showbiz operator pipelines:
-
-- Simple task fast path: `User / Interrogator -> Orchestrator -> ExecuteAgent / one specialist -> ReportAgent`
-- Content creation: `Interrogator -> Orchestrator -> MovieResearchAgent -> ContentAgent -> ValidateAgent -> PublishAgent -> ReportAgent`
-- Scheduled publishing: `Cron -> Orchestrator -> ContentAgent -> ValidateAgent -> PublishAgent -> MetricsAgent`
-- Engagement triage: `Orchestrator -> EngagementAgent -> EscalationAgent or MetricsAgent`
-- Factual dispute: `EngagementAgent -> EscalationAgent -> MovieResearchAgent -> human review -> ReportAgent`
-- Metrics reporting: `Orchestrator -> MetricsAgent -> AnalysisAgent -> ReportAgent`
-- Python standards review: `Orchestrator -> PythonStandardsAgent -> ReportAgent`
-- Generative composition: `Orchestrator -> ComposerAgent -> ReportAgent`
-- Self-improvement: `Any Agent -> improvement-queue -> Orchestrator -> SkillBuildingAgent -> ReportAgent`
+| Pipeline | Agents involved | Tier flow |
+|---|---|---|
+| Simple fast path | Session Director → any Tier 2 agent | 0 → 2 |
+| Content creation | ContentAgent → validate → draft → report | 0 → 1 → 2 |
+| Publish with receipt | PublishAgent → validate → publish → report | 0 → 1 → 2 |
+| Metrics snapshot | MetricsAgent → analysis → report | 0 → 1 → 2 |
+| Data capture | FetchAgent → validate → fetch → transform → report | 0 → 1 → 2 |
+| Knowledge distillation | DistillAgent → skill-builder → report | 0 → 1 → 2 |
+| Project coordination | ProjectManager → [specialist agents] → report | 0 → 1 → 2 |
+| Engagement triage | Session Director → engagement-agent → escalation-agent | 0 → 2 → 2 |
+| Factual dispute | engagement-agent → escalation-agent → movie-research-agent → human | 2 → 2 → 2 |
+| Self-improvement | any agent → distill-agent → skill-builder → report | 1 → 2 |
+| Ambiguous task | Session Director → orchestrator → [planned pipeline] | 0 → 1 → 2 |
 
 ## Shared Status Vocabulary
 
-- `CLEAR` — safe to proceed
-- `BLOCKED` — do not continue without user input or policy change
-- `PARTIAL` — usable but incomplete
-- `INSUFFICIENT` — evidence does not support a claim yet
-- `NO BASELINE` — comparison requested without a prior state
-- `COMPLETE` — taskable handoff returned with no blocker
+| Status | Meaning |
+|--------|---------|
+| `COMPLETE` | Task finished successfully |
+| `BLOCKED` | Cannot proceed; dependency missing or tool failed |
+| `PARTIAL` | Task partially done; remaining work documented |
+| `INSUFFICIENT` | Input was insufficient to complete the task |
+| `NO_BASELINE` | No prior state to compare against |
+| `CLEAR` | No action needed; info-only response |
+| `HOLD` | Escalation triggered; held for human review |
 
 ## Tool Routing
 
@@ -61,6 +76,5 @@ New Showbiz operator pipelines:
 - X writes: `mcp-x-mcp-write` toolset — disabled until Phase 3
 - Browser QA: `playwright` MCP (global) or `mcp-twitter-mcp` fallback
 - Escalation records: `newshowbiz_escalation` toolset
-- Metrics and reporting: `newshowbiz_metrics_read`, `newshowbiz_reporting` toolsets
 
-Last updated: 2026-06-01 — rewritten for New Showbiz operator; removed stale vault OS references.
+*Last updated: 2026-06-05 — restructured for three-tier execution model; added tier table, updated pipeline families.*

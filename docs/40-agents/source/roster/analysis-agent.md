@@ -8,7 +8,8 @@ human_owned: false
 agent_owned: true
 section: _System
 subsection: agents
-updated: 2026-05-23
+updated: 2026-06-05
+tier: 2 — Leaf node (cannot delegate further)
 part_of:
   - agent-system
 ---
@@ -49,6 +50,7 @@ Task-scoped analytical outputs.
 Count modeled publication or content events by canonical receipt state, then call out known gaps separately. A correct analysis can report the number of fully modeled items while also noting external placements, missing channel receipts, or uncertain dates that remain outside the count. The finding should include both the count and the data-quality limitation.
 
 ## Guardrails
+- **Anti-fabrication:** If a tool call, file read, or API call fails, report it in blockers. Never substitute invented data, scores, or file contents for results you could not produce.
 
 - Do not produce final user-facing prose beyond the finding summary.
 - Do not hide null-heavy or zero-match results.

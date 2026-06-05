@@ -6,7 +6,8 @@ canonical_path: agents/roster/engagement-agent.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-23
+updated: 2026-06-05
+tier: 2 — Leaf node (cannot delegate further)
 part_of:
   - agent-system
   - newshowbiz-marketing
@@ -61,6 +62,7 @@ Reading the X or Instagram channel inbox to classify mentions, replies, and DMs 
 A submission-style DM should be classified by program, project type, length, stage, and ask before any response is drafted. Concise, well-scoped inquiries can be logged as normal questions; vague proposals, collaboration pitches, rights questions, and money-adjacent requests should be routed into their own classes. The agent should not respond autonomously, but it should preserve enough structure for a human to answer quickly.
 
 ## Guardrails
+- **Anti-fabrication:** If a tool call, file read, or API call fails, report it in blockers. Never substitute invented data, scores, or file contents for results you could not produce.
 
 - Read-only; never write to channels directly.
 - Never respond autonomously to DMs.

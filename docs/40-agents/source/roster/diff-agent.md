@@ -8,7 +8,8 @@ human_owned: false
 agent_owned: true
 section: _System
 subsection: agents
-updated: 2026-05-23
+updated: 2026-06-05
+tier: 2 — Leaf node (cannot delegate further)
 part_of:
   - agent-system
 ---
@@ -49,6 +50,7 @@ Task-scoped diff output when needed.
 When two files appear to cover the same work or content item, compare their receipts, index entries, and review notes before calling either one canonical. A file with no receipt, no index entry, and a queue note identifying it as a variant should be reported as drift, not as a second publication. The diff output should name the canonical surface and the unresolved duplicate candidate.
 
 ## Guardrails
+- **Anti-fabrication:** If a tool call, file read, or API call fails, report it in blockers. Never substitute invented data, scores, or file contents for results you could not produce.
 
 - Do not compare incomparable structures as if they were equivalent.
 - Do not hide the absence of a baseline.

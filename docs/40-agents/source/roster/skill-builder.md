@@ -6,7 +6,8 @@ canonical_path: agents/roster/skill-builder.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-23
+updated: 2026-06-05
+tier: 2 — Leaf node (cannot delegate further)
 part_of:
   - agent-system
 ---
@@ -174,6 +175,7 @@ SkillBuildingAgent processes pending improvement work by creating validated seed
 ---
 
 ## Guardrails
+- **Anti-fabrication:** If a tool call, file read, or API call fails, report it in blockers. Never substitute invented data, scores, or file contents for results you could not produce.
 
 - Do not add skills for one-off tasks. A skill must be invocable by at least two agents or two pipeline families.
 - Do not apply refinements that expand an agent's core role or override guardrails without explicit user confirmation.

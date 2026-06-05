@@ -8,7 +8,8 @@ human_owned: false
 agent_owned: true
 section: _System
 subsection: agents
-updated: 2026-05-23
+updated: 2026-06-05
+tier: 2 — Leaf node (cannot delegate further)
 part_of:
   - agent-system
 ---
@@ -48,6 +49,7 @@ Nothing persistent.
 Before fetching an external source, ValidateAgent checks whether the task needs a source record, what source type will be used, and whether the source can support downstream provenance fields. It previews only enough structure to decide whether capture should proceed: author, URL or handle, likely storage path, access conditions, and downstream dependency. A mismatch blocks the handoff to FetchAgent rather than producing a partial ingest.
 
 ## Guardrails
+- **Anti-fabrication:** If a tool call, file read, or API call fails, report it in blockers. Never substitute invented data, scores, or file contents for results you could not produce.
 
 - Do not fetch the full source.
 - Do not ignore access restrictions.

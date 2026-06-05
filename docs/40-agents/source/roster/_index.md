@@ -6,66 +6,95 @@ canonical_path: agents/roster/_index.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-23
+updated: 2026-06-05
 part_of:
   - agent-system
 ---
 
 # Agent Roster Index
 
-Directory of specialist agents dispatched by the orchestrator. Annealed for the New Showbiz marketing operator on 2026-05-20.
+Directory of all agents in the New Showbiz operator system. Updated 2026-06-05 for three-tier execution architecture.
 
-## Intake
+**Total agents: 28** (1 Session Director + 7 Tier 1 pipeline agents + 21 Tier 2 subagents)
 
-- [Interrogator](interrogator.md) — task clarification and brief production
+---
 
-## New Showbiz Marketing
+## Tier 1 — Pipeline Agents
 
-Core marketing operator pipeline agents.
+These agents manage multi-step workflows and can spawn Tier 2 subagents via `delegate_task`.
 
-- [ContentAgent](content-agent.md) — generate policy-checked social content from movie and product data
-- [PublishAgent](publish-agent.md) — route approved ContentJobs through toolsets; return durable receipts
-- [EngagementAgent](engagement-agent.md) — read channel inbox; classify mentions and replies; trigger escalation
-- [EscalationAgent](escalation-agent.md) — hold flagged items; write EscalationRecords; route to human review
-- [MetricsAgent](metrics-agent.md) — collect PerformanceSnapshots; attribution joins; content-angle feedback
+- [Orchestrator](../orchestrator.md) — task classification, pipeline planning, output validation
+- [ContentAgent](content-agent.md) — content generation pipeline: validate → draft → report
+- [PublishAgent](publish-agent.md) — publication pipeline: validate → publish → receipt → report
+- [MetricsAgent](metrics-agent.md) — metrics pipeline: collect → analysis → report
+- [FetchAgent](fetch-agent.md) — data capture pipeline: validate → fetch → transform → report
+- [DistillAgent](distill-agent.md) — distillation pipeline: evaluate → skill-builder → report
+- [ProjectManager](project-manager.md) — project coordination: plan → dispatch → consolidate
 
-## Acquisition and Processing
+---
 
-General-purpose agents adapted for New Showbiz data and content flows.
+## Tier 2 — Subagents (Leaf Nodes)
 
-- [ValidateAgent](validate-agent.md) — content policy, brand rules, and ToS preflight
-- [FetchAgent](fetch-agent.md) — fetch product data from newshow.biz; channel reads via approved toolsets
-- [TransformAgent](transform-agent.md) — normalize product data into content briefs; format for channel targets
-- [AnalysisAgent](analysis-agent.md) — metrics analysis, attribution scoring, and performance computation
-- [MovieResearchAgent](movie-research-agent.md) — research film context, cast, reception, and representational claims before content creation
+These agents execute atomic tasks and cannot delegate further.
 
-## Operations
+### Intake
 
-- [LintAgent](lint-agent.md) — audit ContentJob receipts, EscalationRecords, and routing drift
-- [PythonStandardsAgent](python-standards-agent.md) — define and review Python coding standards, tooling policy, typing expectations, testing practices, and maintainability guidance with evidence-scored recommendations
-- [QueryAgent](query-agent.md) — answer questions about content history, prior posts, and deduplication
-- [DiffAgent](diff-agent.md) — compare metrics periods; detect engagement anomalies
-- [DistillAgent](distill-agent.md) — evaluate completed tasks for reusable procedure candidates
-- [ExecuteAgent](execute-agent.md) — run known procedures from the live skill registry; preferred executor for simple known procedures
-- [ReportAgent](report-agent.md) — format and deliver output while preserving blockers
+- [Interrogator](interrogator.md) — task clarification and structured brief production
 
-## System Improvement
+### Research and Evidence
 
-- [SkillBuildingAgent](skill-builder.md) — construct skills from proposals; apply agent refinements; convert between framework formats (Hermes, OpenAI, Anthropic, LangChain, CrewAI, AutoGen, MCP)
+- [Researcher](researcher.md) — multi-source web research, fact-checking, literature review
+- [MovieResearchAgent](movie-research-agent.md) — film evidence: production context, scores, representational claims
 
-## Specialist
+### Content and Voice
 
-- [ComposerAgent](composer.md) — literary and editorial voice work; primary brand voice for marketing copy requiring the Composer register
-- [ComposerTranslatorAgent](composer-translator.md) — Golden Age Castilian into Composer register
+- [Compose](composer.md) — literary writing, criticism, essays (C. Composer voice)
+- [Writer](writer.md) — general prose, documentation, marketing copy, scripts
+- [ComposerTranslator](composer-translator.md) — Golden Age Castilian translation in Composer register
+- [Editor](editor.md) — editing, proofreading, tone calibration, quality gating
 
-## Archived (vault-oriented; not active for New Showbiz)
+### Design
 
-These agents were built for the Sandbatch Vault Knowledge OS. They are preserved in `archive/` for reference and framework portability but are not part of the active New Showbiz operator roster.
+- [Designer](designer.md) — visual design, diagrams, HTML/CSS/SVG, layout
 
-- `archive/ingest-agent.md` — vault source and record formalization
-- `archive/concept-agent.md` — vault concept promotion
-- `archive/librarian-agent.md` — vault organizational completeness
-- `archive/historian.md` — structural historical analysis
-- `archive/research-page.md` — archival retrieval (superseded by MovieResearchAgent)
+### Analysis and Data
 
-Last updated: 2026-05-23 — Added Simple Task Fast Path support and PythonStandardsAgent; roster examples remain preserved across active and archived specs.
+- [AnalysisAgent](analysis-agent.md) — computation over normalized data, rankings, summaries
+- [QueryAgent](query-agent.md) — evidence-based vault lookups
+- [DiffAgent](diff-agent.md) — snapshot comparison, change detection
+- [ValidateAgent](validate-agent.md) — pre-fetch access checks, schema gating
+- [TransformAgent](transform-agent.md) — normalization of captured material
+
+### Operations
+
+- [LintAgent](lint-agent.md) — vault/record health checks, structural repair
+- [PythonStandardsAgent](python-standards-agent.md) — Python code standards audit
+- [ExecuteAgent](execute-agent.md) — run known procedures from the live skill registry
+
+### Content Operations
+
+- [EngagementAgent](engagement-agent.md) — inbox triage, mention classification, escalation routing
+- [EscalationAgent](escalation-agent.md) — risk incident logging, human routing, HOLD status
+
+### System Improvement
+
+- [SkillBuilder](skill-builder.md) — construct skill files from distilled proposals
+- [ReportAgent](report-agent.md) — format and package specialist output for delivery
+
+### Knowledge Management
+
+- [Librarian](librarian.md) — Obsidian vault organization, MOCs, PKM
+
+---
+
+## Archived (not active for New Showbiz)
+
+These agents were built for the Sandbatch Vault Knowledge OS and are preserved for reference.
+
+- `archive/ingest-agent.md`
+- `archive/concept-agent.md`
+- `archive/librarian-agent.md` (superseded by active Librarian above)
+- `archive/historian.md`
+- `archive/research-page.md`
+
+*Last updated: 2026-06-05 — added 6 new active agents (writer, designer, researcher, editor, librarian, project-manager); restructured for three-tier model.*

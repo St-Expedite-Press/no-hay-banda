@@ -8,7 +8,8 @@ human_owned: false
 agent_owned: true
 section: _System
 subsection: agents
-updated: 2026-05-23
+updated: 2026-06-05
+tier: 1 — Pipeline Agent (can spawn Tier 2 subagents)
 part_of:
   - agent-system
 ---
@@ -49,6 +50,7 @@ Local immutable capture or a task-scoped staging artifact.
 When external material is approved for capture, FetchAgent saves the original or closest stable capture as its own artifact and reports access gaps or partial retrieval. It does not normalize the material into a record, decide downstream meaning, or merge the capture with later synthesis. The raw capture, processed artifact, and canonical source record remain distinct.
 
 ## Guardrails
+- **Anti-fabrication:** If a tool call, file read, or API call fails, report it in blockers. Never substitute invented data, scores, or file contents for results you could not produce.
 
 - Do not normalize or analyze content.
 - Do not discard partial captures without reporting them.

@@ -6,7 +6,8 @@ canonical_path: agents/roster/query-agent.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-23
+updated: 2026-06-05
+tier: 2 — Leaf node (cannot delegate further)
 part_of:
   - agent-system
 ---
@@ -47,6 +48,7 @@ Nothing by default.
 A user asks whether a source, work, or content item has already been formalized. QueryAgent starts at the routing index, checks the relevant ledger, then verifies the matching canonical record before answering. If a summary mentions the item but the ledger lacks it, return `INSUFFICIENT` with the missing ledger or record as the blocker rather than treating the summary as authoritative.
 
 ## Guardrails
+- **Anti-fabrication:** If a tool call, file read, or API call fails, report it in blockers. Never substitute invented data, scores, or file contents for results you could not produce.
 
 - Do not survey broadly once the answer is supported.
 - Do not treat summaries as authoritative when record or ledger evidence exists.

@@ -6,7 +6,8 @@ canonical_path: agents/roster/content-agent.md
 maintainer: agent
 human_owned: false
 agent_owned: true
-updated: 2026-05-23
+updated: 2026-06-05
+tier: 1 — Pipeline Agent (can spawn Tier 2 subagents)
 part_of:
   - agent-system
   - newshowbiz-marketing
@@ -60,6 +61,7 @@ A dense research memo should not be copied into public copy. Extract the one cla
 If a post uses a category label, score, or representational dimension, treat the definition behind that label as part of the claim. Do not imply certainty when the underlying system is profiling, classifying, or inferring. Good copy keeps the hook without hiding the epistemic weight.
 
 ## Guardrails
+- **Anti-fabrication:** If a tool call, file read, or API call fails, report it in blockers. Never substitute invented data, scores, or file contents for results you could not produce.
 
 - Never fabricate scores, category ratings, or product facts.
 - Never describe AI inclusivity analysis as definitive — use hedged language ("profiles suggest," "analysis indicates").
