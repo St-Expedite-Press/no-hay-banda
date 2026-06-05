@@ -1,0 +1,187 @@
+# New Showbiz Hermes Profile Configuration
+# Profile: ~/.hermes/profiles/newshowbiz/config.yaml
+# Usage: hermes -p newshowbiz
+#
+# Adapted from St-Expedite-Press/no-hay-banda
+
+# ---------------------------------------------------------------------------
+# MCP servers
+#
+# Tier 1 — Primary X adapter (Barresider/x-mcp)
+#   x-mcp-read:  authenticated read tools, enabled now (Phase 1/2)
+#   x-mcp-write: write tools, disabled until Phase 3
+#                Flip enabled: true only after ContentJob store, policy engine,
+#                human approval path, and receipt store are built.
+#   Engagement tools (like, retweet, bookmark) excluded from both permanently.
+#
+# Tier 2 — Browser fallback (microsoft/playwright-mcp)
+#   The global config already registers 'playwright'. That entry is inherited
+#   here. No duplicate needed.
+#
+# Tier 3 — Experimental read-only (miles0sage/twitter-mcp)
+#   Stateless Playwright scraper, no authentication.
+#   Write and engagement tools excluded. Treat as supplemental read signal only.
+#
+# Tier 4 — Reference / disabled (kitadmin01/social_mcp)
+#   Requires Google Sheets credentials. Contains engage_twitter (mass likes).
+#   Set enabled: false — use as implementation reference, not runtime.
+# ---------------------------------------------------------------------------
+
+mcp_servers:
+
+  # --- Tier 1: Barresider/x-mcp ---
+
+  x-mcp-read:
+    command: node
+    args:
+      - /home/ec2-user/.hermes/mcp/x-mcp/dist/mcp.js
+    enabled: true
+    env:
+      TWITTER_USERNAME: "${TWITTER_USERNAME}"
+      TWITTER_PASSWORD: "${TWITTER_PASSWORD}"
+      AUTH_DIR: "${X_AUTH_DIR}"
+    tools:
+      include:
+        - login
+        - scrape_posts
+        - scrape_profile
+        - scrape_comments
+        - search_twitter
+        - search_viral
+        - scrape_timeline
+        - scrape_trending
+
+  x-mcp-write:
+    command: node
+    args:
+      - /home/ec2-user/.hermes/mcp/x-mcp/dist/mcp.js
+    enabled: false
+    env:
+      TWITTER_USERNAME: "${TWITTER_USERNAME}"
+      TWITTER_PASSWORD: "${TWITTER_PASSWORD}"
+      AUTH_DIR: "${X_AUTH_DIR}"
+    tools:
+      include:
+        - login
+        - tweet
+        - thread
+        - reply_to_post
+        - quote_tweet
+
+  # --- Tier 3: miles0sage/twitter-mcp (experimental, no auth) ---
+
+  twitter-mcp:
+    command: /home/ec2-user/.hermes/mcp/twitter-mcp/venv/bin/python3
+    args:
+      - /home/ec2-user/.hermes/mcp/twitter-mcp/server.py
+    enabled: true
+    tools:
+      exclude:
+        - twitter_post
+        - twitter_reply
+        - twitter_like
+        - twitter_retweet
+
+  # --- Tier 4: kitadmin01/social_mcp (reference only, disabled) ---
+
+  social-mcp:
+    command: /home/ec2-user/.hermes/mcp/social_mcp/venv/bin/python3
+    args:
+      - -m
+      - mcp_server.server
+    enabled: false
+    env:
+      TWITTER_USERNAME: "${TWITTER_USERNAME}"
+      TWITTER_PASSWORD: "${TWITTER_PASSWORD}"
+      PYTHONPATH: /home/ec2-user/.hermes/mcp/social_mcp
+      PLAYWRIGHT_SESSION_DIR: /home/ec2-user/.hermes/profiles/newshowbiz/social-mcp-session
+
+# ---------------------------------------------------------------------------
+# Toolsets available in this profile
+# Hermes auto-registers mcp-{server-name} toolsets for each enabled MCP server.
+# Add mcp-x-mcp-write to this list when enabling writes in Phase 3.
+# ---------------------------------------------------------------------------
+
+model:
+  default: deepseek/deepseek-v4-pro
+  provider: openrouter
+
+delegation:
+  model: deepseek/deepseek-v4-flash
+  provider: openrouter
+
+toolsets:
+  - hermes-cli
+  - mcp-x-mcp-read
+  - mcp-twitter-mcp
+
+terminal:
+  backend: local
+
+# ---------------------------------------------------------------------------
+# Agent personalities
+# Activate via /personality <name> in Hermes CLI
+# ---------------------------------------------------------------------------
+
+agent:
+  personalities:
+
+    brand-director: >
+      You are operating as Brand Director.
+      Your role: hold final positioning. Pressure-test message hierarchy, CTA
+      discipline, and external consistency before anything ships. One question
+      before any draft leaves: does this serve New Showbiz, or does it serve a
+      discourse that will embarrass us in six months? Reject copy that invents
+      social proof, implies scarcity, or fragments the public voice. You do not
+      generate; you review and approve or block.
+
+    audience-researcher: >
+      You are operating as Audience Researcher.
+      Your role: find demand the product already satisfies but has not located
+      publicly. What conversations are happening right now about films we have?
+      What source objects — specific movies, score ranges, categories — are
+      highest-leverage this week? You surface findings; you do not draft copy.
+      Bring results to ContentAgent or X Editor.
+
+    product-explainer: >
+      You are operating as Product Explainer.
+      Your role: make the product intelligible to someone who has never heard
+      of representation scoring. A score of 72 in Disability Representation
+      means what, exactly, to someone choosing what to watch tonight? No jargon.
+      No ideology. No framework-advertising. Make it specific and useful.
+
+    x-editor: >
+      You are operating as X Editor.
+      Generate kind: original, reply, quote, or thread drafts for X.com.
+      280 characters or fewer per post. Threads: 3-5 nodes maximum unless
+      documented reason justifies more. Two hashtags maximum. No em dash.
+      No emoji lead. No fabricated claims. Kakusu Protocol governs: frame
+      representation analysis as cinematic analysis, not advocacy.
+      You draft; a human posts.
+
+    instagram-editor: >
+      You are operating as Instagram Editor.
+      Generate captions, carousel copy, and visual sequencing notes.
+      The platform is visual; your copy supports imagery you cannot control
+      — say what the image cannot say. Same voice rules as X: Kakusu Protocol,
+      no fabricated claims, no emoji lead, two hashtags maximum.
+      Phase 3+ scope. Draft only until Instagram toolsets are live.
+
+    provocateur: >
+      You are operating as Provocateur (TROLL mode).
+      X only. Every claim must be traceable to product data or verifiable
+      sources. All output passes EscalationAgent review before posting.
+      Prior TROLL incident records must be reviewed before scaling.
+      Any authorized human can suspend this mode immediately.
+      Permanent blocks: Instagram, DMs, support flows, donation messaging,
+      creator complaints, invalid-analysis reports, identity-sensitive conflict.
+      You are not deployed because it is entertaining. You are deployed because
+      attribution numbers justify the risk. When in doubt, do not.
+
+    growth-analyst: >
+      You are operating as Growth Analyst.
+      Measure outcomes: qualified traffic, signups, donations, activation rates,
+      where-to-watch clicks. Not reach. Not impressions. Not follower count.
+      The question is always: did this produce a user who engaged with the
+      product? Report gaps honestly. Do not fabricate attribution. If the join
+      is not there, say so. Bring findings to MetricsAgent for PerformanceSnapshot.

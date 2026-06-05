@@ -1,0 +1,284 @@
+import "dotenv/config";
+
+import { Page } from "playwright";
+import { chromium, devices } from "playwright-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import path from "path";
+import fs from "fs";
+
+chromium.use(StealthPlugin());
+
+async function doLogin(page: Page, user: string, password: string) {
+  // Patch: x.com (twitter.com redirects but races React hydration)
+  await page.goto("https://x.com/i/flow/login", { waitUntil: "domcontentloaded" });
+  await page.waitForTimeout(4000);
+
+  // Patch: updated selector — X renamed input to username_or_email
+  await page.fill('input[name="username_or_email"]', user, { timeout: 15000 });
+
+  // Patch: X renamed "Next" to "Continue" in some flows — try both
+  await page.locator('span:text("Next"), span:text("Continue")').first().click({ timeout: 10000 });
+
+  await page.waitForTimeout(2000);
+
+  const phoneOrEmailPromptSelector =
+    '//span[contains(text(), "Enter your phone number or email address")]';
+  const verificationInputSelector = '//input[@data-testid="ocfEnterTextTextInput"]';
+
+  const isPhoneOrEmailPromptVisible = await page
+    .locator(phoneOrEmailPromptSelector)
+    .isVisible()
+    .catch(() => false);
+  const isVerificationInputVisible = await page
+    .locator(verificationInputSelector)
+    .isVisible()
+    .catch(() => false);
+
+  if (isPhoneOrEmailPromptVisible || isVerificationInputVisible) {
+    const twitterEmail = process.env.TWITTER_EMAIL;
+    const twitterPhone = process.env.TWITTER_PHONE;
+
+    if (twitterEmail) {
+      console.error("Email/phone verification prompted. Attempting with TWITTER_EMAIL.");
+      await page.fill(verificationInputSelector, twitterEmail);
+      await page.locator('span:text("Next"), span:text("Continue")').first().click({ timeout: 10000 });
+      await page.waitForTimeout(2000); // Wait for password page or further verification
+    } else if (twitterPhone) {
+      console.error("Email/phone verification prompted. Attempting with TWITTER_PHONE.");
+      await page.fill(verificationInputSelector, twitterPhone);
+      await page.locator('span:text("Next"), span:text("Continue")').first().click({ timeout: 10000 });
+      await page.waitForTimeout(2000); // Wait for password page or further verification
+    } else {
+      throw new Error(
+        "Email or phone verification required by Twitter, but neither TWITTER_EMAIL nor TWITTER_PHONE environment variables are set."
+      );
+    }
+  }
+
+  const passwordInput = '//input[@autocomplete="current-password"]';
+  const passwordFieldExists = await page
+    .locator(passwordInput)
+    .isVisible()
+    .catch(() => false);
+
+  if (!passwordFieldExists) {
+    // If password field is not found, check for common reasons
+    const stillOnEmailPhoneVerification = await page
+      .locator(verificationInputSelector) // Check if still on the same verification input
+      .isVisible()
+      .catch(() => false);
+    const confirmIdentityPromptVisible = await page
+      .locator('//span[contains(text(), "Confirm your identity")]')
+      .isVisible()
+      .catch(() => false);
+
+    if (stillOnEmailPhoneVerification) {
+      throw new Error(
+        "Failed to proceed past email/phone verification. The provided TWITTER_EMAIL/TWITTER_PHONE might be incorrect, or further verification is needed."
+      );
+    } else if (confirmIdentityPromptVisible) {
+      throw new Error(
+        "Twitter requires additional identity confirmation that cannot be automated (e.g., 'Confirm your identity' prompt). Please login manually."
+      );
+    } else {
+      throw new Error(
+        "Password field not found, and no recognized verification step is active. The login flow may have changed or an unexpected verification is required."
+      );
+    }
+  }
+
+  await page.fill(passwordInput, password);
+
+  await page.click("//span[contains(text(), 'Log in')]");
+
+  try {
+    await Promise.race([
+      page.waitForURL("https://x.com/home", { timeout: 10000 }),
+      page.waitForSelector('//span[contains(text(), "Wrong password")]', { timeout: 5000 }),
+      page.waitForSelector('//span[contains(text(), "Incorrect")]', { timeout: 5000 }),
+      page.waitForSelector('//div[@role="alert"]', { timeout: 5000 }),
+    ]);
+  } catch (error) {
+    // Check if we're still on login page (indicates error)
+    if (page.url().includes("/i/flow/login") || page.url().includes("twitter.com/login")) {
+      const wrongPasswordError = await page
+        .locator('//span[contains(text(), "Wrong password")]')
+        .isVisible()
+        .catch(() => false);
+      const incorrectError = await page
+        .locator('//span[contains(text(), "Incorrect")]')
+        .isVisible()
+        .catch(() => false);
+      const alertError = await page
+        .locator('//div[@role="alert"]')
+        .isVisible()
+        .catch(() => false);
+
+      if (wrongPasswordError || incorrectError) {
+        throw new Error("Wrong password. Please check your credentials and try again.");
+      } else if (alertError) {
+        const alertText = await page
+          .locator('//div[@role="alert"]')
+          .textContent()
+          .catch(() => "");
+        throw new Error(`Login failed: ${alertText || "Unknown error occurred"}`);
+      } else {
+        throw new Error("Login failed. Unable to navigate to home page after login attempt.");
+      }
+    }
+  }
+
+  // Final check to ensure we're logged in
+  if (!page.url().includes("x.com/home")) {
+    throw new Error("Login failed. Did not reach the home page after login.");
+  }
+}
+
+const authDir = process.env.AUTH_DIR || "playwright/.auth";
+// Patch: ensure auth directory exists before any storageState write
+if (!fs.existsSync(authDir)) {
+  fs.mkdirSync(authDir, { recursive: true });
+}
+const authFile = path.join(authDir, "twitter.json");
+
+function getProxyConfig() {
+  const proxyUrl = process.env.PROXY_URL;
+  if (!proxyUrl) {
+    return undefined;
+  }
+
+  const proxyConfig = {
+    server: proxyUrl,
+    username: process.env.PROXY_USERNAME,
+    password: process.env.PROXY_PASSWORD,
+  };
+
+  if (proxyUrl.includes("@")) {
+    const match = proxyUrl.match(/^(https?:\/\/)(?:([^:]+):([^@]+)@)?(.+)$/);
+    if (match) {
+      proxyConfig.server = match[1] + match[4];
+      proxyConfig.username = proxyConfig.username || match[2];
+      proxyConfig.password = proxyConfig.password || match[3];
+    }
+  }
+
+  // Patch: console.log pollutes MCP stdio (JSON-RPC uses stdout)
+  console.error("Using proxy config:", proxyConfig);
+  return {
+    server: proxyConfig.server,
+    ...(proxyConfig.username && { username: proxyConfig.username }),
+    ...(proxyConfig.password && { password: proxyConfig.password }),
+  };
+}
+
+async function createBrowser() {
+  const proxyConfig = getProxyConfig();
+
+  const browser = await chromium.launch({
+    timeout: 60000,
+    headless: process.env.NODE_ENV !== "development",
+    slowMo: 1000,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-accelerated-2d-canvas",
+    ],
+    ...(proxyConfig && { proxy: proxyConfig }),
+  });
+
+  return browser;
+}
+
+export async function getUnauthenticatedPage() {
+  const browser = await createBrowser();
+  const context = await browser.newContext({
+    ...devices["Desktop Chrome"],
+    locale: "en-US",
+  });
+  const page = await context.newPage();
+
+  return {
+    page,
+    close: async () => {
+      await page.close();
+      await context.close();
+      await browser.close();
+    },
+  };
+}
+
+export async function getAuthenticatedPage() {
+  const browser = await createBrowser();
+
+  let context;
+  try {
+    context = await browser.newContext({
+      ...devices["Desktop Chrome"],
+      storageState: authFile,
+      locale: "en-US",
+    });
+  } catch (error) {
+    console.error("No auth file found, creating new context...");
+    context = await browser.newContext({
+      ...devices["Desktop Chrome"],
+      locale: "en-US",
+    });
+  }
+
+  await context.addInitScript(
+    "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
+  );
+
+  const page = await context.newPage();
+
+  await page.goto("https://x.com/home");
+
+  if (page.url().includes("/i/flow/login") || page.url().includes("twitter.com/login")) {
+    console.error("Not logged in, performing automatic login...");
+
+    const user = process.env.TWITTER_USERNAME;
+    const password = process.env.TWITTER_PASSWORD;
+    if (!user || !password) {
+      throw new Error("You need to set the TWITTER_USERNAME and TWITTER_PASSWORD env variables");
+    }
+
+    await doLogin(page, user, password);
+
+    console.error("Saving new auth state...");
+    await saveState(page);
+  }
+
+  return {
+    page,
+    close: async () => {
+      await page.close();
+      await context.close();
+      await browser.close();
+    },
+  };
+}
+
+export async function saveState(page: Page) {
+  return page.context().storageState({ path: authFile });
+}
+
+export async function login() {
+  const user = process.env.TWITTER_USERNAME;
+  const password = process.env.TWITTER_PASSWORD;
+  if (!user || !password) {
+    throw new Error("You need to set the TWITTER_USERNAME and TWITTER_PASSWORD env variables");
+  }
+
+  const { page, close } = await getUnauthenticatedPage();
+
+  console.error("Logging in...");
+  await doLogin(page, user, password);
+
+  console.error("Saving auth...");
+  await page.context().storageState({ path: authFile });
+
+  await close();
+
+  console.error("Done!");
+}
