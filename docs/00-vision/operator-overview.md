@@ -14,21 +14,27 @@ The marketing operator is an autonomous agent system — built on a customized H
 
 ## System State as of 2026-06-05
 
-The operator is deployed and operational on EC2 (i-05451add3165b57ff). Oneshot mode is confirmed working. The content pipeline has been exercised: DeepSeek V4 Pro was handed film data, read the template library, and produced on-brand drafts that passed Kakusu Protocol constraints. Two bootstrapped ContentJob JSON files sit in the review queue awaiting human decisions. What remains to complete Phase 1 is X authentication, followed by a production content run with fresh research.
+The operator is deployed and operational on EC2 (i-05451add3165b57ff). The Telegram gateway (`buchenwald_bettybot`) is live — the operator can be controlled from a mobile device without SSH access. A full pipeline run was triggered via Telegram, producing a draft for *Daughters of the Dust* (1991, Julie Dash) that was on-brand in voice and structure. The draft was rejected because the agent fabricated the film's Racial & Ethnic Diversity score (reported `94/100`; actual score is `9.8/10`) when the source page was inaccessible without auth. This is the anti-fabrication failure mode documented in the system design — confirmed in production for the first time.
+
+Two blockers remain before a verified production run can complete: newshow.biz movie pages are auth-gated server-side (no public API; Playwright without credentials hits a 307 redirect), and the X account `stex_press` is rate-limited on login (one manual browser login from a non-EC2 IP would clear it).
 
 | Layer | State |
 |---|---|
 | Hermes runtime | **Live** — v0.15.1, DeepSeek V4 Pro/Flash via OpenRouter |
-| Oneshot mode (`hermes -p newshowbiz --yolo -z`) | **Confirmed working** — profile config bug found and fixed |
-| Three-tier agent system | **Live** — 20 agents (Tier 0/1/2), consolidated from 29; all tier declarations in place |
-| Anti-fabrication enforcement | **Live** — present at SOUL, contract, and every agent file |
-| Content pipeline | **Confirmed working** — templates read, drafts produced, ContentJob store populated |
-| First content run (DeepSeek output) | **Complete** — discovery post (255 chars) and 3-post thread on Racial & Ethnic (9.6 score) |
-| Human review workflow | **Live** — procedure doc + review-decision-record skill; 2 drafts pending review |
+| Oneshot mode | **Confirmed working** — profile config self-contained (model block fix applied) |
+| Telegram gateway | **Live** — `buchenwald_bettybot`; operator controllable via Telegram from mobile |
+| Three-tier agent system | **Live** — 20 agents (consolidated from 29); all tier declarations in place |
+| Anti-fabrication enforcement | **Live — failed once in production** — Daughters of the Dust, 2026-06-05: score fabricated when source was inaccessible |
+| Content pipeline | **Confirmed working** — templates read, Kakusu Protocol enforced, drafts produced |
+| newshow.biz score scraping | **Blocked** — movie pages return 307 redirect without auth; no public API; agent cannot pull scores independently |
+| Human review workflow | **Live** — review-decision-record skill; 2 bootstrapped drafts in queue (pending replacement) |
+| Monitoring | **Live** — run-pipeline.sh failure logger; systemd weekly log-rotation timer |
+| Phase 3 gate infrastructure | **Built** — telegram-notify + telegram-await-approval skills; 6-gate activation checklist |
+| X read tools (x-mcp-read) | **Built, auth pending** — Barresider fork compiled; `stex_press` rate-limited on login |
 | X read tools (twitter-mcp) | **Partially live** — public profile lookup confirmed; search requires auth |
-| X read tools (x-mcp-read) | **Built, auth pending** — Barresider local fork patched and compiled; login not yet called |
-| X write tools | **Configured, disabled** — Phase 3 gate enforced at config level |
+| X write tools | **Configured, disabled** — Phase 3 gate; 6 binary conditions must pass before enabling |
 | Autonomous publishing | **Not started** — Phase 3 prerequisite |
+| Approved content queue | **0 posts** — production run blocked on two resolved prerequisites |
 | Instagram | **Not started** — Phase 5 |
 
 ---
@@ -117,27 +123,28 @@ These are not preferences. They are constraints baked into the system at the age
 
 ## Assessment: Where the Project Stands
 
-**The content pipeline works.** This is no longer a theoretical claim. DeepSeek V4 Pro, operating through the newshowbiz profile in oneshot mode, read the template library without prompting, applied the correct structural constraints, enforced Kakusu Protocol character limits and term prohibitions, and produced drafts that are on-brand. The discovery post came in at 255 characters. The thread-breakdown on Racial and Ethnic representation ran three posts against a 9.6 score. The model verified character counts before returning. It did not use loaded advocacy language. It framed scores as analytical observations: "The multiverse is not a metaphor for diversity; it is built from it." That is the film-critic register working as designed.
+**The Telegram gateway is the most significant development since the last assessment.** The operator can now be controlled from a mobile device via Telegram message. A full pipeline — research, draft, template selection, Kakusu Protocol enforcement — was triggered from Telegram and ran without SSH access to the EC2 instance. This is not a Phase 3 capability. This is the system working as designed at Phase 1. It changes the operational picture: the human operator does not need to be at a terminal to run the content cycle.
 
-**The model block bug is a good example of why the hacked-instance framing matters.** Interactive mode worked for weeks. Oneshot mode silently failed. The root cause was non-obvious and required reading the Hermes source to understand how profile configs are loaded in `-z` mode versus interactive mode. This is not a Hermes bug — it is a consequence of running a customized deployment where interactive and oneshot modes have different config resolution paths. Anyone operating this system should treat the profile config as fully independent of the global config and verify that both modes work after any config change.
+**The anti-fabrication stack was tested in production and failed.** The Daughters of the Dust run produced a draft claiming `94/100 for Racial & Ethnic representation`. The actual score on newshow.biz is `9.8/10`. The format was wrong (the site uses X.X/10, not XX/100), the number was wrong (98/100 if converted, not 94), and the agent had no way to verify because the movie page returned a 307 redirect without credentials. The draft was caught in human review and rejected. The failure mode is exactly the one documented in the anti-fabrication stack: inaccessible tool → plausible-looking fabricated output rather than BLOCKED status. The stack detected it at the review layer, not at the generation layer. That is the right place to catch it for now, but it is not where we want to catch it permanently.
 
-**The Kakusu Protocol creative decision is validated.** The concern going in was whether an LLM instructed to avoid advocacy framing would produce flat, hedged copy as a result. It did not. DeepSeek reached naturally for film-structural analysis — cinematic architecture, directorial choices, narrative function — when the templates prohibited the loaded terms. This is not a constraint working around quality; it is a constraint producing quality. The protocol exists for brand safety reasons, but it turns out to be editorially correct as well.
+**The newshow.biz auth gap is the critical Phase 1 blocker.** The agent cannot do independent film research without credentials to access movie pages. Every workaround explored has a hard wall: the 307 redirect is server-side, there is no public API, and Playwright without a session cookie hits the same redirect. The fix is newshow.biz login credentials in the profile `.env`. Until those exist, every production run requires a human to look up scores and hand them to the agent — which is not what this system is built for.
 
-**The remaining gap is not "does the system work" — it is "does the output survive human review at production volume."** Two bootstrapped drafts are in the queue. They were produced from film data handed directly to the agent, not from the agent doing its own research. A full production cycle means the agent finds the film, pulls the score data, applies the template, and produces a draft that earns a human approval — not because the human is being lenient, but because the content is actually ready to post. That cycle has not run yet. When it runs three to five times in sequence, and the reviewer is making real approve/reject decisions rather than bootstrapping examples, that is when Phase 1 is genuinely complete.
+**The X auth block is a temporary annoyance, not a structural problem.** `stex_press` hit a login rate limit on EC2 IP ranges. One manual browser login from a non-EC2 IP clears the rate limit window. After that, the Playwright login tool saves a session cookie to `x-auth/twitter.json` and the system does not need to re-login on every post.
 
-**The operator has no audience yet.** The X account (`@new_show_biz`) exists and has some following. Growing a relevant audience for a representation-scored movie catalog requires a consistent content strategy over weeks and months. The operator is ready to execute that strategy. The decisions about which films to lead with, what cadence to run, and what CTA to emphasize are human decisions that have not yet been made.
+**The Kakusu Protocol creative decision remains validated.** The Daughters of the Dust draft — fabricated score aside — used the film-critic register correctly. "Julie Dash's 1991 debut refuses the familiar documentary gaze — the Gullah Geechee women carry their own archive." That is the voice the protocol is designed to produce. The content problem is not the framing; it is the data sourcing.
 
-**Phase 3 (autonomous publish) is the real gate.** Everything before Phase 3 is governed by a human with final say on every post. Phase 3 introduces the policy engine and receipt store that allow the system to publish without asking. That is where the risk/reward calculus changes and where the Telegram oversight gate becomes mandatory.
+**Phase 3 infrastructure is built.** The Telegram gate skills (`telegram-notify`, `telegram-await-approval`), the activation checklist with 6 binary gates, the credential rotation doc, the failure logging wrapper, and the weekly log-rotation timer are all in place. Phase 3 is not blocked on infrastructure. It is blocked on Phase 1 being complete, which requires the approved content queue to exist, which requires the newshow.biz auth gap to close.
 
 ---
 
 ## Next Actions (Phase 1 Completion)
 
-1. **X authentication** — invoke the `login` tool in interactive mode (`hermes -p newshowbiz`), verify `x-auth/twitter.json` is written, confirm x-mcp-read search works
-2. **Production content run** — agent researches 3–5 films independently (not from data handed to it), produces drafts using the template library, all drafts go through real human review decisions
-3. **Human decisions** — campaign priorities, post cadence (X vs Instagram split), CTA preference (browse / signup / donate), review SLA
-4. **Build 7-day queue** — 14–21 approved posts across X and Instagram
-5. **Phase 1 exit report** — `report-agent` over store/ → commit to `docs/50-rollout/phase-1-exit-report.md`
+1. **newshow.biz credentials** — add login email and password to `~/.hermes/profiles/newshowbiz/.env` as `NEWSHOWBIZ_EMAIL` and `NEWSHOWBIZ_PASSWORD`; update `movie-research-agent` to use Playwright for authenticated score scraping
+2. **X authentication** — log into `stex_press` in a real browser from any non-EC2 IP to clear the rate limit; then invoke the `login` tool in `hermes -p newshowbiz` to save the session cookie
+3. **Production content run** — agent researches 3–5 films independently via Playwright-authenticated newshow.biz pages, drafts using the template library, all drafts go through real human review via Telegram
+4. **Human decisions** — campaign priorities (which films/categories to lead with), post cadence, CTA preference (browse / signup / donate)
+5. **Build 7-day approved queue** — 14–21 approved posts with verified source refs
+6. **Phase 1 exit report** — `report-agent` over `store/` → commit to `docs/50-rollout/phase-1-exit-report.md`
 
 ---
 

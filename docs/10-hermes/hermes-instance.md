@@ -278,6 +278,13 @@ Three write skills implement the store protocol:
 | `escalation-record-write` | Write an EscalationRecord when a risk trigger fires |
 | `review-decision-record` | Record human approve/reject/revise; move file to appropriate directory; append to review-log |
 
+Two Phase 3 gate skills manage the Telegram oversight loop:
+
+| Skill | Purpose |
+|---|---|
+| `telegram-notify` | Send publish request to `buchenwald_bettybot`; returns `message_id` |
+| `telegram-await-approval` | Poll for APPROVE/REJECT reply; 4-hour timeout → HOLD |
+
 ### 5.7 Content template library
 
 **Stock Hermes** has no platform-specific content templates.
@@ -336,7 +343,8 @@ hermes -p newshowbiz
 | `store/rejected/` | Rejected ContentJobs |
 | `store/review-log.jsonl` | Audit trail (one JSON line per decision) |
 | `skills/` | Global bundled skills + 6 custom New Showbiz skills + template library |
-| `sessions/` | Conversation session history (16 sessions) |
+| `sessions/` | Conversation session history (16 sessions recorded) |
+| `bin/` | Operational scripts: `run-pipeline.sh` (failure logger), `rotate-logs.sh` (weekly archive) |
 | `memories/` | Agent memory store (currently empty) |
 | `cron/` | Scheduled job state |
 | `logs/` | Session and MCP logs |
@@ -440,6 +448,8 @@ The `newshowbiz` profile has access to 109 skills across 31 categories. Most are
 | `review-decision-record` | Custom | Record human approve/reject/revise; move file to correct directory; append to `review-log.jsonl` | draft |
 | `x-publish-with-receipt` | Custom | Publish an approved ContentJob via the reviewed publish wrapper (Phase 3) | validated |
 | `escalation-record-create` | Custom | Create an EscalationRecord from a ContentJob or EngagementJob | validated |
+| `telegram-notify` | Custom | Send publish request to `buchenwald_bettybot`; return `message_id` for approval polling | draft |
+| `telegram-await-approval` | Custom | Poll Telegram for APPROVE/REJECT reply; 4h timeout → HOLD | draft |
 | `templates/x/*` | Custom | 5 X content templates with Kakusu Protocol compliance and platform constraints | active |
 | `templates/instagram/*` | Custom | 3 Instagram content templates | active |
 
@@ -548,3 +558,30 @@ VS Code server versions accumulate on EC2 and consume significant disk space.
 | Memory | Trace material, not business truth |
 | Cron | Must fetch durable state from store before acting; do not rely on session history |
 | Gateway | Internal oversight only; never use as public X or Instagram transport |
+
+---
+
+## 11. Operational Incidents
+
+### 11.1 Profile model block bug (2026-06-05)
+
+**Symptom:** `hermes -p newshowbiz -z` returned empty responses with exit code 1.
+**Root cause:** Oneshot mode reads only the profile config, not the global config. Profile had no `model` block.
+**Fix:** Added `model.default` and `delegation.model` to profile `config.yaml`.
+**Lesson:** Profile configs must be fully self-contained for oneshot use. Verify both interactive and oneshot modes after any config change.
+
+### 11.2 Anti-fabrication failure — Daughters of the Dust (2026-06-05)
+
+**Symptom:** Pipeline run via Telegram produced draft claiming `94/100 for Racial & Ethnic representation` for *Daughters of the Dust* (Julie Dash, 1991).
+**Actual score:** `9.8/10` for Racial & Ethnic Diversity (verified on newshow.biz).
+**Root cause:** `movie-research-agent` could not access `newshow.biz/movie/daughters-of-the-dust` (307 redirect — auth required). Instead of returning BLOCKED, DeepSeek substituted a plausible-looking fabricated score. Format was also wrong (site uses X.X/10, not XX/100).
+**Detection:** Human review — draft rejected before entering approved queue.
+**Fix applied:** None to the agent. The anti-fabrication stack caught this at the review layer, which is working as intended for Phase 1.
+**Permanent fix required:** Add newshow.biz credentials to profile `.env`; update `movie-research-agent` to authenticate via Playwright before scraping. Until then, every draft citing a score must be verified against the live site before approval.
+
+### 11.3 X login rate limit — stex_press (2026-06-05)
+
+**Symptom:** Playwright login to x.com for `stex_press` returned "We've temporarily limited your login."
+**Root cause:** X rate-limits login attempts from EC2 IP ranges after repeated failed or fresh attempts.
+**Fix:** Log into `stex_press` from a non-EC2 browser to clear the rate-limit window, then retry the `login` tool in an interactive hermes session.
+**Status:** Pending user action.

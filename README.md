@@ -2,7 +2,7 @@
 
 **What this is:** A deployed autonomous marketing operator for [newshow.biz](https://newshow.biz) built on a heavily customized ("hacked") instance of Hermes Agent v0.15.1. The system uses a 20-agent, three-tier architecture to research films from the New Showbiz catalog, generate governed social content, route it through human review, and (in Phase 3) publish to X and Instagram. It is live on EC2 and has produced content. This repository is the documentation package, canonical spec, and operational reference for that system.
 
-**Status:** Phase 1 operational. Content pipeline confirmed working. X authentication pending.
+**Status:** Phase 1 operational. Telegram gateway live — operator is controllable from mobile. Two blockers remain before production run: X auth (`stex_press` rate-limited) and newshow.biz credentials (movie pages auth-gated; agent cannot pull scores independently). Anti-fabrication failure recorded in production (2026-06-05): agent produced a fabricated score when the source page was inaccessible.
 
 ---
 
@@ -19,12 +19,16 @@
 | **Fallback model** | `anthropic/claude-sonnet-4` via OpenRouter |
 | **Agent tiers** | Tier 0 (1) · Tier 1 (6) · Tier 2 (13) = 20 agents total |
 | **Active MCP servers** | x-mcp-read (Barresider fork), twitter-mcp, playwright, github |
-| **Custom skills** | 6 New Showbiz domain skills + 8-template library |
+| **Telegram gateway** | `buchenwald_bettybot` — operator controllable from mobile via Telegram |
+| **Custom skills** | 8 domain skills + 8-template library |
+| **Phase 3 gate** | telegram-notify + telegram-await-approval skills built; activation checklist written |
+| **Monitoring** | run-pipeline.sh failure logger + systemd weekly log-rotation timer |
 | **Content pipeline** | Flat-file ContentJob store (Phase 1) |
-| **Sessions recorded** | 16 (including debugging sessions) |
-| **Drafts in review queue** | 2 (awaiting first human review decision) |
-| **Phase** | Phase 1 (~90% complete) |
-| **Phase gate** | X auth → production content run → 7-day approved queue |
+| **Sessions recorded** | 16 |
+| **Drafts in review queue** | 2 bootstrapped (pending replacement with verified-source drafts) |
+| **Approved queue** | 0 — production run blocked pending newshow.biz credentials + X auth |
+| **Phase** | Phase 1 (~80% complete — two blockers identified) |
+| **Blockers** | (1) newshow.biz auth required for score scraping · (2) X `stex_press` rate-limited on login |
 
 ---
 
