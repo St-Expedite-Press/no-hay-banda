@@ -139,10 +139,17 @@ cp $REPO/hermes/profiles/newshowbiz/docs/10-hermes/AGENTS.md $PROFILE/docs/10-he
 
 # Custom skills
 for skill in content-draft-from-movie-data content-job-write escalation-record-write \
-             review-decision-record x-publish-with-receipt escalation-record-create; do
+             review-decision-record x-publish-with-receipt escalation-record-create \
+             telegram-notify telegram-await-approval; do
   mkdir -p $PROFILE/skills/$skill
   cp $REPO/hermes/profiles/newshowbiz/skills/$skill/SKILL.md $PROFILE/skills/$skill/SKILL.md
 done
+
+# Pipeline scripts
+mkdir -p $PROFILE/bin
+cp $REPO/hermes/profiles/newshowbiz/bin/run-pipeline.sh $PROFILE/bin/run-pipeline.sh
+cp $REPO/hermes/profiles/newshowbiz/bin/rotate-logs.sh $PROFILE/bin/rotate-logs.sh
+chmod +x $PROFILE/bin/*.sh
 
 # Template library
 mkdir -p $PROFILE/skills/templates/{x,instagram}
@@ -184,6 +191,50 @@ hermes -p newshowbiz
 ```
 
 **Rate limit:** X may restrict login from a new IP. If blocked, wait several hours and retry once. Do not loop. See `docs/30-operations/x-mcp-test-log.md` for the incident record.
+
+---
+
+## Step 7 — Telegram oversight gate (Phase 3 prerequisite)
+
+Create a Telegram bot via @BotFather. Then:
+
+```bash
+# Add credentials to profile .env
+nano ~/.hermes/profiles/newshowbiz/.env
+# Set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID
+
+# Get your chat_id: start the bot, send it a message, then:
+# curl https://api.telegram.org/bot{TOKEN}/getUpdates
+# Look for result[].message.chat.id
+
+# Test the connection
+source ~/.hermes/profiles/newshowbiz/.env
+curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+  -d "chat_id=${TELEGRAM_CHAT_ID}" \
+  -d "text=Telegram gate test" | python3 -c "import sys,json; print('OK' if json.load(sys.stdin).get('ok') else 'FAILED')"
+```
+
+The Telegram gate is enforced by `telegram-notify` + `telegram-await-approval` skills. See `docs/50-rollout/phase-3-activation-checklist.md` for the full Phase 3 gate procedure.
+
+---
+
+## Step 8 — Log rotation timer (systemd user service)
+
+```bash
+mkdir -p ~/.config/systemd/user
+
+# Copy service + timer units
+cp $REPO/hermes/systemd/newshowbiz-log-rotate.service ~/.config/systemd/user/
+cp $REPO/hermes/systemd/newshowbiz-log-rotate.timer ~/.config/systemd/user/
+
+systemctl --user daemon-reload
+systemctl --user enable --now newshowbiz-log-rotate.timer
+
+# Verify
+systemctl --user list-timers | grep newshowbiz
+```
+
+Fires weekly Monday 02:00 UTC. Archives sessions older than 30 days, compresses pipeline-output.log if over 5 MB.
 
 ---
 
@@ -238,6 +289,17 @@ hermes/
           instagram/          ← 3 Instagram caption templates
       store/                  ← empty ContentJob store (create on install)
       x-auth/                 ← empty session dir (populated after login)
+  profiles/
+    newshowbiz/
+      bin/
+        run-pipeline.sh       → ~/.hermes/profiles/newshowbiz/bin/  (failure-logging wrapper)
+        rotate-logs.sh        → ~/.hermes/profiles/newshowbiz/bin/  (weekly log rotation)
+      skills/
+        telegram-notify/SKILL.md          ← Phase 3 publish notification
+        telegram-await-approval/SKILL.md  ← Phase 3 human approval polling
+  systemd/
+    newshowbiz-log-rotate.service → ~/.config/systemd/user/
+    newshowbiz-log-rotate.timer   → ~/.config/systemd/user/
   mcp/
     x-mcp/
       PATCHES.md              ← patch documentation (5 fixes to login.ts)
