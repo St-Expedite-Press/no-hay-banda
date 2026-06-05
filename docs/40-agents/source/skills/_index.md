@@ -33,6 +33,9 @@ To convert a skill: route to [SkillBuildingAgent](../roster/skill-builder.md) wi
 | Name | Description | Status | Added | Proposed By |
 |------|-------------|--------|-------|-------------|
 | [content-draft-from-movie-data](content-draft-from-movie-data.md) | Turn a New Showbiz movie page or research memo into channel-ready draft variants for X or Instagram | validated | 2026-05-21 | orchestrator |
+| [content-job-write](content-job-write.md) | Write a ContentJob JSON to the Phase 1 flat-file store; places in jobs/ and review-queue/ | draft | 2026-06-05 | project-manager |
+| [escalation-record-write](escalation-record-write.md) | Write an EscalationRecord JSON when a risk trigger fires; outputs HOLD notice | draft | 2026-06-05 | project-manager |
+| [review-decision-record](review-decision-record.md) | Record a human approve/reject/revise decision; moves file, updates status, appends review-log.jsonl | draft | 2026-06-05 | project-manager |
 | [x-publish-with-receipt](x-publish-with-receipt.md) | Publish an approved ContentJob through newshowbiz_x_publish_reviewed and return a durable receipt | validated | 2026-05-21 | orchestrator |
 | [escalation-record-create](escalation-record-create.md) | Create an EscalationRecord when a ContentJob or EngagementJob triggers a risk class that blocks autonomous action | validated | 2026-05-21 | orchestrator |
 

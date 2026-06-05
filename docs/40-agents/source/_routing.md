@@ -114,7 +114,7 @@ Each Tier 1 agent may only spawn the subagents listed here:
 
 **Tier 1:** orchestrator, content-agent, publish-agent, metrics-agent, fetch-agent, distill-agent, project-manager
 
-**Tier 2:** analysis-agent, compose, composer-translator, diff-agent, engagement-agent, escalation-agent, execute-agent, interrogator, librarian, lint-agent, metrics-agent (data collection only), movie-research-agent, python-standards-agent, query-agent, report-agent, researcher, skill-builder, transform-agent, validate-agent, writer, designer, editor
+**Tier 2:** analysis-agent, compose, composer-translator, diff-agent, engagement-agent, escalation-agent, execute-agent, interrogator, librarian, lint-agent, movie-research-agent, python-standards-agent, query-agent, report-agent, researcher, skill-builder, transform-agent, validate-agent, writer, designer, editor
 
 ---
 

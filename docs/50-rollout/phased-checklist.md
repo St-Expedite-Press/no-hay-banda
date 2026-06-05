@@ -60,14 +60,14 @@
 - [x] ✅ Upgrade Hermes to v0.15.1. — *Upgraded 2026-06-05 from v0.14.0. 376 upstream commits. Config format updated v24→v25. 10 bundled skills updated.*
 - [x] ✅ Set runtime model. — *DeepSeek V4 Pro (orchestrator) + DeepSeek V4 Flash (subagents) via OpenRouter. Documented in `docs/60-models/runtime-model-selection.md`.*
 - [x] ✅ Add prefill_messages.json. — *Full delegation cycle example added 2026-06-05 at `~/.hermes/prefill_messages.json`. Demonstrates Tier 0 → Tier 1 → Tier 2 routing for a film research + content pipeline task.*
-- [ ] Define `PersonaRegistry`.
-- [ ] Define `TaskRouter`.
-- [ ] Define `ContentJob`, `EngagementJob`, `EscalationRecord`, and `PerformanceSnapshot` schemas.
+- [x] ✅ Define `PersonaRegistry`. — *Formal registry written 2026-06-05 at `docs/20-system-spec/persona-registry.md`. Maps 7 personas to agent pipelines, toolsets, and phase gates.*
+- [x] ✅ Define `TaskRouter`. — *Formal spec written 2026-06-05 at `docs/20-system-spec/task-router.md`. Formalizes `_routing.md` as a callable contract with input/output schema and resolution algorithm.*
+- [x] ✅ Define `ContentJob`, `EngagementJob`, `EscalationRecord`, and `PerformanceSnapshot` schemas. — *Schemas defined in `docs/20-system-spec/domain-contracts.md`. Phase 1 flat-JSON implementation in `~/.hermes/profiles/newshowbiz/store/`. Write skills: `content-job-write`, `escalation-record-write`, `review-decision-record` (2026-06-05).*
 - [ ] Add `ChannelIntegration` fields for MCP adapter, fallback tool, session path, and account-safety signals.
 - [ ] Add activation fields for watchlist, rating, review, search/filter, and where-to-watch actions.
-- [ ] Build template library for `X`.
-- [ ] Build template library for Instagram.
-- [ ] Build manual-review workflow.
+- [x] ✅ Build template library for `X`. — *5 templates written 2026-06-05: original-discovery, thread-breakdown, comparison-post, reactive-hook, utility-post. Live: `~/.hermes/profiles/newshowbiz/skills/templates/x/`. Doc mirror: `docs/40-agents/source/templates/x/`.*
+- [x] ✅ Build template library for Instagram. — *3 templates written 2026-06-05: caption-standard, carousel-intro, caption-utility. Live: `~/.hermes/profiles/newshowbiz/skills/templates/instagram/`. Doc mirror: `docs/40-agents/source/templates/instagram/`.*
+- [x] ✅ Build manual-review workflow. — *Procedure documented 2026-06-05 at `docs/30-operations/manual-review-procedure.md`. Implemented via `review-decision-record` skill and `store/review-queue/` directory.*
 - [ ] Produce one week of human-reviewed draft content.
 
 ### Exit Criteria

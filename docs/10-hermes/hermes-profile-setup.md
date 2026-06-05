@@ -87,20 +87,37 @@ This saves the authenticated browser session to `~/.hermes/profiles/newshowbiz/x
 
 **Important:** X may apply temporary login restrictions if login is attempted repeatedly from a new IP in a short window. If this happens, wait several hours and retry once. Do not loop on login. See the incident note in [X MCP Test Log](../30-operations/x-mcp-test-log.md).
 
-## Barresider login.js Patch
+## Barresider Local Fork
 
-The deployed version of `@barresider/x-mcp` contains stale selectors for X's current login UI. The `login.js` in the npx cache has been patched. If the npx cache is cleared or the package is reinstalled, reapply the patch:
+The npx-based install of `@barresider/x-mcp` is replaced by a permanent local fork at `~/.hermes/mcp/x-mcp/`. The profile config points to the local build:
+
+```yaml
+x-mcp-read:
+  command: node
+  args:
+    - /home/ec2-user/.hermes/mcp/x-mcp/dist/mcp.js
+```
+
+This means npx never re-downloads the package and the patches below are durable in the TypeScript source.
+
+### Patches applied to `src/behaviors/login.ts`
 
 | Bug | Fix |
 |---|---|
-| Login URL | `twitter.com/i/flow/login` → `x.com/i/flow/login` with `domcontentloaded` |
-| Username selector | `autocomplete="username"` → `name="username_or_email"` |
-| Next/Continue button | `//span[text()='Next']` → `button[3]` (current layout index) |
-| Headless mode | `headless: false` → `headless: true` + `--no-sandbox` |
-| Auth path | hardcoded `playwright/.auth/` → `AUTH_DIR` env var |
+| Login URL | `twitter.com/i/flow/login` → `x.com/i/flow/login` with `domcontentloaded` + 4s wait |
+| Username selector | `autocomplete="username"` XPath → `input[name="username_or_email"]` |
+| Next/Continue button | `//span[text()='Next']` → `span:text("Next"), span:text("Continue")` first match |
+| Auth dir creation | No mkdir → `fs.mkdirSync(authDir, { recursive: true })` before first write |
 | stdio pollution | `console.log` → `console.error` (stdout is the MCP JSON-RPC channel) |
 
-Full patch file: `~/.npm/_npx/*/node_modules/@barresider/x-mcp/dist/behaviors/login.js`
+### Rebuilding after an edit
+
+```bash
+cd ~/.hermes/mcp/x-mcp
+npm run build
+```
+
+Full patch documentation: `~/.hermes/mcp/x-mcp/PATCHES.md`
 
 ## Profile Boundaries
 
