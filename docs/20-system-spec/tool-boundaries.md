@@ -9,13 +9,11 @@ flowchart TD
     A --> D[newshowbiz_escalation]
     A --> E[newshowbiz_reporting]
     A -. only approved ContentJobs .-> F[newshowbiz_x_publish_reviewed]
-    A -. future phase .-> G[newshowbiz_instagram_publish_reviewed]
     B --> H[Catalog, movie pages, source records]
     C --> I[Analytics and attribution]
     D --> J[EscalationRecord store]
     E --> K[Reports]
     F --> L[X adapter or MCP wrapper]
-    G --> M[Instagram adapter]
 ```
 
 ## Toolset Classes
@@ -37,6 +35,6 @@ flowchart TD
 - No worker receives write tools unless its task requires writes.
 - No write-capable workflow runs without an idempotency key.
 - No public write runs without policy result and approval state.
-- No X or Instagram write falls back to raw Playwright publishing if the reviewed wrapper fails.
+- No X write falls back to raw Playwright publishing if the reviewed wrapper fails.
 - Like, retweet, bookmark, follow, and mass engagement actions are manual-only in v1.
 

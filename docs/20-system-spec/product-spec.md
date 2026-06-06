@@ -2,7 +2,7 @@
 
 ## Product Summary
 
-`New Showbiz Marketing Operator` is a high-autonomy marketing system for `newshow.biz`. It plans, drafts, publishes, replies, escalates, and reports across `X` and `Instagram`.
+`New Showbiz Marketing Operator` is a high-autonomy marketing system for `newshow.biz`. It plans, drafts, publishes, replies, escalates, and reports on `X`.
 
 The operator converts a structured movie-analysis product into repeatable growth activity. Its job is not to simulate a personality. Its job is to drive qualified traffic, signups, donations, and trust by translating product evidence into social-native communication.
 
@@ -53,7 +53,6 @@ Hermes should provide:
 New Showbiz must provide:
 
 - `X` publishing, reply, DM, browser-session, account-safety, and analytics integrations
-- `Instagram` publishing, comment, DM, media, and analytics integrations
 - content, engagement, escalation, and metric persistence
 - campaign and experiment taxonomy
 - attribution joins between social events and `newshow.biz`
@@ -104,7 +103,7 @@ Make New Showbiz feel useful, specific, and credible. Trust is not a vanity outc
 - autonomous sponsorship or partnership negotiation
 - autonomous legal response
 - long-form editorial publishing
-- public activity on channels beyond `X` and `Instagram`
+- public activity on channels beyond `X`
 - fully unsupervised handling of major controversy
 - synthetic testimonials, fake urgency, fake scarcity, or fabricated metrics
 - financial or tax guidance about crypto support
@@ -177,10 +176,6 @@ Multiple internal personas may collaborate, but the public identity is always `N
 
 The default implementation candidate for X-specific browser automation is `Barresider/x-mcp`. Its write tools must not be exposed directly to planning, reporting, or research workflows. `microsoft/playwright-mcp` may inspect X or other pages when the X-specific tool fails, but raw browser publishing is not an approved fallback in v1.
 
-### Instagram
-
-`Instagram` is the trust, discovery, save, and explanation channel. It supports polished captions, carousels, comparison cards, title explainers, and support-the-project posts. It does not support `TROLL` mode.
-
 ## Autonomy Model
 
 The operator is high-autonomy, not approval-first.
@@ -220,7 +215,7 @@ The recommended Hermes operating shape is:
 - project `docs/10-hermes/AGENTS.md` for builder and operator rules
 - skills for campaign planning, draft review, policy checks, reporting, and incident review
 - cron jobs for planning, publish windows, monitoring, and reports
-- custom plugins or MCP servers for `X`, `Instagram`, site analytics, and donation analytics
+- custom plugins or MCP servers for `X`, site analytics, and donation analytics
 - narrow toolsets per workflow
 - containerized terminal backend for production write-capable workflows
 - allowlisted oversight channels for approvals and escalations
@@ -266,12 +261,12 @@ Actions:
 
 Actions:
 
-- call explicit custom `X` or `Instagram` integration tools
+- call explicit custom `X` integration tools
 - schedule or publish
 - store platform IDs, canonical URLs, timestamps, media receipts, and final copy
 - tag the run, cron job, campaign, and experiment
 
-Hermes native messaging gateway is not the public `X` or `Instagram` publisher for this product.
+Hermes native messaging gateway is not the public `X` publisher for this product.
 
 For X, a reviewed publishing flow may call `Barresider/x-mcp` through a wrapper such as `newshowbiz_x_publish_reviewed`. The wrapper must confirm policy disposition, approval state, idempotency key, final copy, media approvals, and account-safety status before exposing `tweet`, `thread`, `reply_to_post`, or `quote_tweet`.
 
@@ -476,7 +471,7 @@ For `X`, the default candidate values are `Barresider/x-mcp` for X-specific oper
 The product spec is ready for implementation when:
 
 - a builder can distinguish Hermes runtime capabilities from New Showbiz custom work
-- `X` and `Instagram` scope is explicit
+- `X` scope is explicit
 - business outcomes are measurable
 - autonomy and escalation boundaries are unambiguous
 - domain objects are concrete enough to persist

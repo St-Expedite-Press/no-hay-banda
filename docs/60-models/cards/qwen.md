@@ -167,7 +167,7 @@ Treat benchmark numbers as vendor-reported reference data, not as New Showbiz pr
 - Vision observations should be treated as QA evidence, not final truth.
 - Video handling depends heavily on serving configuration and frame sampling.
 - Tool-calling must be constrained to New Showbiz toolsets with review gates and durable receipts.
-- Public channel writes still require explicit New Showbiz X/Instagram adapters.
+- Public channel writes still require explicit New Showbiz X adapters.
 
 ## Usage Notes for New Showbiz
 
@@ -185,7 +185,7 @@ Recommended uses:
 Avoid or gate:
 
 - Unreviewed public copy about representation scores or sensitive identity categories.
-- Direct social publishing or browser automation without approved New Showbiz adapters.
+- Direct X publishing or browser automation without approved New Showbiz adapters.
 - Donation, crypto, tax, refund, investment, legal, partnership, or creator-complaint responses without escalation.
 - Claims about live site behavior unless verified against the current site or source.
 - Treating visual inference as definitive evidence for film content, identity representation, or user intent.

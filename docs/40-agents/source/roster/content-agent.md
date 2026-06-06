@@ -17,7 +17,7 @@ part_of:
 
 ## Use When
 
-The task is to generate a social post for X or Instagram from New Showbiz movie or product data.
+The task is to generate a social post for X from New Showbiz movie or product data.
 
 ## Reads
 
@@ -25,7 +25,7 @@ The task is to generate a social post for X or Instagram from New Showbiz movie 
 - `docs/20-system-spec/03-personas-and-behavior-modes.md` — tone and mode rules
 - `docs/20-system-spec/risk-guardrails-and-escalation.md` — what language triggers escalation
 - Prior posts on the same title (from ContentJob records) for deduplication
-- Channel target and character constraints (X: 280 chars; IG: longer, image brief optional)
+- Channel target and character constraints (X: 280 chars)
 
 ## Writes
 

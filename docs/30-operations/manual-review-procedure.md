@@ -34,8 +34,8 @@ Drafts with `status: hold` are escalation cases and must not be decided through 
 Work through this checklist for each draft before recording a decision:
 
 - [ ] **Source refs present** — `source_refs` list is non-empty; every score or factual claim traces to a newshow.biz page URL
-- [ ] **Character count within limit** — X posts: 280 chars max including link and hashtags. Instagram captions: no hard limit but the opening line should be 125 chars or fewer.
-- [ ] **Hashtag ceiling** — X: 2 max. Instagram: 5–10 is normal.
+- [ ] **Character count within limit** — X posts: 280 chars max including link and hashtags.
+- [ ] **Hashtag ceiling** — X: 2 max.
 - [ ] **Kakusu Protocol** — No loaded advocacy terms: "subversive," "woke," "progressive," "DEI," "political activism." Representation analysis must be framed as cinematic observation, not advocacy.
 - [ ] **No em dash** — Replace any em dash (—) with a comma, period, or rewrite before approving.
 - [ ] **No fabricated claims** — No invented plot points, characters, scores, or statistics. Every claim must trace to a source ref.

@@ -21,7 +21,7 @@ erDiagram
 |---|---:|---|
 | `id` | yes | Stable internal ID |
 | `kind` | yes | `original`, `reply`, `quote`, `thread`, `carousel`, `report` |
-| `platform` | yes | `x`, `instagram`, or internal preview |
+| `platform` | yes | `x` or internal preview |
 | `status` | yes | `draft`, `needs_revision`, `approved`, `scheduled`, `published`, `hold`, `failed` |
 | `text` | yes | Draft or final text |
 | `source_refs` | yes | Product pages, movie IDs, external sources, evidence notes |

@@ -17,7 +17,7 @@ part_of:
 
 ## Use When
 
-An approved ContentJob is ready to be sent to X or Instagram.
+An approved ContentJob is ready to be sent to X.
 
 ## Reads
 
@@ -28,7 +28,7 @@ An approved ContentJob is ready to be sent to X or Instagram.
 ## Writes
 
 Durable channel receipt appended to ContentJob:
-- `channel` (X | Instagram)
+- `channel` (X)
 - `timestamp`
 - `post_id` or `post_url`
 - `content_hash`
@@ -41,7 +41,6 @@ Durable channel receipt appended to ContentJob:
 2. Check `newshowbiz_x_account_safety` for active warnings or account flags before any write.
 3. Select toolset:
    - X: `newshowbiz_x_publish_reviewed` (primary)
-   - Instagram: dedicated Instagram path (when implemented)
 4. Attempt publish; capture channel response including post ID or URL.
 5. Write receipt to ContentJob record before returning.
 6. On failure:

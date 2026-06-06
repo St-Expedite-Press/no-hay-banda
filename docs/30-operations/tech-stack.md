@@ -33,7 +33,7 @@ This package defines the target stack. It does not ship runnable implementation 
 
 - Installing Hermes.
 - Running a Telegram bot.
-- Publishing to X or Instagram.
+- Publishing to X.
 - Hosting a database.
 - Storing secrets.
 - Shipping Python packages.

@@ -28,14 +28,14 @@ For New Showbiz, this model is best considered a strong general-purpose operator
 
 Use Hermes 4.3 36B when the operator needs careful text work, structured decisions, or workflow reasoning:
 
-- Generate reviewed X/Instagram draft copy from approved source evidence.
+- Generate reviewed X draft copy from approved source evidence.
 - Convert movie profile data into structured captions, alt text, thread outlines, or content briefs.
 - Classify inbound messages into support, bug, invalid-analysis report, creator complaint, partnership, donation, or escalation categories.
 - Draft escalation summaries with source references and required review gates.
 - Produce JSON for `ContentJob`, `EngagementJob`, `EscalationRecord`, and reporting summaries.
 - Run policy-bound internal personas without exposing persona fragmentation publicly.
 
-Do not treat Hermes as a social publishing product. It can reason over channel workflows, but New Showbiz still needs explicit X and Instagram read/write adapters, durable receipts, review controls, and account-safety handling.
+Do not treat Hermes as a social publishing product. It can reason over channel workflows, but New Showbiz still needs explicit X read/write adapters, durable receipts, review controls, and account-safety handling.
 
 ## Prompting Format
 
@@ -143,7 +143,7 @@ Hermes 4.3 36B is a candidate default text operator model for governed marketing
 
 Recommended uses:
 
-- Draft reviewed X posts and Instagram captions from approved movie/profile evidence.
+- Draft reviewed X posts from approved movie/profile evidence.
 - Generate content variants for "watch more of what matters to you" campaigns.
 - Summarize inbound public replies and DMs into escalation-ready records.
 - Classify reports of bugs or invalid diversity analysis and route them to the contact/review path.

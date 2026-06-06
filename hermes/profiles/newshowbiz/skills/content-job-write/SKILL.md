@@ -12,8 +12,7 @@ license: MIT
 ## When to Use
 
 After content-draft-from-movie-data produces a draft variant that needs to be persisted
-for human review. Call once per draft (one call per platform variant — X post, X thread,
-Instagram caption each get their own ContentJob).
+for human review. Call once per draft variant (X post and X thread each get their own ContentJob).
 
 Do NOT use for EngagementJobs or EscalationRecords — those have separate skills.
 
@@ -21,8 +20,8 @@ Do NOT use for EngagementJobs or EscalationRecords — those have separate skill
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `kind` | string | yes | One of: original, reply, quote, thread, carousel, report |
-| `platform` | string | yes | One of: x, instagram, preview |
+| `kind` | string | yes | One of: original, reply, quote, thread, report |
+| `platform` | string | yes | `x` |
 | `text` | string | yes | Draft text (final or near-final) |
 | `objective` | string | yes | One of: discovery, explain, activate, respond, support |
 | `source_refs` | list | yes | At least one product URL or file path backing the content |

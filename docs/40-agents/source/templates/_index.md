@@ -14,14 +14,6 @@ All templates enforce: Kakusu Protocol, no em dash, 2-hashtag ceiling (X), sourc
 | Reactive Hook | `x/reactive-hook.md` | Responding to current film discourse with product angle |
 | Utility Post | `x/utility-post.md` | Promoting browse/filter feature; drive catalog traffic |
 
-## Instagram Templates
-
-| Template | File | Use When |
-|---|---|---|
-| Caption Standard | `instagram/caption-standard.md` | Single image post; drive saves and clicks |
-| Carousel Intro | `instagram/carousel-intro.md` | First slide of a category-breakdown carousel |
-| Caption Utility | `instagram/caption-utility.md` | Discovery/recommendation; optimized for saves |
-
 ## Template Selection Logic
 
 1. If the task is a single film introduction for X -> `original-discovery.md`
@@ -29,8 +21,5 @@ All templates enforce: Kakusu Protocol, no em dash, 2-hashtag ceiling (X), sourc
 3. If the task compares two films -> `comparison-post.md`
 4. If a specific discourse moment is the hook -> `reactive-hook.md`
 5. If the task promotes a browse filter or feature -> `utility-post.md`
-6. If the task is an Instagram single-image caption -> `caption-standard.md`
-7. If the task is an Instagram carousel -> `carousel-intro.md`
-8. If the task is an Instagram discovery/recommendation list -> `caption-utility.md`
 
-When no template matches exactly, default to `original-discovery.md` for X or `caption-standard.md` for Instagram, and note the gap in the output.
+When no template matches exactly, default to `original-discovery.md` and note the gap in the output.

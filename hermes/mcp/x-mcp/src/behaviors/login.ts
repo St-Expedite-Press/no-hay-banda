@@ -137,7 +137,7 @@ async function doLogin(page: Page, user: string, password: string) {
 const authDir = process.env.AUTH_DIR || "playwright/.auth";
 // Patch: ensure auth directory exists before any storageState write
 if (!fs.existsSync(authDir)) {
-  fs.mkdirSync(authDir, { recursive: true });
+  fs.mkdirSync(authDir, { recursive: true, mode: 0o700 });
 }
 const authFile = path.join(authDir, "twitter.json");
 

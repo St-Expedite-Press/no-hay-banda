@@ -55,8 +55,6 @@ Channel Integration Layer
   - X write tools
   - X MCP wrappers
   - general Playwright browser fallback
-  - Instagram read tools
-  - Instagram write tools
   - media upload tools
   - analytics tools
   - site and donation analytics tools
@@ -105,7 +103,6 @@ Recommended toolset classes:
 - `newshowbiz_read`: movie catalog, score data, site pages, trend reads
 - `newshowbiz_metrics_read`: platform analytics, site analytics, donation analytics
 - `newshowbiz_publish_x`: `X` publish and reply writes
-- `newshowbiz_publish_instagram`: Instagram publish and comment writes
 - `newshowbiz_escalation`: create and update escalation records
 - `newshowbiz_reporting`: read metrics and write reports
 
@@ -143,7 +140,7 @@ Cron should not be the only record of what happened.
 
 ### Gateway and API Surfaces
 
-Hermes gateway connects to many messaging platforms and supports authorization, pairing, approvals, slash commands, delivery, and cron output. For New Showbiz, the gateway should be an internal oversight channel, not the public `X` or `Instagram` transport.
+Hermes gateway connects to many messaging platforms and supports authorization, pairing, approvals, slash commands, delivery, and cron output. For New Showbiz, the gateway should be an internal oversight channel, not the public `X` transport.
 
 Use it for:
 
@@ -153,7 +150,7 @@ Use it for:
 - report delivery
 - ad hoc operator commands
 
-Use custom channel integrations for actual public `X` and `Instagram` actions.
+Use custom channel integrations for actual public `X` actions.
 
 ### Security Controls
 
@@ -167,7 +164,7 @@ Recommended v1 deployment:
 - containerized terminal backend for production runs
 - profile-scoped secrets in Hermes config or environment, with least privilege
 - New Showbiz domain store for jobs, receipts, metrics, and escalations
-- plugin or MCP tool layer for `X`, `Instagram`, site analytics, and donation analytics
+- plugin or MCP tool layer for `X`, site analytics, and donation analytics
 - internal oversight channel through Hermes gateway or a custom API dashboard
 - scheduled work through Hermes cron
 - explicit allowlists for oversight users

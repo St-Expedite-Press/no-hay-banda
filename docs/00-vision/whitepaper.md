@@ -22,7 +22,7 @@ Each movie page can become:
 - watchlist, rating, and review activation prompt
 - audience prompt
 - reactive hook
-- Instagram carousel
+- comparison carousel
 - support or donation narrative when appropriate
 
 The operator does not need to invent the business every morning. It needs to translate existing product structure into useful distribution.
@@ -42,7 +42,7 @@ Hermes is useful here because it is not just a chat wrapper. It is a persistent 
 - profiles for runtime isolation
 - approvals and container backends for safety
 
-Those capabilities let the project focus on the missing business layer: `X` and `Instagram` integrations, campaign data, review workflows, analytics joins, policy rules, and live product affordances such as browse filters, watch-provider links, rating/review prompts, watchlists, contact paths, and donation constraints.
+Those capabilities let the project focus on the missing business layer: `X` integrations, campaign data, review workflows, analytics joins, policy rules, and live product affordances such as browse filters, watch-provider links, rating/review prompts, watchlists, contact paths, and donation constraints.
 
 For X specifically, the best current option is to use `Barresider/x-mcp` as the X-specific Playwright MCP candidate and keep `microsoft/playwright-mcp` as the general browser-control fallback. That gives the project tools for X search, timeline/profile reads, posting, threads, replies, media upload, and trend discovery without pretending X exposes a stable automation surface. `kitadmin01/social_mcp` should inform session and retry design, while the `miles0sage` PulseMCP listing should remain experimental.
 
@@ -51,8 +51,7 @@ For X specifically, the best current option is to use `Barresider/x-mcp` as the 
 Hermes does not natively provide:
 
 - `X` publishing
-- Instagram publishing
-- public-channel inbox moderation for those platforms
+- public-channel inbox moderation
 - media scheduling
 - social analytics normalization
 - donation attribution
@@ -180,7 +179,7 @@ For X, canary `Barresider/x-mcp` read workflows first. Track login state, block 
 
 ### Stage 3: Low-Risk Autonomous Publishing
 
-Add write-capable `X` and Instagram tools with receipts and narrow toolsets. Allow low-risk and approved medium-risk content.
+Add write-capable `X` tools with receipts and narrow toolsets. Allow low-risk and approved medium-risk content.
 
 For X, writes should start as reviewed `Barresider/x-mcp` calls through `newshowbiz_x_publish_reviewed`. Do not fall back to raw Playwright publishing when the reviewed path fails.
 

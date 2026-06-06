@@ -152,10 +152,9 @@ cp $REPO/hermes/profiles/newshowbiz/bin/rotate-logs.sh $PROFILE/bin/rotate-logs.
 chmod +x $PROFILE/bin/*.sh
 
 # Template library
-mkdir -p $PROFILE/skills/templates/{x,instagram}
+mkdir -p $PROFILE/skills/templates/x
 cp $REPO/hermes/profiles/newshowbiz/skills/templates/_index.md $PROFILE/skills/templates/
 cp $REPO/hermes/profiles/newshowbiz/skills/templates/x/*.md $PROFILE/skills/templates/x/
-cp $REPO/hermes/profiles/newshowbiz/skills/templates/instagram/*.md $PROFILE/skills/templates/instagram/
 
 # Empty store (review-log starts empty)
 touch $PROFILE/store/review-log.jsonl
@@ -286,7 +285,6 @@ hermes/
         templates/
           _index.md           ← template selection logic
           x/                  ← 5 X post templates
-          instagram/          ← 3 Instagram caption templates
       store/                  ← empty ContentJob store (create on install)
       x-auth/                 ← empty session dir (populated after login)
   profiles/

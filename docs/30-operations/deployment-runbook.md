@@ -41,4 +41,4 @@ This is the target deployment sequence for implementers. It is intentionally gat
 2. Keep Telegram or equivalent pause path active.
 3. Run daily reports.
 4. Review incidents before expanding behavior modes.
-5. Add Instagram only after its channel contract is complete.
+5. Review channel expansion separately before adding any new channel.

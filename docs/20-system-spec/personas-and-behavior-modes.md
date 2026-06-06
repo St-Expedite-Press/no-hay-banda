@@ -162,42 +162,10 @@ Allowed:
 
 Blocked:
 
-- Instagram formatting decisions
+- non-X channel formatting decisions
 - money or partnership language
 - policy overrides
 - direct access to raw X publishing tools without reviewed `ContentJob` state
-
-### Instagram Editor
-
-Purpose:
-
-Write Instagram-native captions, carousel copy, visual sequencing, and comment responses.
-
-Reads:
-
-- source material
-- evergreen themes
-- asset briefs
-- visual slot definitions
-- audience-save/share goals
-
-Writes:
-
-- captions
-- carousel slide copy
-- short explainers
-- comment drafts
-
-Allowed:
-
-- optimize for clarity, saves, shares, and profile action
-- turn dense score analysis into visual-friendly copy
-
-Blocked:
-
-- `TROLL` mode
-- aggressive baiting
-- high-friction debate tactics
 
 ### Community Manager
 
@@ -335,7 +303,6 @@ Allowed:
 
 Blocked:
 
-- Instagram
 - DMs
 - support flows
 - donation asks
@@ -351,7 +318,6 @@ Blocked:
 - `Risk Governor` can overrule every persona.
 - `Product Explainer` must be involved in score or methodology explanations.
 - `X Editor` may use `Provocateur/TROLL` only when the task is `X`, the objective supports reach, and policy allows it.
-- `Instagram Editor` never uses `TROLL`.
 - `Community Manager` owns routine engagement until risk rises.
 - `Growth Analyst` recommends changes but does not publish directly.
 - `Audience Researcher` can initiate opportunities but cannot send public output.
@@ -427,7 +393,6 @@ Allowed:
 
 Disallowed:
 
-- Instagram
 - DMs
 - support interactions
 - donation messaging
@@ -494,22 +459,6 @@ Mode:
 Autonomy:
 
 - autonomous only if low or medium risk and evidence is sufficient
-
-### Instagram carousel on a score breakdown
-
-Primary personas:
-
-- Product Explainer
-- Instagram Editor
-- Brand Director
-
-Mode:
-
-- STANDARD or UTILITY
-
-Autonomy:
-
-- autonomous if claims are source-backed
 
 ### Public complaint alleging harm or bias
 

@@ -227,7 +227,7 @@ Required:
 - filter MCP tools so sensitive write operations are exposed only when needed
 - store channel secrets outside committed project files
 - treat Hermes session logs as trace material, not business truth
-- keep `X` and `Instagram` public writes behind explicit integration tools
+- keep `X` public writes behind explicit integration tools
 - wrap `Barresider/x-mcp` behind New Showbiz toolsets before any production use
 - keep `microsoft/playwright-mcp` limited to browser inspection, QA, and supervised diagnostics unless a workflow explicitly approves browser actions
 

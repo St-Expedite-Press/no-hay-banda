@@ -2,16 +2,13 @@
 
 ## Channel Thesis
 
-The v1 operator owns two public channels:
+The v1 operator owns one public channel:
 
 - `X`: speed, reach, reaction, argument, and controlled edge
-- `Instagram`: trust, discovery, save/share behavior, polished explanation
-
-The same source object can feed both channels, but the same copy should not be duplicated across both. `X` wants movement. Instagram wants retention and clarity.
 
 ## Hermes Integration Model
 
-Hermes is the operator runtime. It is not the public `X` or `Instagram` transport.
+Hermes is the operator runtime. It is not the public `X` transport.
 
 Operational consequences:
 
@@ -153,10 +150,6 @@ Formats:
 - family or group watch prompts
 - genre or mood lists
 
-Primary channel:
-
-- both
-
 Primary KPI:
 
 - qualified traffic
@@ -176,13 +169,9 @@ Formats:
 - why a title scored high or low
 - score misconception correction
 
-Primary channel:
-
-- Instagram for depth, `X` for concise hooks
-
 Primary KPI:
 
-- saves, clicks, support-question reduction, trust indicators
+- clicks, support-question reduction, trust indicators
 
 ### Comparison Posts
 
@@ -198,13 +187,9 @@ Formats:
 - mainstream hit versus under-discussed alternative
 - category-level comparison
 
-Primary channel:
-
-- both, with sharper versions on `X`
-
 Primary KPI:
 
-- qualified traffic, replies/comments with usable signal, saves
+- qualified traffic, replies with usable signal
 
 ### Reactive Commentary
 
@@ -220,10 +205,6 @@ Formats:
 - "we checked the score"
 - title-specific response
 - trend-linked comparison
-
-Primary channel:
-
-- `X`
 
 Primary KPI:
 
@@ -245,10 +226,6 @@ Formats:
 - score category walkthroughs
 - search and browse tips
 
-Primary channel:
-
-- both
-
 Primary KPI:
 
 - signups, repeat visits, support deflection
@@ -267,10 +244,6 @@ Formats:
 - supporter thank-yous
 - "what support funds" explainers
 
-Primary channel:
-
-- both, used sparingly
-
 Primary KPI:
 
 - donation-page visits and conversions
@@ -287,10 +260,6 @@ Formats:
 - contact-path reminders
 - "spot an issue?" posts
 - transparent correction-process replies
-
-Primary channel:
-
-- both, but mostly replies and DMs
 
 Primary KPI:
 
@@ -315,22 +284,6 @@ Default mix:
 - 10% support-the-project
 - 5% experimental edge, including eligible `TROLL`
 
-### Instagram
-
-Default daily cadence:
-
-- 1 to 2 feed posts
-- 3 to 5 comment windows per week
-- stories only after story workflow exists
-
-Default mix:
-
-- 35% comparison and score explanation
-- 30% evergreen discovery
-- 20% product utility
-- 10% support-the-project
-- 5% experimental formats
-
 ## Formatting Rules
 
 ### X
@@ -342,15 +295,6 @@ Default mix:
 - use threads only when compression weakens the idea
 - use quote-posts only when the source context is safe and preserved
 - use `TROLL` only when the campaign objective and policy allow it
-
-### Instagram
-
-- lead with clarity, not edge
-- write captions that reward saving and sharing
-- use visual sequence language for carousel drafts
-- keep score explanations concrete
-- avoid dense methodology language unless the post is explicitly educational
-- never use `TROLL`
 
 ## Reply Model
 
@@ -416,7 +360,7 @@ Escalated DM uses:
 - money negotiation
 - safety-sensitive disclosure
 
-If a platform integration cannot provide safe thread context, DM automation should be disabled for that platform.
+If a platform integration cannot provide safe thread context, DM automation should be disabled.
 
 ## Channel-Specific Autonomy
 
@@ -446,24 +390,6 @@ Escalate:
 - legal, money, partnership, or identity-sensitive issues
 - X login wall, CAPTCHA, Cloudflare block, account warning, or repeated selector failure before a publish window
 
-### Instagram
-
-Autonomous by default:
-
-- evergreen posts
-- score explainers
-- comparison captions
-- routine comments
-- support-the-project posts using approved language
-
-Escalate:
-
-- discrimination allegations
-- creator complaints
-- harassment patterns
-- money and partnership requests
-- factual disputes needing review
-
 ## Template Categories
 
 ### X Templates
@@ -478,21 +404,9 @@ Escalate:
 - supporter thank-you
 - controlled provocation
 
-### Instagram Templates
-
-- comparison carousel
-- single-title score breakdown
-- "what this score means"
-- curated recommendation card
-- product-use explainer
-- support-the-project card
-- comment response template
-
 ## Operational Defaults
 
-- `X` is the experimentation engine.
-- Instagram is the trust engine.
-- Literal duplication across channels is discouraged.
+- `X` is the publishing channel.
 - Every post gets one primary objective.
 - Every claim needs source support.
 - Every publish action returns a receipt.

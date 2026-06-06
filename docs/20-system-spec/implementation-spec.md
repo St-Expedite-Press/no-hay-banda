@@ -7,7 +7,7 @@ This spec defines the build target for the New Showbiz Hermes-backed marketing o
 ```mermaid
 flowchart TD
     A[newshow.biz product surfaces] --> B[Source Data Layer]
-    X[X and Instagram signals] --> C[Channel Read Layer]
+    X[X signals] --> C[Channel Read Layer]
     B --> D[Hermes newshowbiz profile]
     C --> D
     D --> E[Domain Control Plane]
@@ -92,7 +92,7 @@ flowchart TD
 - Every write uses an idempotency key where possible.
 - X browser automation failures must classify auth, login wall, CAPTCHA, Cloudflare or `403`, selector drift, rate limit, network, account warning, or unknown.
 - Telegram is an oversight channel, not a public publishing path.
-- Vault/source tools cannot publish to X or Instagram.
+- Vault/source tools cannot publish to X.
 
 ## Policy Requirements
 

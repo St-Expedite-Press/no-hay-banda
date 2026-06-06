@@ -44,7 +44,7 @@ Human-in-the-loop oversight through Telegram.
 - Operator commands (pause publishing, show pending, escalation status)
 - Draft approval or rejection before publication
 
-**Does not include:** X or Instagram write access; direct ContentJob modification.
+**Does not include:** X write access; direct ContentJob modification.
 
 See [`telegram/README.md`](telegram/README.md).
 

@@ -8,7 +8,7 @@
 
 New Showbiz is a structured movie-discovery product at [newshow.biz](https://newshow.biz). The catalog contains more than 110,000 titles, each with AI-generated inclusivity profiles scored across five dimensions: LGBTQ+ representation, Gender representation, Racial and Ethnic representation, Disability representation, and Religious and Cultural representation. The site surfaces these scores through browse filters, movie detail pages, and user-facing category ratings. Its live promise: "Watch more of what matters to you."
 
-The marketing operator is an autonomous agent system — built on a customized Hermes Agent v0.15.1 deployment — that turns that structured catalog data into governed social content for X and Instagram. The system researches films, drafts posts in a controlled brand voice, routes them through human review, and (in Phase 3) publishes with receipts. It is not a schedule-and-blast tool. It is a governed production system with explicit human gates at every write boundary.
+The marketing operator is an autonomous agent system — built on a customized Hermes Agent v0.15.1 deployment — that turns that structured catalog data into governed social content for X. The system researches films, drafts posts in a controlled brand voice, routes them through human review, and (in Phase 3) publishes with receipts. It is not a schedule-and-blast tool. It is a governed production system with explicit human gates at every write boundary.
 
 ---
 
@@ -35,7 +35,7 @@ Two blockers remain before a verified production run can complete: newshow.biz m
 | X write tools | **Configured, disabled** — Phase 3 gate; 6 binary conditions must pass before enabling |
 | Autonomous publishing | **Not started** — Phase 3 prerequisite |
 | Approved content queue | **0 posts** — production run blocked on two resolved prerequisites |
-| Instagram | **Not started** — Phase 5 |
+| Instagram | **Not in scope** |
 
 ---
 
@@ -76,7 +76,7 @@ The result is a system where a human supervisor can follow every decision: what 
 
 The system is intentionally described as a "hacked Hermes instance." This framing is accurate and useful. Stock Hermes is a powerful general-purpose autonomous agent runtime. It does not natively provide:
 
-- Safe X or Instagram publishing
+- Safe X publishing
 - Campaign persistence or content storage
 - Brand-specific tone enforcement at the model level
 - Anti-fabrication enforcement for DeepSeek-family models
@@ -152,7 +152,7 @@ These are not preferences. They are constraints baked into the system at the age
 
 - One public identity: `New Showbiz`
 - Hermes is the runtime, not the social-channel transport
-- X and Instagram writes require explicit tool wrappers behind the ContentJob store and policy engine
+- X writes require explicit tool wrappers behind the ContentJob store and policy engine
 - Engagement tools (`like_post`, `retweet_post`, `bookmark_post`) are excluded from all MCP configs — permanently
 - Write tools (`tweet`, `thread`) require Phase 3 gate to pass — no exceptions
 - TROLL mode is X-only, fact-bound, and suspendable

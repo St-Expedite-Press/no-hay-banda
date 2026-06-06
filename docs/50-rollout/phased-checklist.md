@@ -15,7 +15,7 @@
 - [ ] Approve persona contracts. — Seven personas defined in `03-personas-and-behavior-modes.md`; formal PersonaRegistry mapping personas to agents not yet written.
 - [x] ✅ Approve risk classes and escalation triggers. — 12 classes defined and consistent across all docs (docs/10-hermes/AGENTS.md, retired clarity map, agent specs)
 - [x] ✅ Approve Hermes as runtime substrate. — Phase 3+ runtime; three-layer architecture documented in retired overview and docs/10-hermes/AGENTS.md
-- [x] ✅ Approve that `X` and Instagram require custom tools. — Five named New Showbiz toolsets defined; no third-party MCP exposed directly (docs/10-hermes/AGENTS.md)
+- [x] ✅ Approve that `X` requires custom tools. — Five named New Showbiz toolsets defined; no third-party MCP exposed directly (docs/10-hermes/AGENTS.md)
 - [x] ✅ Approve `Barresider/x-mcp` as the first X-specific MCP candidate. — Phase 3+ scope; confirmed in docs/10-hermes/AGENTS.md and retired clarity map
 - [x] ✅ Approve `microsoft/playwright-mcp` as the general browser fallback. — QA and browser inspection only; not an unsupervised publishing fallback (docs/10-hermes/AGENTS.md)
 - [x] ✅ Approve that `kitadmin01/social_mcp` is reference material, not the default runtime. — Tier 3 reference for session/retry design (docs/10-hermes/AGENTS.md)
@@ -66,7 +66,7 @@
 - [ ] Add `ChannelIntegration` fields for MCP adapter, fallback tool, session path, and account-safety signals.
 - [ ] Add activation fields for watchlist, rating, review, search/filter, and where-to-watch actions.
 - [x] ✅ Build template library for `X`. — *5 templates written 2026-06-05: original-discovery, thread-breakdown, comparison-post, reactive-hook, utility-post. Live: `~/.hermes/profiles/newshowbiz/skills/templates/x/`. Doc mirror: `docs/40-agents/source/templates/x/`.*
-- [x] ✅ Build template library for Instagram. — *3 templates written 2026-06-05: caption-standard, carousel-intro, caption-utility. Live: `~/.hermes/profiles/newshowbiz/skills/templates/instagram/`. Doc mirror: `docs/40-agents/source/templates/instagram/`.*
+- [ ] Instagram template library removed from scope — X only going forward.
 - [x] ✅ Build manual-review workflow. — *Procedure documented 2026-06-05 at `docs/30-operations/manual-review-procedure.md`. Implemented via `review-decision-record` skill and `store/review-queue/` directory.*
 - [ ] Produce one week of human-reviewed draft content.
 
@@ -105,7 +105,7 @@
 - [ ] Implement catalog/search/filter URL helper tools.
 - [ ] Implement movie-detail source extraction for scores, category details, strengths, improvement notes, watch providers, and AI analysis.
 - [ ] Implement platform analytics read tools for `X`.
-- [ ] Implement platform analytics read tools for Instagram.
+- [ ] ~~Implement platform analytics read tools for Instagram.~~ (not in scope)
 - [ ] Implement site traffic analytics read tools.
 - [ ] Implement account activation analytics for signups, watchlists, ratings, and reviews where privacy policy permits.
 - [ ] Implement signup and donation analytics read tools.
@@ -153,9 +153,9 @@
 - [ ] Implement `newshowbiz_x_publish_reviewed` wrapper around the selected X adapter.
 - [ ] Implement `X` schedule tool if separate.
 - [ ] Implement `X` reply tool.
-- [ ] Implement Instagram publish tool.
-- [ ] Implement Instagram media upload/attach tool.
-- [ ] Implement Instagram comment reply tool.
+- [ ] ~~Implement Instagram publish tool.~~ (not in scope)
+- [ ] ~~Implement Instagram media upload/attach tool.~~ (not in scope)
+- [ ] ~~Implement Instagram comment reply tool.~~ (not in scope)
 - [ ] Add receipts for every write.
 - [ ] Add idempotency strategy where available.
 - [ ] Create write-capable toolsets separated by channel.
@@ -287,7 +287,7 @@
 - [ ] Audit tool scopes and MCP filters.
 - [ ] Audit command allowlists and secrets.
 - [ ] Review whether to add more Hermes plugins, MCP servers, or profiles.
-- [ ] Review whether to expand beyond `X` and Instagram.
+- [ ] Review whether to expand beyond `X`.
 - [ ] Formalize governance review cadence.
 
 ### Exit Criteria
@@ -302,12 +302,10 @@
 
 - [ ] Attribution gaps hide weak performance.
 - [ ] Governance loosens after early success.
-- [ ] Platform style overfits to `X`.
 - [ ] Channel expansion happens before current channels are stable.
 
 ### Human Decisions Required
 
-- [ ] Whether to expand channels.
 - [ ] Whether to keep, narrow, or retire `TROLL`.
 - [ ] Whether to add email, outreach, or partnerships later.
 - [ ] Budget for dashboards and integration hardening.

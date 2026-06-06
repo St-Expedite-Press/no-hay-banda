@@ -9,7 +9,7 @@ Use when turning a New Showbiz movie page, movie data object, or research memo i
 | Input | Required | Notes |
 |---|---:|---|
 | `movie_data` | yes | Title, scores, category details, synopsis, watch links |
-| `platform` | yes | `x` or `instagram` |
+| `platform` | yes | `x` |
 | `objective` | yes | discovery, explain, activate, respond, support |
 | `source_refs` | yes | Evidence for any factual or score-based claim |
 

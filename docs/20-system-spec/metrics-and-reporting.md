@@ -14,7 +14,6 @@ Source-of-truth inputs should include:
 
 - `X` receipts and analytics
 - X MCP account-safety and browser-automation telemetry
-- Instagram receipts and analytics
 - `newshow.biz` traffic analytics
 - signup analytics
 - account activation analytics, including watchlist, rating, and review actions
@@ -143,24 +142,6 @@ Risk overlays:
 - account-health warning count
 - write receipt success rate
 - duplicate-prevention and idempotency exceptions
-
-### Instagram
-
-Primary:
-
-- saves
-- shares
-- profile actions
-- link-in-bio or profile-driven traffic
-- comment quality
-- follower growth
-
-Risk overlays:
-
-- complaint rate
-- comment disputes
-- creator complaints
-- misinformation corrections
 
 ## Attribution Model
 

@@ -301,15 +301,7 @@ Two Phase 3 gate skills manage the Telegram oversight loop:
 | `reactive-hook` | `x/reactive-hook.md` | Respond to a trending topic with film angle |
 | `utility-post` | `x/utility-post.md` | Actionable list or resource post |
 
-**Instagram templates (3):**
-
-| Template | File | Purpose |
-|---|---|---|
-| `caption-standard` | `instagram/caption-standard.md` | Standard single-image caption |
-| `carousel-intro` | `instagram/carousel-intro.md` | Opening slide copy for carousels |
-| `caption-utility` | `instagram/caption-utility.md` | List/resource captions |
-
-All templates include Kakusu Protocol compliance requirements and platform-specific constraints (280-char for X, hashtag discipline for Instagram). The `content-draft-from-movie-data` skill was updated to select a template before drafting — template choice is part of the output spec.
+All templates include Kakusu Protocol compliance requirements and platform-specific constraints (280-char limit, hashtag discipline). The `content-draft-from-movie-data` skill was updated to select a template before drafting — template choice is part of the output spec.
 
 ---
 
@@ -386,7 +378,7 @@ Personality overlays are prompt conveniences, not public personas. All public ou
 | `audience-researcher` | Demand discovery, trend signals, source selection | Phase 1 |
 | `product-explainer` | Catalog structure, score explanation, feature education | Phase 1 |
 | `x-editor` | X post generation, 280-char discipline, thread architecture | Phase 1 |
-| `instagram-editor` | Instagram caption and carousel copy | Phase 2 |
+| `instagram-editor` | Instagram caption and carousel copy (not in scope) | — |
 | `provocateur` | TROLL mode — X only, fact-bound, incident-reviewed | Phase 5 |
 | `growth-analyst` | Qualified traffic, signup, donation, trust measurement | Phase 1 |
 
@@ -451,7 +443,7 @@ The `newshowbiz` profile has access to 109 skills across 31 categories. Most are
 | `telegram-notify` | Custom | Send publish request to `buchenwald_bettybot`; return `message_id` for approval polling | draft |
 | `telegram-await-approval` | Custom | Poll Telegram for APPROVE/REJECT reply; 4h timeout → HOLD | draft |
 | `templates/x/*` | Custom | 5 X content templates with Kakusu Protocol compliance and platform constraints | active |
-| `templates/instagram/*` | Custom | 3 Instagram content templates | active |
+| `templates/instagram/*` | Custom | 3 Instagram content templates (not in scope) | inactive |
 
 ### Bundled skill categories (Hermes hub)
 
@@ -553,11 +545,10 @@ VS Code server versions accumulate on EC2 and consume significant disk space.
 |---|---|
 | Secrets | Profile-local `.env` only; never committed |
 | X writes | `x-mcp-write` disabled — enable only after Phase 3 pipeline exists |
-| Instagram writes | Disabled until channel spec is complete |
 | Engagement tools | Excluded from all MCP configs at Hermes filter level; never enable |
 | Memory | Trace material, not business truth |
 | Cron | Must fetch durable state from store before acting; do not rely on session history |
-| Gateway | Internal oversight only; never use as public X or Instagram transport |
+| Gateway | Internal oversight only; never use as public X transport |
 
 ---
 

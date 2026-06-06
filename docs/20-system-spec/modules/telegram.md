@@ -100,7 +100,7 @@ Top performer: {content_job_id}
 
 ## Guardrails
 
-- This module is never a publishing path to X or Instagram. Approval here signals status; PublishAgent performs the actual write.
+- This module is never a publishing path to X. Approval here signals status; PublishAgent performs the actual write.
 - No draft content is modified through this module — only approved or rejected.
 - Sensitive escalation details (creator complaints, legal threats) are delivered here for human review; autonomous action is blocked until resolved.
 - The oversight user list is fixed in gateway config; it is not reconfigurable through chat commands.

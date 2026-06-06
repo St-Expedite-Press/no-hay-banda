@@ -17,12 +17,11 @@ part_of:
 
 ## Use When
 
-Reading the X or Instagram channel inbox to classify mentions, replies, and DMs and identify escalation triggers.
+Reading the X channel inbox to classify mentions, replies, and DMs and identify escalation triggers.
 
 ## Reads
 
 - X mentions and replies via `newshowbiz_x_read`
-- Instagram inbox via dedicated read tool (when implemented)
 - `docs/20-system-spec/risk-guardrails-and-escalation.md` — escalation trigger list
 - Prior EngagementJob records for thread context
 

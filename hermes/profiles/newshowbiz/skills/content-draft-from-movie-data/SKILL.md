@@ -1,13 +1,13 @@
 ---
 name: content-draft-from-movie-data
-description: "Turn a New Showbiz movie page or research memo into channel-ready draft variants for X or Instagram"
+description: "Turn a New Showbiz movie page or research memo into X-ready draft variants"
 version: 1.0.0
 author: New Showbiz
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
   hermes:
-    tags: [newshowbiz, content, drafting, x, instagram, kakusu, film-critic]
+    tags: [newshowbiz, content, drafting, x, kakusu, film-critic]
 ---
 
 # Skill: Content Draft From Movie Data
@@ -15,21 +15,21 @@ metadata:
 ## When to Use
 
 Use when turning a New Showbiz movie page, movie data object, or research memo into
-channel-ready draft variants for X or Instagram.
+X-ready draft variants.
 
 ## Inputs
 
 | Input | Required | Notes |
 |---|---:|---|
 | `movie_data` | yes | Title, scores, category details, synopsis, watch links |
-| `platform` | yes | `x` or `instagram` |
+| `platform` | yes | `x` |
 | `objective` | yes | discovery, explain, activate, respond, support |
 | `source_refs` | yes | Evidence for any factual or score-based claim |
 
 ## Procedure
 
 1. Confirm the source refs support every factual claim.
-2. Select a template from `~/.hermes/profiles/newshowbiz/skills/templates/` using the selection logic in `templates/_index.md`. Match on platform + objective + content type. If no template matches, default to `x/original-discovery.md` for X or `instagram/caption-standard.md` for Instagram and note the gap.
+2. Select a template from `~/.hermes/profiles/newshowbiz/skills/templates/` using the selection logic in `templates/_index.md`. Match on objective + content type. If no template matches, default to `x/original-discovery.md` and note the gap.
 3. Draft variants in New Showbiz voice (film critic register, not system summary), following the selected template's skeleton and prohibitions.
 4. Enforce Kakusu Protocol — frame representation analysis as cinematic analysis, not advocacy.
 5. Apply platform constraints per the selected template (character ceiling, hashtag ceiling, em dash prohibition are all stated per template).

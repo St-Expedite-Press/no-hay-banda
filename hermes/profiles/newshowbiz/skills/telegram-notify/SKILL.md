@@ -17,7 +17,7 @@ Send a publish notification to the Telegram oversight channel. Returns a `messag
 | Field | Type | Description |
 |---|---|---|
 | `job_id` | string | ContentJob ID (e.g. `2026-06-05T140012-e98f`) |
-| `platform` | string | `x` or `instagram` |
+| `platform` | string | `x` |
 | `draft_text` | string | Full post text (or thread post 1 if thread) |
 | `source_refs` | array | Source references from ContentJob |
 | `risk_level` | string | `low`, `medium`, or `high` |

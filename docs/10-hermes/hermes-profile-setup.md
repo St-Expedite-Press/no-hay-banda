@@ -124,9 +124,8 @@ Full patch documentation: `~/.hermes/mcp/x-mcp/PATCHES.md`
 | Surface | Rule |
 |---|---|
 | Secrets | Profile-local `.env` only; never committed |
-| Gateway | Internal oversight only; never use as public X or Instagram transport |
+| Gateway | Internal oversight only; never use as public X transport |
 | X writes | `x-mcp-write` disabled — enable only after Phase 3 pipeline exists |
-| Instagram writes | Disabled until channel spec is complete |
 | Engagement tools | Excluded from all MCP configs at Hermes filter level; never enable |
 | Memory | Trace material, not business truth |
 | Cron | Must fetch durable state before acting; do not rely on session history |
@@ -134,6 +133,6 @@ Full patch documentation: `~/.hermes/mcp/x-mcp/PATCHES.md`
 
 ## Personality Overlays
 
-The `hermes-config.example.yaml` documents seven personality overlays: `brand-director`, `audience-researcher`, `product-explainer`, `x-editor`, `instagram-editor`, `provocateur`, `growth-analyst`. They are prompt conveniences, not public personas. All public output remains the single New Showbiz brand voice.
+The `hermes-config.example.yaml` documents six personality overlays: `brand-director`, `audience-researcher`, `product-explainer`, `x-editor`, `provocateur`, `growth-analyst`. They are prompt conveniences, not public personas. All public output remains the single New Showbiz brand voice.
 
 Activate via `/personality <name>` in any `hermes -p newshowbiz` session.

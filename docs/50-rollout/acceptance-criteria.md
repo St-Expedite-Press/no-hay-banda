@@ -11,8 +11,6 @@ flowchart TD
     P2 --> P3[Phase 3 reviewed X writes]
     P3 --> P4[Phase 4 low-risk autonomy]
     P4 --> P5[Phase 5 managed edge]
-    P3 --> IG[Instagram spec]
-    IG --> P6[Phase 6 scaling and governance]
 ```
 
 ## Phase Gates
@@ -25,7 +23,7 @@ flowchart TD
 | 3 | Reviewed X writes return durable receipts and classify failures |
 | 4 | Pause path works, low-risk autonomous jobs are bounded, daily reports reconcile receipts |
 | 5 | TROLL or edge workflows are incident-reviewed, fact-bound, and suspendable |
-| 6 | Instagram, scale, and governance hardening have their own tested wrappers |
+| 6 | Scale and governance hardening have their own tested wrappers |
 
 ## End-to-End Write Readiness
 
